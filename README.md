@@ -1,6 +1,8 @@
 imagery-requests
 ================
 
+[![Join the chat at https://gitter.im/hotosm/imagery-requests](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hotosm/imagery-requests?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This repo was set up to do coordination of Imagery Requests for HOT Activations but...
 
 
