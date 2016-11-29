@@ -2,10 +2,10 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import example from './example';
+import user from './user';
 
 export const reducers = {
-  example
+  user
 };
 
 export default combineReducers(Object.assign({}, reducers, {

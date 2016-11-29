@@ -34,8 +34,7 @@
 /* Headline */
 
 .page__headline {
-  // float: left;
-  // margin: -0.5rem 0;
+  float: left;
 }
 
 .page__title {
@@ -48,9 +47,120 @@
   }
 }
 
-// TEMP
+
+/* Navigation */
+
 .page__prime-nav {
-  float: right;
+  font-weight: $base-font-bold;
+
+  @include media(medium-up) {
+    float: right;
+    margin: -0.5rem 0;
+  }
+
+  .toggle-menu {
+    position: absolute;
+    top: 0.5rem;
+    right: $global-spacing / 4;
+    margin: 0;
+
+    a {
+      @extend .button, .button--base-unbounded, .button--medium, .button--text-hidden;
+      vertical-align: top;
+
+      &:before {
+        @extend %oam-ds-icon-hamburger-menu;
+      }
+
+      @include media(medium-up) {
+        &:before {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    @include media(small-up) {
+      right: $global-spacing * 1.5;
+    }
+
+    @include media(medium-up) {
+      top: 1.5rem;
+    }
+
+    @include media(large-up) {
+      display: none;
+    }
+  }
+}
+
+.menu-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  clear: both;
+  background: #fff;
+  padding: $global-spacing;
+  box-shadow: 0 4px 12px 0 $base-alpha-color, 0 1px 0 0 $base-alpha-color;
+
+  /* Animation */
+
+  margin-top: - $global-spacing;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
+
+  &.menu-wrapper--open {
+    margin-top: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @include media(small-up) {
+    padding: $global-spacing ($global-spacing * 2);
+  }
+
+  @include media(large-up) {
+    position: initial;
+    float: left;
+    width: auto;
+    margin-top: 0;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.global-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  @include media(medium-up) {
+    float: left;
+    > li {
+      float: left;
+      margin: 0 ($global-spacing / 2) 0 0;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.global-menu-item {
+  display: block;
+  line-height: 2rem;
+  font-size: 1rem;
+  padding: 0 ($global-spacing / 2);
+  border-radius: $base-border-radius;
+  &, &:visited {
+    color: $base-font-color;
+  }
+  &--active {
+    background: rgba($base-color, 0.08);
+  }
 }
 
 /* Body

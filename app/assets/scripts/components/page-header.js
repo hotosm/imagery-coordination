@@ -1,49 +1,70 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { hashHistory, Link } from 'react-router';
+import c from 'classnames';
 
-import AuthService from '../utils/auth-service';
+import AuthService, { isLoggedIn, logout } from '../utils/auth-service';
 
 var PageHeader = React.createClass({
   displayName: 'PageHeader',
 
   propTypes: {
-    auth: T.instanceOf(AuthService)
+    auth: T.instanceOf(AuthService),
+    user: T.object
   },
 
   getInitialState: function () {
     return {
-      logged: this.props.auth.loggedIn()
+      menu: false
     };
   },
 
-  componentDidMount: function () {
-    this.props.auth.on('login', () => this.setState({logged: true}));
+  onLogoutClick: function (e) {
+    logout();
+    hashHistory.push('/');
   },
 
-  logout: function () {
-    this.props.auth.logout();
-    this.setState({logged: false});
+  onMenuClick: function (e) {
+    e.preventDefault();
+    this.setState({menu: !this.state.menu});
+  },
+
+  renderUserProfileLink: function () {
+    // The user profile is fetched asynchronously from the token.
+    // Ensure we have the data before rendering.
+    let prof = this.props.user.profile;
+    if (!prof) return null;
+
+    return <li><Link to='/dashboard' className='global-menu-item' title='View my tasks'>{prof.user_metadata.name} tasks</Link></li>;
   },
 
   render: function () {
     const auth = this.props.auth;
+    const loggedIn = isLoggedIn(this.props.user.token);
+
     return (
       <header className='page__header' role='banner'>
         <div className='inner'>
           <div className='page__headline'>
             <h1 className='page__title'>
-              <a href='/' title='Visit homepage'>Imagery Requests</a>
+              <Link to='/' title='Visit homepage'>Imagery Requests</Link>
             </h1>
           </div>
           <nav className='page__prime-nav' role='navigation'>
-            {this.state.logged
-              ? <button className='button button--base' onClick={this.logout}>Logout</button>
-              : <button className='button button--primary' onClick={auth.login.bind(this)}>Login</button>
-            }
+            <h2 className='toggle-menu'><a href='#global-menu' className={c({'button--active': this.state.menu})} title='Show/hide menu' onClick={this.onMenuClick}><span>Browse</span></a></h2>
+            <div className={c('menu-wrapper', {'menu-wrapper--open': this.state.menu})} ref='menu'>
+              <ul className='global-menu' id='global-menu'>
+                {loggedIn ? this.renderUserProfileLink() : null }
+                <li><Link to='/about' className='global-menu-item' title='About this website'>About</Link></li>
+                <li>
+                  {loggedIn
+                    ? <button className='button button--base' onClick={this.onLogoutClick}>Logout</button>
+                    : <button className='button button--primary' onClick={auth.login.bind(this)}>Login</button>
+                  }
+                </li>
+              </ul>
+            </div>
           </nav>
-          <p style={{'wordBreak': 'break-all', marginTop: '5rem'}}>
-            {this.state.logged ? auth.getToken() : null}
-          </p>
         </div>
       </header>
     );
@@ -51,3 +72,4 @@ var PageHeader = React.createClass({
 });
 
 module.exports = PageHeader;
+

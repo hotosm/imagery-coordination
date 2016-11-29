@@ -13,7 +13,9 @@ var App = React.createClass({
   propTypes: {
     routes: T.array,
     route: T.object,
-    children: T.object
+    children: T.object,
+
+    user: T.object
   },
 
   render: function () {
@@ -21,7 +23,9 @@ var App = React.createClass({
 
     return (
       <div className={c('page', pageClass)}>
-        <PageHeader auth={this.props.route.auth} />
+        <PageHeader
+          auth={this.props.route.auth}
+          user={this.props.user} />
         <main className='page__body' role='main'>
           {this.props.children}
         </main>
@@ -36,6 +40,7 @@ var App = React.createClass({
 
 function selector (state) {
   return {
+    user: state.user
   };
 }
 
