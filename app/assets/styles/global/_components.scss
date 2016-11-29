@@ -1,0 +1,61 @@
+.status-indicator {
+  position: relative;
+  padding-left: 0.75rem;
+
+  &::before {
+    position: absolute;
+    top: 0.625rem;
+    left: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    display: block;
+    border-radius: $full-border-radius;
+    content: '';
+    background: tint($base-color, 60%);
+  }
+
+  &--open::before {
+    background: $primary-color
+  }
+
+  &--close::before {
+    background: tint($base-color, 60%);
+  }
+
+  &--canceled::before {
+    background: #ea4f54;
+  }
+}
+
+.progress-bar {
+  @include appearance(none);
+  border: none;
+  border-radius: $base-border-radius;
+  height: 0.5rem;
+  width: 100%;
+  display: block;
+
+  &::-moz-progress-bar {
+    background: none;
+  }
+
+  &::-webkit-progress-bar {
+    background: none;
+  }
+
+  &::-webkit-progress-value {
+    background: none;
+  }
+
+  /* For IE10 */
+  color: transparent;
+
+  background-color: tint($base-color, 96%);
+  background-image: linear-gradient(to right, $primary-color 0%, $primary-color 100%);
+  background-repeat: repeat-y;
+  background-position: top left;
+
+  &.progress-bar--disabled {
+  background-image: linear-gradient(to right, tint($base-color, 60%) 0%, tint($base-color, 60%) 100%);
+  }
+}
