@@ -25,6 +25,7 @@ import App from './views/app';
 import Home from './views/home';
 import UhOh from './views/uhoh';
 import Dashboard from './views/dashboard';
+import Request from './views/request-page';
 import About from './views/about';
 
 const history = syncHistoryWithStore(hashHistory, store);
@@ -34,6 +35,9 @@ const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
     decodeURIComponent(currRouterProps.location.pathname) !== decodeURIComponent(prevRouterProps.location.pathname);
 });
 
+import { fetchUsers } from './actions';
+store.dispatch(fetchUsers());
+
 render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
@@ -41,6 +45,7 @@ render((
       <Route path='/' component={App} auth={auth}>
         <Route path='/dashboard' component={Dashboard} onEnter={requireAuth}/>
         <Route path='/about' component={About}/>
+        <Route path='/requests/:reqid' component={Request}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
       </Route>
     </Router>

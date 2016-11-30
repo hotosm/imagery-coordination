@@ -1,3 +1,148 @@
 /* ==========================================================================
    Homepage: Content
    ========================================================================== */
+
+.section--home {
+  .section__header {
+    padding: 2rem 0;
+  }
+
+  .section__introduction {
+    width: 45em;
+  }
+}
+
+.requests {
+  &__list {
+    @extend .clearfix;
+    padding: 0;
+  }
+
+  &__item {
+    list-style: none;
+    margin-bottom: 1rem;
+
+    @include media(medium-up) {
+      @include col(6/12, $cycle: 2);
+      margin-bottom: 2rem;
+    }
+  }
+}
+
+.request {
+  box-shadow: 0 3px 0 0 $base-semi-alpha-color, 0 0 0 1px $base-alpha-color;
+  border-radius: $base-border-radius;
+
+  &__header {
+    background: tint($base-color, 96%);
+    padding: $global-spacing;
+  }
+
+  &__body {
+    padding: $global-spacing;
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    @extend .heading--small;
+    margin: 0;
+  }
+
+  .status-indicator {
+    margin: 0;
+  }
+
+  .request-progress {
+    @extend .clearfix;
+
+    .progress-bar {
+      @include col(8/12);
+      margin-top: 0.5rem;
+    }
+
+    .progress-value {
+      @include col(4/12);
+      @extend .truncated;
+      margin: 0;
+    }
+  }
+
+  .request-tasks-info {
+    @extend .clearfix;
+    padding: 0;
+    margin-bottom: 1rem;
+
+    li {
+      list-style: none;
+      float: left;
+      margin-right: 1rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .meta-info {
+    font-size: 0.75rem;
+  }
+}
+
+.general-stats {
+  @extend .clearfix;
+  padding: 0;
+
+  li {
+    list-style: none;
+
+    strong {
+      font-size: 2rem;
+    }
+
+    @include media(medium-up) {
+      float: left;
+      margin-right: 1rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.list-filters {
+  margin-bottom: 2rem;
+  .form {
+    @extend .clearfix;
+
+    &__group {
+      width: 10rem;
+      float: left;
+      margin-right: 1rem;
+      margin-bottom: 0;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.pagination-wrapper {
+  text-align: center;
+
+  .pagination {
+    display: inline-block;
+  }
+}
+
+// TEMP!!
+.map-container {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 8rem 0;
+  background: tint($base-color, 96%);
+}

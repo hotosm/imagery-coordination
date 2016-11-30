@@ -5,6 +5,8 @@
 module.exports = {
   environment: 'production',
   auth0Client: 'qTQW5L362p0DWpuNAcx5SHggOY1p65bG',
-  auth0Domain: 'danielfdsilva.eu.auth0.com'
+  auth0Domain: 'danielfdsilva.eu.auth0.com',
+
+  api: ''
 };
 

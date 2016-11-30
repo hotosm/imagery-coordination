@@ -201,14 +201,10 @@
   &__header {
     > .inner {
       @extend .row, .row--centered;
-    }
-  }
 
-  &__headline {
-    @include col(12/12);
-
-    > *:last-child {
-      margin-bottom: 0;
+      > *:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
@@ -233,8 +229,11 @@
   &__body {
     margin-bottom: 2rem;
     > .inner {
-      @extend .row;
-      @extend .row--centered;
+      @extend .row, .row--centered;
+
+      > *:last-child {
+        margin-bottom: 0;
+      }
     }
     @include media(medium-up) {
       margin-bottom: 3rem;

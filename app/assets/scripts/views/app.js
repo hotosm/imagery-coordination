@@ -15,11 +15,17 @@ var App = React.createClass({
     route: T.object,
     children: T.object,
 
-    user: T.object
+    user: T.object,
+    usersList: T.object
   },
 
   render: function () {
     const pageClass = _.get(_.last(this.props.routes), 'pageClass', '');
+
+    // Wait for the data dependencies.
+    if (!this.props.usersList.fetched || this.props.usersList.fetching) {
+      return null;
+    }
 
     return (
       <div className={c('page', pageClass)}>
@@ -40,7 +46,8 @@ var App = React.createClass({
 
 function selector (state) {
   return {
-    user: state.user
+    user: state.user,
+    usersList: state.users
   };
 }
 
