@@ -2,20 +2,68 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import ReactPaginate from 'react-paginate';
+import _ from 'lodash';
+import numeral from 'numeral';
+import moment from 'moment';
+import c from 'classnames';
 
-import { fetchRequests } from '../actions';
+import { fetchRequests, fetchGeneralStats } from '../actions';
+import * as userUtils from '../utils/users';
 
 var Home = React.createClass({
   displayName: 'Home',
 
   propTypes: {
     _fetchRequests: T.func,
+    _fetchGeneralStats: T.func,
 
-    requests: T.object
+    requests: T.object,
+    generalStats: T.object
   },
 
   componentDidMount: function () {
     this.props._fetchRequests();
+    this.props._fetchGeneralStats();
+  },
+
+  getFilters: function () {
+    let f = {};
+    if (this.refs['filter-author'].value !== '--') {
+      f.author = this.refs['filter-author'].value;
+    }
+    if (this.refs['filter-status'].value !== '--') {
+      f.status = this.refs['filter-status'].value;
+    }
+
+    switch (this.refs['filter-interval'].value) {
+      case 'week' :
+        f.dateFrom = moment().subtract(7, 'days').startOf('day').toISOString();
+        break;
+      case 'month' :
+        f.dateFrom = moment().subtract(1, 'month').startOf('day').toISOString();
+        break;
+      case 'months3' :
+        f.dateFrom = moment().subtract(3, 'month').startOf('day').toISOString();
+        break;
+      case 'months6' :
+        f.dateFrom = moment().subtract(6, 'month').startOf('day').toISOString();
+        break;
+      case 'year' :
+        f.dateFrom = moment().subtract(1, 'year').startOf('day').toISOString();
+        break;
+    }
+
+    return f;
+  },
+
+  handlePageClick: function (d) {
+    let f = this.getFilters();
+    f.page = d.selected + 1;
+    this.props._fetchRequests(f);
+  },
+
+  onFilterChange: function () {
+    this.props._fetchRequests(this.getFilters());
   },
 
   renderRequestList: function () {
@@ -34,13 +82,13 @@ var Home = React.createClass({
     }
 
     if (!data.results.length) {
-      return <p>no results</p>;
+      return <p>No requests found with the selected filters.</p>;
     }
 
     return (
       <div>
         <ul className='requests__list'>
-          {[1, 2, 3].map(this.renderRequestCard)}
+          {data.results.map(this.renderRequestCard)}
         </ul>
 
         <div className='pagination-wrapper'>
@@ -48,10 +96,11 @@ var Home = React.createClass({
             previousLabel={<span>previous</span>}
             nextLabel={<span>next</span>}
             breakLabel={<span className='pages__page'>...</span>}
-            pageNum={10}
-            forceSelected={5}
+            pageNum={Math.ceil(data.meta.found / data.meta.limit)}
+            forceSelected={data.meta.page - 1}
             marginPagesDisplayed={2}
             pageRangeDisplayed={5}
+            clickCallback={this.handlePageClick}
             containerClassName={'pagination'}
             subContainerClassName={'pages'}
             pageClassName={'pages__wrapper'}
@@ -62,35 +111,57 @@ var Home = React.createClass({
     );
   },
 
-  renderRequestCard: function () {
+  renderRequestCard: function (o) {
+    let completedTasks = _.get(o.tasksInfo.status, 'completed', 0);
+    let progress = o.tasksInfo.total > 0 ? completedTasks / o.tasksInfo.total * 100 : 0;
+    let progressClass = c('progress-bar', {
+      'progress-bar--disabled': o.status === 'canceled'
+    });
+
     return (
-      <li className='requests__item'>
+      <li className='requests__item' key={o._id}>
         <article className='request'>
           <header className='request__header'>
-            <h1 className='request__title'>Request</h1>
+            <h1 className='request__title'>{o.name}</h1>
           </header>
           <div className='request__body'>
-            <p className='status-indicator status-indicator--close'>open</p>
+            <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
 
             <div className='request-progress'>
-              <progress value='60' max='100' className='progress-bar' style={{backgroundSize: '60%'}} />
-              <p className='progress-value'>60% complete</p>
+              <progress value={progress} max='100' className={progressClass} style={{backgroundSize: progress + '%'}} />
+              <p className='progress-value'>{numeral(progress).format('0.0')}% complete</p>
             </div>
 
             <ul className='request-tasks-info'>
-              <li><strong>3</strong> Active</li>
-              <li><strong>2</strong> Complete tasks</li>
+              <li><strong>{_.get(o.tasksInfo.status, 'open', 0)}</strong> Active</li>
+              <li><strong>{completedTasks}</strong> Complete tasks</li>
             </ul>
 
-            <p className='meta-info'>Created on 2016/10/10 by user</p>
+            <p className='meta-info'>Created on {moment(o.created).format('YYYY/MM/DD')} by {userUtils.getNameFromId(o.authorId)}</p>
           </div>
         </article>
       </li>
     );
   },
 
+  renderStats: function () {
+    let {fetched, fetching, data} = this.props.generalStats;
+
+    if (!fetched || fetching) {
+      return null;
+    }
+
+    return (
+      <ul className='general-stats'>
+        <li><strong>{data.requests.status.open}</strong> active requests</li>
+        <li><strong>{data.requests.status.closed}</strong> closed requests</li>
+      </ul>
+    );
+  },
+
   render: function () {
-    console.log('res', this.props.requests);
+    let reqCount = this.props.requests.data.meta.found;
+
     return (
       <section className='section section--home'>
         <header className='section__header'>
@@ -101,32 +172,27 @@ var Home = React.createClass({
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio sit eveniet magnam dignissimos itaque sequi ullam praesentium voluptas esse sunt repudiandae impedit, rerum maxime unde debitis saepe aut molestiae dolorem.</p>
               </div>
             </div>
-            <ul className='general-stats'>
-              <li><strong>17</strong> active requests</li>
-              <li><strong>129</strong> closed requests</li>
-            </ul>
+            {this.renderStats()}
           </div>
         </header>
         <div className='section__body'>
           <div className='inner'>
             <div className='map-container bleed-full'>Map goes here</div>
 
-            <h2>Showing 17 requests</h2>
+            <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
             <div className='list-filters'>
               <form className='form'>
                 <div className='form__group'>
                   <label className='form__label' htmlFor='request-author'>Author</label>
-                  <select className='form__control form__control--medium' id='request-author'>
-                    <option>Option 1</option>
-                    <option>Option 2</option>
-                    <option>Option 3</option>
-                    <option>Option 4</option>
+                  <select ref='filter-author' className='form__control form__control--medium' id='request-author' onChange={this.onFilterChange}>
+                    <option value='--'>All</option>
+                    {userUtils.getWithRole('coordinator').map(o => <option value={o.userId} key={o.userId}>{o.name}</option>)}
                   </select>
                 </div>
                 <div className='form__group'>
                   <label className='form__label' htmlFor='request-status'>Status</label>
-                  <select className='form__control form__control--medium' id='request-status'>
+                  <select ref='filter-status' className='form__control form__control--medium' id='request-status' onChange={this.onFilterChange}>
                     <option value='--'>All</option>
                     <option value='open'>Open</option>
                     <option value='closed'>Closed</option>
@@ -135,7 +201,7 @@ var Home = React.createClass({
                 </div>
                 <div className='form__group'>
                   <label className='form__label' htmlFor='request-interval'>Time interval</label>
-                  <select className='form__control form__control--medium' id='request-interval'>
+                  <select ref='filter-interval' className='form__control form__control--medium' id='request-interval' onChange={this.onFilterChange}>
                     <option value='--'>All</option>
                     <option value='week'>Last week</option>
                     <option value='month'>Last month</option>
@@ -160,13 +226,15 @@ var Home = React.createClass({
 
 function selector (state) {
   return {
-    requests: state.requests
+    requests: state.requests,
+    generalStats: state.generalStats
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _fetchRequests: (...args) => dispatch(fetchRequests(...args))
+    _fetchRequests: (...args) => dispatch(fetchRequests(...args)),
+    _fetchGeneralStats: (...args) => dispatch(fetchGeneralStats(...args))
   };
 }
 

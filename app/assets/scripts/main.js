@@ -34,6 +34,9 @@ const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
     decodeURIComponent(currRouterProps.location.pathname) !== decodeURIComponent(prevRouterProps.location.pathname);
 });
 
+import { fetchUsers } from './actions';
+store.dispatch(fetchUsers());
+
 render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
