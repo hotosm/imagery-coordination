@@ -15,7 +15,7 @@
   }
 
   &--open::before {
-    background: $primary-color
+    background: $secondary-color
   }
 
   &--close::before {
@@ -51,7 +51,7 @@
   color: transparent;
 
   background-color: tint($base-color, 96%);
-  background-image: linear-gradient(to right, $primary-color 0%, $primary-color 100%);
+  background-image: linear-gradient(to right, $secondary-color 0%, $secondary-color 100%);
   background-repeat: repeat-y;
   background-position: top left;
 

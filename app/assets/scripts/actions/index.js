@@ -9,6 +9,7 @@ export const LOGOUT_USER = 'LOGOUT_USER';
 
 export const REQUEST_REQUESTS = 'REQUEST_REQUESTS';
 export const RECEIVE_REQUESTS = 'RECEIVE_REQUESTS';
+export const INVALIDATE_REQUESTS = 'INVALIDATE_REQUESTS';
 
 export const REQUEST_USERS = 'REQUEST_USERS';
 export const RECEIVE_USERS = 'RECEIVE_USERS';
@@ -31,6 +32,10 @@ export function logoutUser () {
 }
 
 // Requests
+
+export function invalidateRequests () {
+  return { type: INVALIDATE_REQUESTS };
+}
 
 export function requestRequests () {
   return { type: REQUEST_REQUESTS };

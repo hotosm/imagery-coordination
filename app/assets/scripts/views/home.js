@@ -1,5 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactPaginate from 'react-paginate';
 import _ from 'lodash';
@@ -7,7 +8,7 @@ import numeral from 'numeral';
 import moment from 'moment';
 import c from 'classnames';
 
-import { fetchRequests, fetchGeneralStats } from '../actions';
+import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
 
 var Home = React.createClass({
@@ -16,6 +17,7 @@ var Home = React.createClass({
   propTypes: {
     _fetchRequests: T.func,
     _fetchGeneralStats: T.func,
+    _invalidateRequests: T.func,
 
     requests: T.object,
     generalStats: T.object
@@ -24,6 +26,10 @@ var Home = React.createClass({
   componentDidMount: function () {
     this.props._fetchRequests();
     this.props._fetchGeneralStats();
+  },
+
+  componentWillUnmount: function () {
+    this.props._invalidateRequests();
   },
 
   getFilters: function () {
@@ -122,7 +128,9 @@ var Home = React.createClass({
       <li className='requests__item' key={o._id}>
         <article className='request'>
           <header className='request__header'>
-            <h1 className='request__title'>{o.name}</h1>
+            <h1 className='request__title'>
+              <Link to={`/requests/${o._id}`}>{o.name}</Link>
+            </h1>
           </header>
           <div className='request__body'>
             <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
@@ -234,7 +242,8 @@ function selector (state) {
 function dispatcher (dispatch) {
   return {
     _fetchRequests: (...args) => dispatch(fetchRequests(...args)),
-    _fetchGeneralStats: (...args) => dispatch(fetchGeneralStats(...args))
+    _fetchGeneralStats: (...args) => dispatch(fetchGeneralStats(...args)),
+    _invalidateRequests: (...args) => dispatch(invalidateRequests(...args))
   };
 }
 
