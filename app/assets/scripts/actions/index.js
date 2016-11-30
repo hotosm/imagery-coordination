@@ -17,6 +17,10 @@ export const RECEIVE_USERS = 'RECEIVE_USERS';
 export const REQUEST_GENERAL_STATS = 'REQUEST_GENERAL_STATS';
 export const RECEIVE_GENERAL_STATS = 'RECEIVE_GENERAL_STATS';
 
+export const REQUEST_REQUEST = 'REQUEST_REQUEST';
+export const RECEIVE_REQUEST = 'RECEIVE_REQUEST';
+export const INVALIDATE_REQUEST = 'INVALIDATE_REQUEST';
+
 // User
 
 export function setUserToken (token) {
@@ -51,7 +55,25 @@ export function fetchRequests (filters = {}) {
   return fetcher(`${config.api}/requests?${f}`, requestRequests, receiveRequests);
 }
 
-// Requests
+// Request
+
+export function invalidateRequest () {
+  return { type: INVALIDATE_REQUEST };
+}
+
+export function requestRequest () {
+  return { type: REQUEST_REQUEST };
+}
+
+export function receiveRequest (request, error = null) {
+  return { type: RECEIVE_REQUEST, data: request, error, receivedAt: Date.now() };
+}
+
+export function fetchRequest (uid) {
+  return fetcher(`${config.api}/requests/${uid}`, requestRequest, receiveRequest);
+}
+
+// Users
 
 export function requestUsers () {
   return { type: REQUEST_USERS };
