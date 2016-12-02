@@ -17,6 +17,14 @@ export const RECEIVE_USERS = 'RECEIVE_USERS';
 export const REQUEST_GENERAL_STATS = 'REQUEST_GENERAL_STATS';
 export const RECEIVE_GENERAL_STATS = 'RECEIVE_GENERAL_STATS';
 
+export const REQUEST_REQUEST = 'REQUEST_REQUEST';
+export const RECEIVE_REQUEST = 'RECEIVE_REQUEST';
+export const INVALIDATE_REQUEST = 'INVALIDATE_REQUEST';
+
+export const REQUEST_TASKS = 'REQUEST_TASKS';
+export const RECEIVE_TASKS = 'RECEIVE_TASKS';
+export const INVALIDATE_TASKS = 'INVALIDATE_TASKS';
+
 // User
 
 export function setUserToken (token) {
@@ -51,7 +59,43 @@ export function fetchRequests (filters = {}) {
   return fetcher(`${config.api}/requests?${f}`, requestRequests, receiveRequests);
 }
 
-// Requests
+// Request
+
+export function invalidateRequest () {
+  return { type: INVALIDATE_REQUEST };
+}
+
+export function requestRequest () {
+  return { type: REQUEST_REQUEST };
+}
+
+export function receiveRequest (request, error = null) {
+  return { type: RECEIVE_REQUEST, data: request, error, receivedAt: Date.now() };
+}
+
+export function fetchRequest (uid) {
+  return fetcher(`${config.api}/requests/${uid}`, requestRequest, receiveRequest);
+}
+
+// Tasks
+
+export function invalidateTasks () {
+  return { type: INVALIDATE_TASKS };
+}
+
+export function requestTasks () {
+  return { type: REQUEST_TASKS };
+}
+
+export function receiveTasks (tasks, error = null) {
+  return { type: RECEIVE_TASKS, data: tasks, error, receivedAt: Date.now() };
+}
+
+export function fetchRequestTasks (reqid) {
+  return fetcher(`${config.api}/requests/${reqid}/tasks?limit=100`, requestTasks, receiveTasks);
+}
+
+// Users
 
 export function requestUsers () {
   return { type: REQUEST_USERS };

@@ -1,3 +1,34 @@
 /* ==========================================================================
    Global: content
    ========================================================================== */
+
+.details {
+  @extend .clearfix;
+
+  &__col--medium {
+    @include media(small-up) {
+      @include col(6/12, $cycle: 2);
+    }
+
+    @include media(large-up) {
+      @include col(3/12, $uncycle: 2);
+    }
+  }
+
+  &__col--small {
+    @include media(small-up) {
+      @include col(6/12, $cycle: 2);
+    }
+
+    @include media(large-up) {
+      @include col(2/12, $uncycle: 2);
+    }
+  }
+
+  &__col--wide {
+    @include col(12/12);
+    @include media(large-up) {
+      @include col(7/12);
+    }
+  }
+}

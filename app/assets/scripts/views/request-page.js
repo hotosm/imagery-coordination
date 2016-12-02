@@ -1,26 +1,190 @@
 'use strict';
-import React from 'react';
+import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import _ from 'lodash';
+import c from 'classnames';
+import moment from 'moment';
+import numeral from 'numeral';
+
+import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
+import * as userUtils from '../utils/users';
 
 var RequestPage = React.createClass({
   displayName: 'RequestPage',
 
   propTypes: {
+    _fetchRequest: T.func,
+    _fetchRequestTasks: T.func,
+    _invalidateRequest: T.func,
+    _invalidateTasks: T.func,
+
+    params: T.object,
+    request: T.object,
+    tasks: T.object
+  },
+
+  componentDidMount: function () {
+    this.props._fetchRequest(this.props.params.reqid);
+    this.props._fetchRequestTasks(this.props.params.reqid);
+  },
+
+  componentWillUnmount: function () {
+    this.props._invalidateRequest();
+    this.props._invalidateTasks();
+  },
+
+  renderTaskCard: function (o) {
+    return (
+      <li className='tasks-list__item' key={o._id}>
+        <article className='task'>
+          <header className='task__header'>
+            <h1 className='task__title'>
+              <Link to={`/requests/${this.props.params.reqid}/tasks/${o._id}`}>{o.name}</Link>
+            </h1>
+          </header>
+          <div className='task__body'>
+            <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
+
+            <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(o.authorId)}</strong></p>
+
+            {o.assigneeId
+              ? <p className='task-assignee'>Assigned to: <strong>{userUtils.getNameFromId(o.assigneeId)}</strong></p>
+              : <p className='task-assignee'>Assigned to: <strong>Not assigned</strong></p>}
+
+            <p className='meta-info'>Updated on {moment(o.updated).format('YYYY/MM/DD')} by {userUtils.getNameFromId(o.authorId)}</p>
+          </div>
+        </article>
+      </li>
+    );
+  },
+
+  renderTasks: function () {
+    let { fetched, fetching, error, data } = this.props.tasks;
+
+    if (!fetched && !fetching) {
+      return null;
+    }
+
+    if (fetching) {
+      // return <LoadingMessage />;
+      return <p>Loading</p>;
+    }
+
+    if (error) {
+      return <p>Error</p>;
+    }
+
+    let activeTasks = data.results.filter(o => o.status !== 'completed');
+    let completedTasks = data.results.filter(o => o.status === 'completed');
+
+    return (
+      <div>
+        <section className='tasks-list-container'>
+          <h1>Active tasks ({activeTasks.length})</h1>
+          {activeTasks.length ? (
+            <ul className='tasks-list'>
+              {activeTasks.map(this.renderTaskCard)}
+            </ul>
+          ) : (
+            <p>This request has no active tasks</p>
+          ) }
+        </section>
+        <section className='tasks-list-container'>
+          <h1>Completed tasks ({completedTasks.length})</h1>
+          {activeTasks.length ? (
+            <ul className='tasks-list'>
+              {completedTasks.map(this.renderTaskCard)}
+            </ul>
+          ) : (
+            <p>This request has no completed tasks</p>
+          ) }
+        </section>
+      </div>
+    );
   },
 
   render: function () {
+    let { fetched, fetching, error, data } = this.props.request;
+
+    if (!fetched && !fetching) {
+      return null;
+    }
+
+    if (fetching) {
+      // return <LoadingMessage />;
+      return <p>Loading</p>;
+    }
+
+    if (error) {
+      return <p>Error</p>;
+    }
+
+    let completedTasks = _.get(data.tasksInfo.status, 'completed', 0);
+    let progress = data.tasksInfo.total > 0 ? completedTasks / data.tasksInfo.total * 100 : 0;
+    let progressClass = c('progress-bar', {
+      'progress-bar--disabled': data.status === 'canceled'
+    });
+
+    let timePeriodRequested = 'Most recent available';
+    if (data.timePeriodRequested.from && data.timePeriodRequested.to) {
+      timePeriodRequested = `${moment(data.timePeriodRequested.from).format('YYYY/MM/DD')} - ${moment(data.timePeriodRequested.to).format('YYYY/MM/DD')}`;
+    } else if (data.timePeriodRequested.from && !data.timePeriodRequested.to) {
+      timePeriodRequested = `Anything from ${moment(data.timePeriodRequested.from).format('YYYY/MM/DD')} onwards`;
+    } else if (!data.timePeriodRequested.from && data.timePeriodRequested.to) {
+      timePeriodRequested = `Up to ${moment(data.timePeriodRequested.to).format('YYYY/MM/DD')}`;
+    }
+
     return (
-      <section className='section section--hub'>
+      <section className='section section--page'>
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
-              <h1 className='section__title'>Request</h1>
+              <h1 className='section__title'>{data.name}</h1>
+              <p className={`status-indicator status-indicator--${data.status}`}>{_.capitalize(data.status)}</p>
+              <div className='request-progress'>
+                <progress value={progress} max='100' className={progressClass} style={{backgroundSize: progress + '%'}} />
+                <p className='progress-value'>{numeral(progress).format('0.0')}% complete</p>
+              </div>
+              <p>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
             </div>
           </div>
         </header>
         <div className='section__body'>
           <div className='inner'>
-            request page
+            <div className='map-container bleed-full'>Map goes here</div>
+
+            <div className='details'>
+              <div className='details__col--medium'>
+                <dl>
+                  <dt>Requesting organization</dt>
+                  <dd>{data.requestingOrg ? data.requestingOrg : 'n/a'}</dd>
+                  <dt>Time period requested</dt>
+                  <dd>{timePeriodRequested}</dd>
+                </dl>
+              </div>
+              <div className='details__col--small'>
+                <dl>
+                  <dt>Desired GSD</dt>
+                  <dd>{data.gsd ? `${data.gsd}m` : 'n/a'}</dd>
+                  <dt>Product type</dt>
+                  <dd>{data.productType ? data.productType : 'n/a'}</dd>
+                </dl>
+              </div>
+              <div className='details__col--wide'>
+                <dl>
+                  <dt>Purpose</dt>
+                  <dd>{data.purpose ? data.purpose : 'Purpose not provided'}</dd>
+                  <dt>Use</dt>
+                  <dd>{data.use ? data.use : 'Use not provided'}</dd>
+                  <dt>Notes</dt>
+                  <dd>{data.notes ? data.notes : 'Notes not provided'}</dd>
+                </dl>
+              </div>
+            </div>
+
+            {this.renderTasks()}
+
           </div>
         </div>
       </section>
@@ -33,11 +197,17 @@ var RequestPage = React.createClass({
 
 function selector (state) {
   return {
+    request: state.request,
+    tasks: state.tasks
   };
 }
 
 function dispatcher (dispatch) {
   return {
+    _fetchRequest: (...args) => dispatch(fetchRequest(...args)),
+    _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
+    _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
+    _invalidateTasks: (...args) => dispatch(invalidateTasks(...args))
   };
 }
 
