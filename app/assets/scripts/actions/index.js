@@ -25,6 +25,10 @@ export const REQUEST_TASKS = 'REQUEST_TASKS';
 export const RECEIVE_TASKS = 'RECEIVE_TASKS';
 export const INVALIDATE_TASKS = 'INVALIDATE_TASKS';
 
+export const REQUEST_TASK = 'REQUEST_TASK';
+export const RECEIVE_TASK = 'RECEIVE_TASK';
+export const INVALIDATE_TASK = 'INVALIDATE_TASK';
+
 // User
 
 export function setUserToken (token) {
@@ -93,6 +97,24 @@ export function receiveTasks (tasks, error = null) {
 
 export function fetchRequestTasks (reqid) {
   return fetcher(`${config.api}/requests/${reqid}/tasks?limit=100`, requestTasks, receiveTasks);
+}
+
+// Task
+
+export function invalidateTask () {
+  return { type: INVALIDATE_TASK };
+}
+
+export function requestTask () {
+  return { type: REQUEST_TASK };
+}
+
+export function receiveTask (task, error = null) {
+  return { type: RECEIVE_TASK, data: task, error, receivedAt: Date.now() };
+}
+
+export function fetchTask (reqid, taskid) {
+  return fetcher(`${config.api}/requests/${reqid}/tasks/${taskid}`, requestTask, receiveTask);
 }
 
 // Users
