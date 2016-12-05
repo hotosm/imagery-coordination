@@ -26,6 +26,7 @@ import Home from './views/home';
 import UhOh from './views/uhoh';
 import Dashboard from './views/dashboard';
 import Request from './views/request-page';
+import Task from './views/task-page';
 import About from './views/about';
 
 const history = syncHistoryWithStore(hashHistory, store);
@@ -46,6 +47,7 @@ render((
         <Route path='/dashboard' component={Dashboard} onEnter={requireAuth}/>
         <Route path='/about' component={About}/>
         <Route path='/requests/:reqid' component={Request}/>
+        <Route path='/requests/:reqid/tasks/:taskid' component={Task}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
       </Route>
     </Router>

@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Task: Content
+   ========================================================================== */
+
+.section__subtitle {
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.task-author,
+.task-assignee {
+  margin-bottom: 0;
+}
+
+.task-updates {
+  &__list {
+    padding: 0;
+  }
+
+  &__item {
+    list-style: none;
+    margin-top: 2rem;
+    max-width: 45rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .update-status {
+    margin-bottom: 0;
+  }
+
+  .update-comment {
+    border-radius: $base-border-radius;
+    background: tint($base-color, 96%);
+    padding: $global-spacing;
+  }
+}

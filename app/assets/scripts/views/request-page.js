@@ -81,7 +81,7 @@ var RequestPage = React.createClass({
     return (
       <div>
         <section className='tasks-list-container'>
-          <h1>Active tasks ({activeTasks.length})</h1>
+          <h2>Active tasks ({activeTasks.length})</h2>
           {activeTasks.length ? (
             <ul className='tasks-list'>
               {activeTasks.map(this.renderTaskCard)}
@@ -91,7 +91,7 @@ var RequestPage = React.createClass({
           ) }
         </section>
         <section className='tasks-list-container'>
-          <h1>Completed tasks ({completedTasks.length})</h1>
+          <h2>Completed tasks ({completedTasks.length})</h2>
           {activeTasks.length ? (
             <ul className='tasks-list'>
               {completedTasks.map(this.renderTaskCard)}
@@ -182,6 +182,8 @@ var RequestPage = React.createClass({
                 </dl>
               </div>
             </div>
+
+            <hr/>
 
             {this.renderTasks()}
 
