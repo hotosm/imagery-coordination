@@ -5,6 +5,8 @@ import c from 'classnames';
 
 import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks } from '../actions';
 import * as userUtils from '../utils/users';
+import { dateFromRelative } from '../utils/utils';
+
 import TaskCard from '../components/task-card';
 
 var Dashboard = React.createClass({
@@ -28,17 +30,33 @@ var Dashboard = React.createClass({
     this.props._invalidateUserTasks();
   },
 
+  getFilters: function () {
+    let f = {};
+    if (this.refs['filter-status'].value !== '--') {
+      f.status = this.refs['filter-status'].value;
+    }
+    let dateFrom = dateFromRelative(this.refs['filter-interval'].value);
+    if (dateFrom !== null) {
+      f.dateFrom = dateFrom;
+    }
+    return f;
+  },
+
   onFilterChange: function () {
+    let filters = this.getFilters();
+    filters.scope = this.props.dashboard.activeTab;
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, filters);
   },
 
   onTabClick: function (tab, e) {
     e.preventDefault();
     this.props._selectDashboardTab(tab);
-    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: tab});
+    let filters = this.getFilters();
+    filters.scope = tab;
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, filters);
   },
 
   renderUserTasks: function () {
-    console.log('masasd', this.props.userTasks);
     let { fetched, fetching, error, data } = this.props.userTasks;
 
     if (!fetched && !fetching) {

@@ -8,6 +8,7 @@ import numeral from 'numeral';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
 import * as userUtils from '../utils/users';
+
 import TaskCard from '../components/task-card';
 
 var RequestPage = React.createClass({
