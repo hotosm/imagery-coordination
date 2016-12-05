@@ -14,21 +14,8 @@
   &:last-child {
     margin-bottom: 0;
   }
-}
 
-.tasks-list {
-  @extend .clearfix;
-  padding: 0;
-  margin-bottom: 0;
-
-  &__item {
-    list-style: none;
-    margin-top: 1rem;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
+  .tasks-list__item {
     @include media(medium-up) {
       @include col(6/12, $cycle: 2);
       margin-top: 2rem;
@@ -37,41 +24,5 @@
         margin-top: 0;
       }
     }
-  }
-}
-
-.task {
-  box-shadow: 0 3px 0 0 $base-semi-alpha-color, 0 0 0 1px $base-alpha-color;
-  border-radius: $base-border-radius;
-
-  &__header {
-    // background: tint($base-color, 96%);
-    padding: $global-spacing $global-spacing 0 $global-spacing;
-  }
-
-  &__body {
-    padding: $global-spacing;
-
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  &__title {
-    @extend .heading--small;
-    margin: 0;
-  }
-
-  .status-indicator {
-    margin: 0;
-  }
-
-  .task-author {
-    margin-bottom: 0;
-  }
-
-
-  .meta-info {
-    font-size: 0.75rem;
   }
 }

@@ -8,6 +8,8 @@ import request from './request';
 import requests from './requests';
 import tasks from './tasks';
 import task from './task';
+import userTasks from './user-tasks';
+import dashboard from './dashboard';
 import generalStats from './general-stats';
 
 export const reducers = {
@@ -17,6 +19,8 @@ export const reducers = {
   requests,
   task,
   tasks,
+  userTasks,
+  dashboard,
   generalStats
 };
 

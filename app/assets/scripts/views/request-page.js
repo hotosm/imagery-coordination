@@ -1,7 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import _ from 'lodash';
 import c from 'classnames';
 import moment from 'moment';
@@ -9,6 +8,7 @@ import numeral from 'numeral';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
 import * as userUtils from '../utils/users';
+import TaskCard from '../components/task-card';
 
 var RequestPage = React.createClass({
   displayName: 'RequestPage',
@@ -37,24 +37,15 @@ var RequestPage = React.createClass({
   renderTaskCard: function (o) {
     return (
       <li className='tasks-list__item' key={o._id}>
-        <article className='task'>
-          <header className='task__header'>
-            <h1 className='task__title'>
-              <Link to={`/requests/${this.props.params.reqid}/tasks/${o._id}`}>{o.name}</Link>
-            </h1>
-          </header>
-          <div className='task__body'>
-            <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
-
-            <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(o.authorId)}</strong></p>
-
-            {o.assigneeId
-              ? <p className='task-assignee'>Assigned to: <strong>{userUtils.getNameFromId(o.assigneeId)}</strong></p>
-              : <p className='task-assignee'>Assigned to: <strong>Not assigned</strong></p>}
-
-            <p className='meta-info'>Updated on {moment(o.updated).format('YYYY/MM/DD')} by {userUtils.getNameFromId(o.authorId)}</p>
-          </div>
-        </article>
+        <TaskCard
+          requestId={o.requestId}
+          id={o._id}
+          name={o.name}
+          status={o.status}
+          authorId={o.authorId}
+          assigneeId={o.assigneeId}
+          updated={o.updated}
+        />
       </li>
     );
   },
