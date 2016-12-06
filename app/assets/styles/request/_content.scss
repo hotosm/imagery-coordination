@@ -11,6 +11,10 @@
 .tasks-list-container {
   margin-bottom: 2rem;
 
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
   &:last-child {
     margin-bottom: 0;
   }

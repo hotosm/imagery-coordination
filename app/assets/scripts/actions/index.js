@@ -159,7 +159,7 @@ export function receiveUserTasks (tasks, error = null) {
 }
 
 export function fetchRequestUserTasks (uid, filters = {}) {
-  filters.limit = 20;
+  filters.limit = 10;
   let f = buildAPIQS(filters);
   return fetcherAuthenticated(`${config.api}/users/${uid}/tasks?${f}`, requestUserTasks, receiveUserTasks);
 }

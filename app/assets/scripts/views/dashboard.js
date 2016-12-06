@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import c from 'classnames';
+import ReactPaginate from 'react-paginate';
 
 import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks } from '../actions';
 import * as userUtils from '../utils/users';
@@ -56,6 +57,13 @@ var Dashboard = React.createClass({
     this.props._fetchRequestUserTasks(this.props.user.profile.user_id, filters);
   },
 
+  handlePageClick: function (d) {
+    let filters = this.getFilters();
+    filters.page = d.selected + 1;
+    filters.scope = this.props.dashboard.activeTab;
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, filters);
+  },
+
   renderUserTasks: function () {
     let { fetched, fetching, error, data } = this.props.userTasks;
 
@@ -77,23 +85,41 @@ var Dashboard = React.createClass({
     }
 
     return (
-      <ul className='tasks-list'>
-        {data.results.map(o => {
-          return (
-            <li className='tasks-list__item' key={o._id}>
-              <TaskCard
-                requestId={o.requestId}
-                id={o._id}
-                name={o.name}
-                status={o.status}
-                authorId={o.authorId}
-                assigneeId={o.assigneeId}
-                updated={o.updated}
-              />
-            </li>
-          );
-        })}
-      </ul>
+      <div>
+        <ul className='tasks-list'>
+          {data.results.map(o => {
+            return (
+              <li className='tasks-list__item' key={o._id}>
+                <TaskCard
+                  requestId={o.requestId}
+                  id={o._id}
+                  name={o.name}
+                  status={o.status}
+                  authorId={o.authorId}
+                  assigneeId={o.assigneeId}
+                  updated={o.updated}
+                />
+              </li>
+            );
+          })}
+        </ul>
+        <div className='pagination-wrapper'>
+          <ReactPaginate
+            previousLabel={<span>previous</span>}
+            nextLabel={<span>next</span>}
+            breakLabel={<span className='pages__page'>...</span>}
+            pageNum={Math.ceil(data.meta.found / data.meta.limit)}
+            forceSelected={data.meta.page - 1}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            clickCallback={this.handlePageClick}
+            containerClassName={'pagination'}
+            subContainerClassName={'pages'}
+            pageClassName={'pages__wrapper'}
+            pageLinkClassName={'pages__page'}
+            activeClassName={'active'} />
+        </div>
+      </div>
     );
   },
 
