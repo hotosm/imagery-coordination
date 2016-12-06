@@ -89,3 +89,11 @@
     font-size: 0.75rem;
   }
 }
+
+.task-updates-form {
+  box-shadow: 0 3px 0 0 $base-semi-alpha-color, 0 0 0 1px $base-alpha-color;
+  padding: $global-spacing;
+  border-radius: $base-border-radius;
+  max-width: 45rem;
+  margin-bottom: 2rem;
+}

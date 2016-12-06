@@ -36,6 +36,9 @@ export const REQUEST_USER_TASKS = 'REQUEST_USER_TASKS';
 export const RECEIVE_USER_TASKS = 'RECEIVE_USER_TASKS';
 export const INVALIDATE_USER_TASKS = 'INVALIDATE_USER_TASKS';
 
+export const START_ADD_TASK_STATUS_UPDATE = 'START_ADD_TASK_STATUS_UPDATE';
+export const FINISH_ADD_TASK_STATUS_UPDATE = 'FINISH_ADD_TASK_STATUS_UPDATE';
+
 // User
 
 export function setUserToken (token) {
@@ -162,6 +165,43 @@ export function fetchRequestUserTasks (uid, filters = {}) {
   filters.limit = 10;
   let f = buildAPIQS(filters);
   return fetcherAuthenticated(`${config.api}/users/${uid}/tasks?${f}`, requestUserTasks, receiveUserTasks);
+}
+
+// User Tasks Status Update
+
+export function startAddTaskStatusUpdate () {
+  return { type: START_ADD_TASK_STATUS_UPDATE };
+}
+
+export function finishAddTaskStatusUpdate (task, error = null) {
+  return { type: FINISH_ADD_TASK_STATUS_UPDATE, data: task, error, receivedAt: Date.now() };
+}
+
+export function addTaskStatusUpdate (requid, tuid, data) {
+  return function (dispatch, getState) {
+    dispatch(startAddTaskStatusUpdate());
+
+    fetch(`${config.api}/requests/${requid}/tasks/${tuid}/updates`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${store.getState().user.token}`
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (response.status >= 400) {
+        throw new Error('Bad response');
+      }
+      return response.json();
+    })
+    .then(json => {
+      console.log('json', json);
+      dispatch(finishAddTaskStatusUpdate(json));
+    }, e => {
+      console.log('e', e);
+      return dispatch(finishAddTaskStatusUpdate(null, 'Data not available'));
+    });
+  };
 }
 
 // Stats

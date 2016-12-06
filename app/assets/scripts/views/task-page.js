@@ -5,8 +5,10 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { invalidateTask, fetchTask } from '../actions';
+import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
+
+import TaskUpdateForm from '../components/task-update-form';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
@@ -14,9 +16,11 @@ var TaskPage = React.createClass({
   propTypes: {
     _invalidateTask: T.func,
     _fetchTask: T.func,
+    _addTaskStatusUpdate: T.func,
 
     params: T.object,
-    task: T.object
+    task: T.object,
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -25,6 +29,10 @@ var TaskPage = React.createClass({
 
   componentWillUnmount: function () {
     this.props._invalidateTask();
+  },
+
+  onTaskUpdateSubmit: function (status, comment) {
+    this.props._addTaskStatusUpdate(this.props.params.reqid, this.props.params.taskid, {status, comment});
   },
 
   renderTaskUpdate: function (o) {
@@ -44,6 +52,14 @@ var TaskPage = React.createClass({
       <div>
         <section className='task-updates'>
           <h2>Task Progress</h2>
+
+          <TaskUpdateForm
+            statusUpdate={this.props.task.statusUpdate}
+            user={this.props.user}
+            task={this.props.task.data}
+            onSubmit={this.onTaskUpdateSubmit}
+          />
+
           <ul className='task-updates__list'>
             {updates.map(this.renderTaskUpdate)}
           </ul>
@@ -123,14 +139,16 @@ var TaskPage = React.createClass({
 
 function selector (state) {
   return {
-    task: state.task
+    task: state.task,
+    user: state.user
   };
 }
 
 function dispatcher (dispatch) {
   return {
     _invalidateTask: (...args) => dispatch(invalidateTask(...args)),
-    _fetchTask: (...args) => dispatch(fetchTask(...args))
+    _fetchTask: (...args) => dispatch(fetchTask(...args)),
+    _addTaskStatusUpdate: (...args) => dispatch(addTaskStatusUpdate(...args))
   };
 }
 
