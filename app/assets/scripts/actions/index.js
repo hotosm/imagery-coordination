@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch';
 import { stringify as buildAPIQS } from 'qs';
 
 import config from '../config';
+import store from '../utils/store';
 
 export const SET_USER_TOKEN = 'SET_USER_TOKEN';
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -28,6 +29,12 @@ export const INVALIDATE_TASKS = 'INVALIDATE_TASKS';
 export const REQUEST_TASK = 'REQUEST_TASK';
 export const RECEIVE_TASK = 'RECEIVE_TASK';
 export const INVALIDATE_TASK = 'INVALIDATE_TASK';
+
+export const SELECT_DASHBOARD_TAB = 'SELECT_DASHBOARD_TAB';
+
+export const REQUEST_USER_TASKS = 'REQUEST_USER_TASKS';
+export const RECEIVE_USER_TASKS = 'RECEIVE_USER_TASKS';
+export const INVALIDATE_USER_TASKS = 'INVALIDATE_USER_TASKS';
 
 // User
 
@@ -131,6 +138,32 @@ export function fetchUsers () {
   return fetcher(`${config.api}/users`, requestUsers, receiveUsers);
 }
 
+// Dashboard
+
+export function selectDashboardTab (tab) {
+  return { type: SELECT_DASHBOARD_TAB, tab };
+}
+
+// User Tasks
+
+export function invalidateUserTasks () {
+  return { type: INVALIDATE_USER_TASKS };
+}
+
+export function requestUserTasks () {
+  return { type: REQUEST_USER_TASKS };
+}
+
+export function receiveUserTasks (tasks, error = null) {
+  return { type: RECEIVE_USER_TASKS, data: tasks, error, receivedAt: Date.now() };
+}
+
+export function fetchRequestUserTasks (uid, filters = {}) {
+  filters.limit = 10;
+  let f = buildAPIQS(filters);
+  return fetcherAuthenticated(`${config.api}/users/${uid}/tasks?${f}`, requestUserTasks, receiveUserTasks);
+}
+
 // Stats
 
 export function requestGeneralStats () {
@@ -147,11 +180,11 @@ export function fetchGeneralStats () {
 
 // Fetcher function
 
-function fetcher (url, requestFn, receiveFn) {
+function f (url, options, requestFn, receiveFn) {
   return function (dispatch, getState) {
     dispatch(requestFn());
 
-    fetch(url)
+    fetch(url, options)
       .then(response => {
         if (response.status >= 400) {
           throw new Error('Bad response');
@@ -166,3 +199,17 @@ function fetcher (url, requestFn, receiveFn) {
       });
   };
 }
+
+function fetcher (url, requestFn, receiveFn) {
+  return f(url, null, requestFn, receiveFn);
+}
+
+function fetcherAuthenticated (url, requestFn, receiveFn) {
+  let opt = {
+    headers: {
+      'Authorization': `Bearer ${store.getState().user.token}`
+    }
+  };
+  return f(url, opt, requestFn, receiveFn);
+}
+

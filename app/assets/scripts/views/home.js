@@ -10,6 +10,7 @@ import c from 'classnames';
 
 import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
+import { dateFromRelative } from '../utils/utils';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -41,24 +42,10 @@ var Home = React.createClass({
       f.status = this.refs['filter-status'].value;
     }
 
-    switch (this.refs['filter-interval'].value) {
-      case 'week' :
-        f.dateFrom = moment().subtract(7, 'days').startOf('day').toISOString();
-        break;
-      case 'month' :
-        f.dateFrom = moment().subtract(1, 'month').startOf('day').toISOString();
-        break;
-      case 'months3' :
-        f.dateFrom = moment().subtract(3, 'month').startOf('day').toISOString();
-        break;
-      case 'months6' :
-        f.dateFrom = moment().subtract(6, 'month').startOf('day').toISOString();
-        break;
-      case 'year' :
-        f.dateFrom = moment().subtract(1, 'year').startOf('day').toISOString();
-        break;
+    let dateFrom = dateFromRelative(this.refs['filter-interval'].value);
+    if (dateFrom !== null) {
+      f.dateFrom = dateFrom;
     }
-
     return f;
   },
 
