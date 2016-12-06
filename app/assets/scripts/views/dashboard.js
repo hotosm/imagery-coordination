@@ -142,8 +142,8 @@ var Dashboard = React.createClass({
               <div className='list-filters'>
                 <form className='form'>
                   <div className='form__group'>
-                    <label className='form__label' htmlFor='request-status'>Status</label>
-                    <select ref='filter-status' className='form__control form__control--medium' id='request-status' onChange={this.onFilterChange}>
+                    <label className='form__label' htmlFor='task-status'>Status</label>
+                    <select ref='filter-status' className='form__control form__control--medium' id='task-status' onChange={this.onFilterChange}>
                       <option value='--'>All</option>
                       <option value='open'>Open</option>
                       <option value='inprogress'>In Progress</option>
@@ -151,8 +151,8 @@ var Dashboard = React.createClass({
                     </select>
                   </div>
                   <div className='form__group'>
-                    <label className='form__label' htmlFor='request-interval'>Time interval</label>
-                    <select ref='filter-interval' className='form__control form__control--medium' id='request-interval' onChange={this.onFilterChange}>
+                    <label className='form__label' htmlFor='task-interval'>Time interval</label>
+                    <select ref='filter-interval' className='form__control form__control--medium' id='task-interval' onChange={this.onFilterChange}>
                       <option value='--'>All</option>
                       <option value='week'>Last week</option>
                       <option value='month'>Last month</option>
