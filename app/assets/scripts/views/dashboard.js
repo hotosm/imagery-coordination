@@ -177,7 +177,7 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <TaskMap mapId={'map--dashboard'}/>
+              <TaskMap mapId={'map--dashboard'} results={this.props.userTasks.data.results}/>
             </div>
 
           </div>
