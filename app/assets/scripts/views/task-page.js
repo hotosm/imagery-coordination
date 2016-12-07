@@ -9,6 +9,7 @@ import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
 
 import TaskUpdateForm from '../components/task-update-form';
+import TaskMap from '../components/task-map';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
@@ -110,8 +111,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <div className='map-container bleed-full'>Map goes here</div>
-
+            <TaskMap mapId='map--task-page' />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

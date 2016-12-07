@@ -9,6 +9,7 @@ import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 
 import TaskCard from '../components/task-card';
+import TaskMap from '../components/task-map';
 
 var Dashboard = React.createClass({
   displayName: 'Dashboard',
@@ -176,7 +177,7 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <div className='map-container'>Map goes here</div>
+              <TaskMap mapId={'map--dashboard'}/>
             </div>
 
           </div>

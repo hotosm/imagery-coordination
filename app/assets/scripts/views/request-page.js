@@ -10,6 +10,7 @@ import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } f
 import * as userUtils from '../utils/users';
 
 import TaskCard from '../components/task-card';
+import TaskMap from '../components/task-map';
 
 var RequestPage = React.createClass({
   displayName: 'RequestPage',
@@ -144,8 +145,7 @@ var RequestPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <div className='map-container bleed-full'>Map goes here</div>
-
+            <TaskMap mapId={'map--request-page'} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>
