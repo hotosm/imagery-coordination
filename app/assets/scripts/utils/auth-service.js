@@ -59,7 +59,7 @@ export function isLoggedIn (token) {
 export function getProfileLocalStorage () {
   // Retrieves the profile data from localStorage
   const profile = localStorage.getItem('profile');
-  return profile ? JSON.parse(localStorage.profile) : {};
+  return profile ? JSON.parse(localStorage.profile) : null;
 }
 
 export function getTokenLocalStorage () {
