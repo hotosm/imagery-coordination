@@ -65,6 +65,7 @@ var TaskUpdateForm = React.createClass({
       roles.indexOf('coordinator') === -1;
 
     let blockAccess = isSurveyor ? this.props.task.data.assigneeId !== this.props.user.profile.user_id : false;
+    let submitClass = c('button button--primary', {disabled: this.state.statusError || this.state.commentError});
     return (
       <div className='task-updates-form'>
         {this.props.statusUpdate.processing ? <p>Submitting status update</p> : null}
@@ -93,7 +94,7 @@ var TaskUpdateForm = React.createClass({
             }
           </div>
           <div className='form__actions'>
-            <button type='submit' className='button button--primary' onClick={this.onStatusUpdateSubmit}><span>Add update</span></button>
+            <button type='submit' className={submitClass} onClick={this.onStatusUpdateSubmit}><span>Add update</span></button>
           </div>
         </form>
       </div>

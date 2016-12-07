@@ -195,7 +195,6 @@ export function addTaskStatusUpdate (requid, tuid, data) {
       return response.json();
     })
     .then(json => {
-      console.log('json', json);
       dispatch(finishAddTaskStatusUpdate(json));
     }, e => {
       console.log('e', e);
