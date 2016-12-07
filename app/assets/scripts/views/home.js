@@ -12,6 +12,8 @@ import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 
+import Map from '../components/map';
+
 var Home = React.createClass({
   displayName: 'Home',
 
@@ -172,7 +174,8 @@ var Home = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <div className='map-container bleed-full'>Map goes here</div>
+
+            <Map />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 

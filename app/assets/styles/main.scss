@@ -24,7 +24,6 @@
    ========================================================================== */
 
 @import "oam-design-system";
-// @import "../../../node_modules/mapbox-gl/dist/mapbox-gl";
 
 
 /* Global
@@ -33,6 +32,7 @@
 @import "global/structure";
 @import "global/components";
 @import "global/content";
+@import "global/map";
 
 
 /* Homepage
@@ -63,3 +63,4 @@
    ========================================================================== */
 
 @import "vendor/react-paginate";
+@import "vendor/mapbox-gl";
