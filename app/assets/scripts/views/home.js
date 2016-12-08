@@ -27,7 +27,7 @@ var Home = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequests();
+    this.props._fetchRequests({footprint:true});
     this.props._fetchGeneralStats();
   },
 
@@ -53,12 +53,15 @@ var Home = React.createClass({
 
   handlePageClick: function (d) {
     let f = this.getFilters();
+    f.footprint = true;
     f.page = d.selected + 1;
     this.props._fetchRequests(f);
   },
 
   onFilterChange: function () {
-    this.props._fetchRequests(this.getFilters());
+    let f = this.getFilters();
+    f.footprint = true;
+    this.props._fetchRequests(f);
   },
 
   renderRequestList: function () {
@@ -175,7 +178,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <TaskMap mapId={'map--home'} />
+            <TaskMap mapId={'map--home'} results={this.props.requests.data.results} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 

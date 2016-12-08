@@ -4,12 +4,10 @@ import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
-import { geometryToFeature } from '../utils/features';
-
 const TaskMap = React.createClass({
   propTypes: {
     mapId: T.string,
-    results: T.array
+    results: T.object
   },
   componentDidMount: function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
@@ -27,7 +25,7 @@ const TaskMap = React.createClass({
 
   setupFeature: function () {
     if (this._map.loaded() && this.props.results) {
-      let feat = geometryToFeature(this.props.results);
+      let feat = this.props.results;
       this.addFeature(feat);
       this.zoomToFeature(feat);
     }

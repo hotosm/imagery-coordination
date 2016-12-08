@@ -7,6 +7,7 @@ import moment from 'moment';
 
 import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
+import { geometryToFeature } from '../utils/features';
 
 import TaskUpdateForm from '../components/task-update-form';
 import TaskMap from '../components/task-map';
@@ -93,6 +94,8 @@ var TaskPage = React.createClass({
       ? moment(data.timePeriodProvided.to).format('YYYY/MM/DD')
       : 'n/a';
 
+    const geometry = geometryToFeature([this.props.task.data]);
+
     return (
       <section className='section section--page'>
         <header className='section__header'>
@@ -111,7 +114,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <TaskMap mapId='map--task-page' results={[this.props.task.data]} />
+            <TaskMap mapId='map--task-page' results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>
