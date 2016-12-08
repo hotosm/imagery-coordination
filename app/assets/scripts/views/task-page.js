@@ -7,10 +7,11 @@ import moment from 'moment';
 
 import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
-import { geometryToFeature } from '../utils/features';
+// import { geometryToFeature } from '../utils/features';
 
 import TaskUpdateForm from '../components/task-update-form';
-import DisplayMap from '../components/display-map';
+// import DisplayMap from '../components/display-map';
+import EditMap from '../components/edit-map';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
@@ -94,7 +95,7 @@ var TaskPage = React.createClass({
       ? moment(data.timePeriodProvided.to).format('YYYY/MM/DD')
       : 'n/a';
 
-    const geometry = geometryToFeature([this.props.task.data]);
+    // const geometry = geometryToFeature([this.props.task.data]);
 
     return (
       <section className='section section--page'>
@@ -114,7 +115,8 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <DisplayMap mapId='map--task-page' results={geometry} />
+            <EditMap mapId='map--task-page--edit' />
+            {/* <DisplayMap mapId='map--task-page' results={geometry} /> */}
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

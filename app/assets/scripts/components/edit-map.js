@@ -21,15 +21,14 @@ const EditMap = React.createClass({
     });
 
     this.map.on('load', () => {
-      const draw = new MapboxDraw({
+      this.draw = new MapboxDraw({
         displayControlsDefault: false,
         controls: {
           polygon: true,
-          trash: true,
-          save: true
+          trash: true
         }
       });
-      this.map.addControl(draw);
+      this.map.addControl(this.draw);
 
       this.addEditLayer();
     });
