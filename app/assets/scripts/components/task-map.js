@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
+import extent from '@turf/bbox';
 import _ from 'lodash';
 
 import { geometryToFeature } from '../utils/features';
@@ -12,50 +13,55 @@ const TaskMap = React.createClass({
   },
   componentDidMount: function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
-    const map = this._map = new mapboxgl.Map({
+    this._map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [0, 20],
       zoom: 1
     });
 
-    map.on('load', () => {
-      this.mapLoaded = true;
+    this._map.on('load', () => {
+      this.setupFeature();
     });
   },
 
+  setupFeature: function () {
+    if (this._map.loaded() && this.props.results) {
+      let feat = geometryToFeature(this.props.results);
+      this.addFeature(feat);
+      this.zoomToFeature(feat);
+    }
+  },
+
   componentWillReceiveProps: function (nextProps) {
-    const feat = geometryToFeature(this.props.results);
-    const nextFeat = geometryToFeature(nextProps.results);
-    if (nextFeat && this.mapLoaded && !_.isEqual(feat, nextFeat)) {
-      this._addFeature(nextFeat);
-      this._zoomToFeature(nextFeat);
+    let nextFeat = nextProps.results;
+    if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
+      this.setupFeature();
     }
   },
 
-  _addFeature: function (feat) {
-    if (this.mapLoaded) {
-      this._map.addSource('task', {
-        type: 'geojson',
-        data: feat
-      });
-      this._map.addLayer({
-        'id': 'task',
-        'type': 'fill',
-        'source': 'task',
-        'paint': {
-          'fill-color': '#088',
-          'fill-opacity': 0.8
-        }
-      });
-    }
+  addFeature: function (feat) {
+    this._map.addSource('task', {
+      type: 'geojson',
+      data: feat
+    });
+    this._map.addLayer({
+      'id': 'task',
+      'type': 'fill',
+      'source': 'task',
+      'paint': {
+        'fill-color': '#088',
+        'fill-opacity': 0.8
+      }
+    });
   },
 
-  _zoomToFeature: function (feat) {
-    // Currently problematic
-    console.log(JSON.stringify(feat));
-    console.log(feat.geometry.coordinates);
-    this._map.fitBounds(feat.geometry.coordinates);
+  zoomToFeature: function (feat) {
+    this._map.fitBounds(extent(feat), {
+      padding: 15,
+      // ease-in-out quint
+      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+    });
   },
 
   render: function () {

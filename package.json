@@ -78,6 +78,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
+    "@turf/bbox": "^3.7.0",
     "auth0-lock": "^10.6.1",
     "babel-polyfill": "^6.16.0",
     "classnames": "^2.2.5",

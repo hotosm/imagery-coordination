@@ -8,7 +8,7 @@ export function geometryToFeature (results) {
             'type': 'Feature',
             'geometry': {
               'type': 'Polygon',
-              'coordinates': result.geometry
+              'coordinates': [result.geometry]
             },
             'properties': { }
           };
@@ -19,7 +19,7 @@ export function geometryToFeature (results) {
       'type': 'Feature',
       'geometry': {
         'type': 'Polygon',
-        'coordinates': results[0].geometry
+        'coordinates': [results[0].geometry]
       },
       'properties': { }
     };
