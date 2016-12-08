@@ -3,6 +3,8 @@ import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from 'mapbox-gl-draw';
 
+import { mbStyles } from '../utils/mapbox-styles';
+
 const EditMap = React.createClass({
   displayName: 'DisplayMap',
 
@@ -26,8 +28,10 @@ const EditMap = React.createClass({
         controls: {
           polygon: true,
           trash: true
-        }
+        },
+        styles: mbStyles
       });
+      // mapboxgl.draw(mbStyles)
       this.map.addControl(this.draw);
 
       this.addEditLayer();
@@ -56,6 +60,11 @@ const EditMap = React.createClass({
         ['==', '$type', 'Polygon']
       ]
     });
+  },
+
+  saveEdits: function () {
+    const edits = this.draw.getAll();
+    console.log(edits);
   },
 
   render: function () {
