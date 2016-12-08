@@ -11,6 +11,7 @@ const DisplayMap = React.createClass({
     mapId: T.string,
     results: T.object
   },
+
   componentDidMount: function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
     this._map = new mapboxgl.Map({
