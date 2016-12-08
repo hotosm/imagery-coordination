@@ -10,7 +10,7 @@ import { dateFromRelative } from '../utils/utils';
 import { geometryToFeature } from '../utils/features';
 
 import TaskCard from '../components/task-card';
-import TaskMap from '../components/task-map';
+import DisplayMap from '../components/display-map';
 
 var Dashboard = React.createClass({
   displayName: 'Dashboard',
@@ -179,7 +179,7 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <TaskMap mapId={'map--dashboard'} results={geometry}/>
+              <DisplayMap mapId={'map--dashboard'} results={geometry}/>
             </div>
 
           </div>

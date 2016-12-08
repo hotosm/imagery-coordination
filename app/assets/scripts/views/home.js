@@ -13,7 +13,7 @@ import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { combineFeatureResults } from '../utils/features';
 
-import TaskMap from '../components/task-map';
+import DisplayMap from '../components/display-map';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -180,7 +180,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <TaskMap mapId={'map--home'} results={geometry} />
+            <DisplayMap mapId={'map--home'} results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 

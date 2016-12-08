@@ -11,7 +11,7 @@ import * as userUtils from '../utils/users';
 import { combineFeatureResults } from '../utils/features';
 
 import TaskCard from '../components/task-card';
-import TaskMap from '../components/task-map';
+import DisplayMap from '../components/display-map';
 
 var RequestPage = React.createClass({
   displayName: 'RequestPage',
@@ -149,7 +149,7 @@ var RequestPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <TaskMap mapId={'map--request-page'} results={geometry} />
+            <DisplayMap mapId={'map--request-page'} results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

@@ -10,7 +10,7 @@ import * as userUtils from '../utils/users';
 import { geometryToFeature } from '../utils/features';
 
 import TaskUpdateForm from '../components/task-update-form';
-import TaskMap from '../components/task-map';
+import DisplayMap from '../components/display-map';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
@@ -114,7 +114,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <TaskMap mapId='map--task-page' results={geometry} />
+            <DisplayMap mapId='map--task-page' results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

@@ -4,7 +4,9 @@ import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
-const TaskMap = React.createClass({
+const DisplayMap = React.createClass({
+  displayName: 'DisplayMap',
+
   propTypes: {
     mapId: T.string,
     results: T.object
@@ -67,4 +69,4 @@ const TaskMap = React.createClass({
   }
 });
 
-module.exports = TaskMap;
+module.exports = DisplayMap;
