@@ -25,3 +25,23 @@ export function geometryToFeature (results) {
     };
   }
 }
+
+export function combineFeatureResults (results) {
+  results = results.filter((result) => {
+    return result.footprint != null;
+  });
+  return ({
+    'type': 'FeatureCollection',
+    'features':
+      results.map((result) => {
+        return {
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Polygon',
+            'coordinates': result.footprint.geometry.coordinates
+          },
+          'properties': { }
+        };
+      })
+  });
+}

@@ -11,6 +11,7 @@ import c from 'classnames';
 import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
+import { combineFeatureResults } from '../utils/features';
 
 import TaskMap from '../components/task-map';
 
@@ -27,7 +28,7 @@ var Home = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequests({footprint:true});
+    this.props._fetchRequests({footprint: true});
     this.props._fetchGeneralStats();
   },
 
@@ -161,6 +162,7 @@ var Home = React.createClass({
 
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
+    const geometry = combineFeatureResults(this.props.requests.data.results);
 
     return (
       <section className='section section--home'>
@@ -178,7 +180,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <TaskMap mapId={'map--home'} results={this.props.requests.data.results} />
+            <TaskMap mapId={'map--home'} results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
