@@ -1,5 +1,20 @@
 export function geometryToFeature (results) {
-  if (results.length === 1) {
+  if (results.length > 1) {
+    return {
+      'type': 'FeatureCollection',
+      'features':
+        results.map((result) => {
+          return {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Polygon',
+              'coordinates': result.geometry
+            },
+            'properties': { }
+          };
+        })
+    };
+  } else if (results.length) {
     return {
       'type': 'Feature',
       'geometry': {
@@ -9,18 +24,4 @@ export function geometryToFeature (results) {
       'properties': { }
     };
   }
-  return {
-    'type': 'FeatureCollection',
-    'features':
-      results.map((result) => {
-        return {
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Polygon',
-            'coordinates': result.geometry
-          },
-          'properties': { }
-        };
-      })
-  };
 }
