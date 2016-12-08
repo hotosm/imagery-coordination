@@ -14,20 +14,20 @@ const DisplayMap = React.createClass({
 
   componentDidMount: function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
-    this._map = new mapboxgl.Map({
+    this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
       center: [0, 20],
       zoom: 1
     });
 
-    this._map.on('load', () => {
+    this.map.on('load', () => {
       this.setupFeature();
     });
   },
 
   setupFeature: function () {
-    if (this._map.loaded() && this.props.results) {
+    if (this.map.loaded() && this.props.results) {
       let feat = this.props.results;
       this.addFeature(feat);
       this.zoomToFeature(feat);
@@ -42,11 +42,11 @@ const DisplayMap = React.createClass({
   },
 
   addFeature: function (feat) {
-    this._map.addSource('task', {
+    this.map.addSource('task', {
       type: 'geojson',
       data: feat
     });
-    this._map.addLayer({
+    this.map.addLayer({
       'id': 'task',
       'type': 'fill',
       'source': 'task',
@@ -58,7 +58,7 @@ const DisplayMap = React.createClass({
   },
 
   zoomToFeature: function (feat) {
-    this._map.fitBounds(extent(feat), {
+    this.map.fitBounds(extent(feat), {
       padding: 15,
       // ease-in-out quint
       easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
