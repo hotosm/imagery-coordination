@@ -8,6 +8,7 @@ import numeral from 'numeral';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
 import * as userUtils from '../utils/users';
+import { combineFeatureResults } from '../utils/features';
 
 import TaskCard from '../components/task-card';
 import TaskMap from '../components/task-map';
@@ -27,7 +28,8 @@ var RequestPage = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequest(this.props.params.reqid);
+    const q = {footprint: true};
+    this.props._fetchRequest(this.props.params.reqid, q);
     this.props._fetchRequestTasks(this.props.params.reqid);
   },
 
@@ -113,6 +115,8 @@ var RequestPage = React.createClass({
       return <p>Error</p>;
     }
 
+    const geometry = combineFeatureResults([this.props.request.data]);
+
     let completedTasks = _.get(data.tasksInfo.status, 'completed', 0);
     let progress = data.tasksInfo.total > 0 ? completedTasks / data.tasksInfo.total * 100 : 0;
     let progressClass = c('progress-bar', {
@@ -145,7 +149,7 @@ var RequestPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <TaskMap mapId={'map--request-page'} />
+            <TaskMap mapId={'map--request-page'} results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>
