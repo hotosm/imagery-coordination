@@ -30,3 +30,20 @@
     }
   }
 }
+
+.request-form {
+  max-width: 45rem;
+}
+
+.date-selector {
+  @extend .clearfix;
+
+  &__picker {
+    @include col(5/11);
+  }
+
+  &__sep {
+    @include col(1/11);
+    text-align: center;
+  }
+}

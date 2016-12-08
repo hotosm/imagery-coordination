@@ -11,6 +11,7 @@ import task from './task';
 import userTasks from './user-tasks';
 import dashboard from './dashboard';
 import generalStats from './general-stats';
+import requestForm from './request-form';
 
 export const reducers = {
   user,
@@ -21,7 +22,8 @@ export const reducers = {
   tasks,
   userTasks,
   dashboard,
-  generalStats
+  generalStats,
+  requestForm
 };
 
 export default combineReducers(Object.assign({}, reducers, {
