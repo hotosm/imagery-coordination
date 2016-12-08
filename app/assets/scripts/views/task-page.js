@@ -111,7 +111,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <TaskMap mapId='map--task-page' />
+            <TaskMap mapId='map--task-page' results={[this.props.task.data]} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>
