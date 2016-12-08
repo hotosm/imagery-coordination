@@ -39,11 +39,20 @@
   @extend .clearfix;
 
   &__picker {
-    @include col(5/11);
+    @include media(small-up) {
+      @include span(5/11);
+    }
   }
 
   &__sep {
-    @include col(1/11);
+    margin: 0;
+    line-height: 2rem;
+    height: 2rem;
     text-align: center;
+    font-weight: $base-font-bold;
+    @include media(small-up) {
+      @include span(1/11);
+      text-align: center;
+    }
   }
 }
