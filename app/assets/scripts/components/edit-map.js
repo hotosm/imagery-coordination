@@ -1,8 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
-// Make mapboxgl available to mapboxgl-draw
-window.mapboxgl = mapboxgl;
 import GLDraw from 'mapbox-gl-draw';
 
 import { mbStyles } from '../utils/mapbox-styles';
@@ -28,7 +26,9 @@ const EditMap = React.createClass({
 
     this.map.on('load', () => {
       this.addEditLayer();
-      this.map.on('click', () => this.saveEdits());
+      this.map.on('click', () => this.handleClick());
+
+      this.addTrashIconListener();
     });
   },
 
@@ -71,19 +71,36 @@ const EditMap = React.createClass({
 
   startDrawing: function () {
     this.draw.changeMode('draw_polygon');
+    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
+    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
   },
 
   limitDrawing: function (id) {
     this.draw.changeMode('direct_select', {featureId: id});
   },
-  saveEdits: function () {
-    this.map.on('draw.add', (e) => console.log(e));
+
+  disableDrawIcon: function () {
+    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
+    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon disabled';
+  },
+
+  addTrashIconListener: function () {
+    let trashIcon = document.querySelector('.mapbox-gl-draw_trash');
+    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
+    trashIcon.addEventListener('mouseup', () => {
+      drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
+    });
+  },
+
+  handleClick: function () {
     const edits = this.draw.getAll();
-    console.log(edits);
-    if (edits.features.length > 1) {
-      this.limitDrawing(edits.features[0].id);
-    } else if (edits.features.length === 0) {
+
+    if (edits.features.length === 0) {
       this.startDrawing();
+    } else if (edits.features.length === 1) {
+      this.disableDrawIcon();
+    } else if (edits.features.length > 1) {
+      this.limitDrawing(edits.features[0].id);
     }
   },
 

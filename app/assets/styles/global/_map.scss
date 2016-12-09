@@ -2,6 +2,11 @@
   margin-bottom: 2rem;
   height: 16rem;
   background-color: tint($base-color, 96%);
+  .mapbox-gl-draw_polygon {
+    &.disabled {
+      opacity: .25;
+    }
+  }
 }
 
 // Hack to selectively remove .bleed-full class effect from dashboard view
