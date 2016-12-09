@@ -39,6 +39,10 @@ export const INVALIDATE_USER_TASKS = 'INVALIDATE_USER_TASKS';
 export const START_ADD_TASK_STATUS_UPDATE = 'START_ADD_TASK_STATUS_UPDATE';
 export const FINISH_ADD_TASK_STATUS_UPDATE = 'FINISH_ADD_TASK_STATUS_UPDATE';
 
+export const RESET_REQUEST_FORM = 'RESET_REQUEST_FORM';
+export const START_POST_REQUEST = 'START_POST_REQUEST';
+export const FINISH_POST_REQUEST = 'FINISH_POST_REQUEST';
+
 // User
 
 export function setUserToken (token) {
@@ -179,29 +183,28 @@ export function finishAddTaskStatusUpdate (task, error = null) {
 }
 
 export function addTaskStatusUpdate (requid, tuid, data) {
-  return function (dispatch, getState) {
-    dispatch(startAddTaskStatusUpdate());
+  return postAuthenticated(`${config.api}/requests/${requid}/tasks/${tuid}/updates`, data, startAddTaskStatusUpdate, finishAddTaskStatusUpdate);
+}
 
-    fetch(`${config.api}/requests/${requid}/tasks/${tuid}/updates`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${store.getState().user.token}`
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (response.status >= 400) {
-        throw new Error('Bad response');
-      }
-      return response.json();
-    })
-    .then(json => {
-      dispatch(finishAddTaskStatusUpdate(json));
-    }, e => {
-      console.log('e', e);
-      return dispatch(finishAddTaskStatusUpdate(null, 'Data not available'));
-    });
-  };
+// User Add task
+
+export function resetRequestFrom () {
+  return { type: RESET_REQUEST_FORM };
+}
+export function startPostRequest () {
+  return { type: START_POST_REQUEST };
+}
+
+export function finishPostRequest (data, error = null) {
+  return { type: FINISH_POST_REQUEST, data: data, error, receivedAt: Date.now() };
+}
+
+export function postRequest (data) {
+  return postAuthenticated(`${config.api}/requests`, data, startPostRequest, finishPostRequest);
+}
+
+export function patchRequest (requid, data) {
+  return patchAuthenticated(`${config.api}/requests/${requid}`, data, startPostRequest, finishPostRequest);
 }
 
 // Stats
@@ -249,6 +252,28 @@ function fetcherAuthenticated (url, requestFn, receiveFn) {
     headers: {
       'Authorization': `Bearer ${store.getState().user.token}`
     }
+  };
+  return f(url, opt, requestFn, receiveFn);
+}
+
+function postAuthenticated (url, data, requestFn, receiveFn) {
+  let opt = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${store.getState().user.token}`
+    },
+    body: JSON.stringify(data)
+  };
+  return f(url, opt, requestFn, receiveFn);
+}
+
+function patchAuthenticated (url, data, requestFn, receiveFn) {
+  let opt = {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${store.getState().user.token}`
+    },
+    body: JSON.stringify(data)
   };
   return f(url, opt, requestFn, receiveFn);
 }

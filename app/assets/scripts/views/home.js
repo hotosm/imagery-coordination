@@ -14,6 +14,7 @@ import { dateFromRelative } from '../utils/utils';
 import { combineFeatureResults } from '../utils/features';
 
 import DisplayMap from '../components/display-map';
+import { isLoggedIn } from '../utils/auth-service';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -24,7 +25,8 @@ var Home = React.createClass({
     _invalidateRequests: T.func,
 
     requests: T.object,
-    generalStats: T.object
+    generalStats: T.object,
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -162,7 +164,14 @@ var Home = React.createClass({
 
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
+<<<<<<< HEAD
     const geometry = combineFeatureResults(this.props.requests.data.results);
+=======
+    let token = this.props.user.token;
+    let roles = _.get(this.props.user, 'profile.roles', []);
+
+    let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
+>>>>>>> 5605f1ed49bb638994a8acad38f9ca95842d4fd4
 
     return (
       <section className='section section--home'>
@@ -175,6 +184,11 @@ var Home = React.createClass({
               </div>
             </div>
             {this.renderStats()}
+            {allowedUser ? (
+            <div className='section__actions'>
+              <Link to={`/requests/edit`} className='button button--primary'><span>Add request</span></Link>
+            </div>
+            ) : null}
           </div>
         </header>
         <div className='section__body'>
@@ -230,7 +244,8 @@ var Home = React.createClass({
 function selector (state) {
   return {
     requests: state.requests,
-    generalStats: state.generalStats
+    generalStats: state.generalStats,
+    user: state.user
   };
 }
 

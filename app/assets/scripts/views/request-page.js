@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import _ from 'lodash';
 import c from 'classnames';
 import moment from 'moment';
@@ -9,6 +10,7 @@ import numeral from 'numeral';
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
 import * as userUtils from '../utils/users';
 import { combineFeatureResults } from '../utils/features';
+import { isLoggedIn } from '../utils/auth-service';
 
 import TaskCard from '../components/task-card';
 import DisplayMap from '../components/display-map';
@@ -24,7 +26,8 @@ var RequestPage = React.createClass({
 
     params: T.object,
     request: T.object,
-    tasks: T.object
+    tasks: T.object,
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -132,12 +135,24 @@ var RequestPage = React.createClass({
       timePeriodRequested = `Up to ${moment(data.timePeriodRequested.to).format('YYYY/MM/DD')}`;
     }
 
+    let token = this.props.user.token;
+    let roles = _.get(this.props.user, 'profile.roles', []);
+
+    let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
+
     return (
       <section className='section section--page'>
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
               <h1 className='section__title'>{data.name}</h1>
+            </div>
+            {allowedUser ? (
+            <div className='section__actions'>
+              <Link to={`/requests/${data._id}/edit`} className='button button--primary'><span>Edit request</span></Link>
+            </div>
+            ) : null}
+            <div className='section__stats'>
               <p className={`status-indicator status-indicator--${data.status}`}>{_.capitalize(data.status)}</p>
               <div className='request-progress'>
                 <progress value={progress} max='100' className={progressClass} style={{backgroundSize: progress + '%'}} />
@@ -196,7 +211,8 @@ var RequestPage = React.createClass({
 function selector (state) {
   return {
     request: state.request,
-    tasks: state.tasks
+    tasks: state.tasks,
+    user: state.user
   };
 }
 

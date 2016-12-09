@@ -7,8 +7,16 @@
     padding: 2rem 0;
   }
 
+  .section__headline {
+    @include span(12/12);
+  }
+
   .section__introduction {
-    width: 45em;
+    max-width: 45em;
+  }
+
+  .section__actions {
+    @include span(12/12);
   }
 }
 
