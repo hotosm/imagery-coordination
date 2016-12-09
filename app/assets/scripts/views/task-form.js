@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link, hashHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
+import GJV from 'geojson-validation';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
@@ -125,6 +126,38 @@ var TaskForm = React.createClass({
     this.setState({data});
   },
 
+  onFileChange: function (e) {
+    let reader = new FileReader();
+
+    reader.onload = (e) => {
+      let err = Object.assign({}, this.state.errors);
+      try {
+        let geojson = JSON.parse(reader.result);
+        console.log('geojson', geojson);
+        if (!geojson.geometry) {
+          err.geometryFile = true;
+          return this.setState({errors: err});
+        }
+
+        GJV.isPolygon(geojson.geometry, (valid, errs) => {
+          if (!valid) {
+            console.log(errs);
+            err.geometryFile = true;
+            this.setState({errors: err});
+          } else {
+            err.geometryFile = false;
+            let data = Object.assign({}, this.state.data, {geometry: geojson.geometry.coordinates[0]});
+            this.setState({errors: err, data});
+          }
+        });
+      } catch (e) {
+        err.geometryFile = true;
+        this.setState({errors: err});
+      }
+    };
+    reader.readAsText(e.target.files[0]);
+  },
+
   componentDidMount: function () {
     // If we're editing a task, the we have the request info from the
     // task itself, otherwise we need to get the request data as well.
@@ -184,6 +217,14 @@ var TaskForm = React.createClass({
     return (
       <div className='task-form'>
         <form ref='form' className='form'>
+          <div className='form__group'>
+            <label className='form__label'>Area of interest</label>
+            <input type='file' name='task-area-file' onChange={this.onFileChange} />
+            {this.state.errors.geometryFile
+              ? <p className='message message--alert'>File is not in a valid format. Needs to be a GeoJSON Feature Polygon.</p>
+              : null
+            }
+          </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>
             <input type='text' className='form__control form__control--medium' id='task-name' name='task-name' placeholder='Task name'
