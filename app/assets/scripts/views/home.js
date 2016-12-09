@@ -11,6 +11,7 @@ import c from 'classnames';
 import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
+import { isLoggedIn } from '../utils/auth-service';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -21,7 +22,8 @@ var Home = React.createClass({
     _invalidateRequests: T.func,
 
     requests: T.object,
-    generalStats: T.object
+    generalStats: T.object,
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -156,6 +158,10 @@ var Home = React.createClass({
 
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
+    let token = this.props.user.token;
+    let roles = _.get(this.props.user, 'profile.roles', []);
+
+    let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
 
     return (
       <section className='section section--home'>
@@ -168,6 +174,11 @@ var Home = React.createClass({
               </div>
             </div>
             {this.renderStats()}
+            {allowedUser ? (
+            <div className='section__actions'>
+              <Link to={`/requests/edit`} className='button button--primary'><span>Add request</span></Link>
+            </div>
+            ) : null}
           </div>
         </header>
         <div className='section__body'>
@@ -222,7 +233,8 @@ var Home = React.createClass({
 function selector (state) {
   return {
     requests: state.requests,
-    generalStats: state.generalStats
+    generalStats: state.generalStats,
+    user: state.user
   };
 }
 
