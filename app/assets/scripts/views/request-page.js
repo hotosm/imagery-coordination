@@ -145,6 +145,7 @@ var RequestPage = React.createClass({
             {allowedUser ? (
             <div className='section__actions'>
               <Link to={`/requests/${data._id}/edit`} className='button button--primary'><span>Edit request</span></Link>
+              <Link to={`/requests/${data._id}/tasks/edit`} className='button button--primary button--add-task'><span>Add task</span></Link>
             </div>
             ) : null}
             <div className='section__stats'>
