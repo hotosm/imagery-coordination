@@ -80,8 +80,8 @@ export const mbStyles = [
     'type': 'fill',
     'filter': ['all', ['==', '$type', 'Polygon'], ['==', 'active', 'false']],
     'paint': {
-      'fill-color': '#00ff00',
-      'fill-outline-color': '#00cc00',
+      'fill-color': '#51d6ff',
+      'fill-outline-color': '#0fc7ff',
       'fill-opacity': 0.2
     }
   },
@@ -96,7 +96,7 @@ export const mbStyles = [
       'line-join': 'round'
     },
     'paint': {
-      'line-color': '#00cc00',
+      'line-color': '#0fc7ff',
       'line-width': 3
     }
   }

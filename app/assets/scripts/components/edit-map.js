@@ -1,7 +1,9 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
-import MapboxDraw from 'mapbox-gl-draw';
+// Make mapboxgl available to mapboxgl-draw
+window.mapboxgl = mapboxgl;
+import GLDraw from 'mapbox-gl-draw';
 
 import { mbStyles } from '../utils/mapbox-styles';
 
@@ -22,20 +24,25 @@ const EditMap = React.createClass({
       zoom: 1
     });
 
-    this.map.on('load', () => {
-      this.draw = new MapboxDraw({
-        displayControlsDefault: false,
-        controls: {
-          polygon: true,
-          trash: true
-        },
-        styles: mbStyles
-      });
-      // mapboxgl.draw(mbStyles)
-      this.map.addControl(this.draw);
+    this.addDraw();
 
+    this.map.on('load', () => {
       this.addEditLayer();
+      this.map.on('click', () => this.saveEdits());
     });
+  },
+
+  addDraw: function () {
+    this.draw = new GLDraw({
+      displayControlsDefault: false,
+      controls: {
+        polygon: true,
+        trash: true
+      },
+      styles: mbStyles
+    });
+    this.map.addControl(this.draw);
+    this.startDrawing();
   },
 
   addEditLayer: function () {
@@ -62,9 +69,22 @@ const EditMap = React.createClass({
     });
   },
 
+  startDrawing: function () {
+    this.draw.changeMode('draw_polygon');
+  },
+
+  limitDrawing: function (id) {
+    this.draw.changeMode('direct_select', {featureId: id});
+  },
   saveEdits: function () {
+    this.map.on('draw.add', (e) => console.log(e));
     const edits = this.draw.getAll();
     console.log(edits);
+    if (edits.features.length > 1) {
+      this.limitDrawing(edits.features[0].id);
+    } else if (edits.features.length === 0) {
+      this.startDrawing();
+    }
   },
 
   render: function () {
