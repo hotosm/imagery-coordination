@@ -44,7 +44,6 @@ const EditMap = React.createClass({
     this.map.addControl(this.drawPlugin);
     this.map.on('draw.create', () => this.handleDraw());
     this.map.on('draw.delete', () => this.handleDraw());
-    // console.log('starting')
     this.startDrawing();
   },
 
@@ -73,7 +72,6 @@ const EditMap = React.createClass({
   },
 
   startDrawing: function () {
-    this.drawPlugin.changeMode('draw_polygon');
     let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
     drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
   },
@@ -81,7 +79,6 @@ const EditMap = React.createClass({
   limitDrawing: function (id) {
     let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
     drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon disabled';
-    // this.drawPlugin.changeMode('direct_select', {featureId: id});
   },
 
   handleDraw: function () {
