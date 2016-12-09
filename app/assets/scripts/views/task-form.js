@@ -225,6 +225,9 @@ var TaskForm = React.createClass({
               : null
             }
           </div>
+
+          <div className='map-container'>Map goes here</div>
+
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>
             <input type='text' className='form__control form__control--medium' id='task-name' name='task-name' placeholder='Task name'
