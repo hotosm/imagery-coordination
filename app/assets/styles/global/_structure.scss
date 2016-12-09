@@ -212,6 +212,25 @@
     @extend .heading, .heading--xlarge;
   }
 
+  &__headline {
+    @include media(medium-up) {
+      @include span(8/12);
+    }
+  }
+
+  &__actions {
+    margin-bottom: 1rem;
+    @include media(medium-up) {
+      @include span(4/12);
+      text-align: right;
+      margin-bottom: 0;
+    }
+  }
+
+  &__stats {
+    clear: both;
+  }
+
   // &__subtitle {
   //   text-transform: uppercase;
   //   font-weight: $base-font-regular;

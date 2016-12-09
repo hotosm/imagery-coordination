@@ -30,3 +30,29 @@
     }
   }
 }
+
+.request-form {
+  max-width: 45rem;
+}
+
+.date-selector {
+  @extend .clearfix;
+
+  &__picker {
+    @include media(small-up) {
+      @include span(5/11);
+    }
+  }
+
+  &__sep {
+    margin: 0;
+    line-height: 2rem;
+    height: 2rem;
+    text-align: center;
+    font-weight: $base-font-bold;
+    @include media(small-up) {
+      @include span(1/11);
+      text-align: center;
+    }
+  }
+}
