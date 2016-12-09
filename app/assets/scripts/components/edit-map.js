@@ -12,6 +12,9 @@ const EditMap = React.createClass({
     mapId: T.string
   },
 
+  map: null,
+  drawPlugin: null,
+
   componentDidMount: function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
 
@@ -26,14 +29,11 @@ const EditMap = React.createClass({
 
     this.map.on('load', () => {
       this.addEditLayer();
-      this.map.on('click', () => this.handleClick());
-
-      this.addTrashIconListener();
     });
   },
 
   addDraw: function () {
-    this.draw = new GLDraw({
+    this.drawPlugin = new GLDraw({
       displayControlsDefault: false,
       controls: {
         polygon: true,
@@ -41,7 +41,10 @@ const EditMap = React.createClass({
       },
       styles: mbStyles
     });
-    this.map.addControl(this.draw);
+    this.map.addControl(this.drawPlugin);
+    this.map.on('draw.create', () => this.handleDraw());
+    this.map.on('draw.delete', () => this.handleDraw());
+    // console.log('starting')
     this.startDrawing();
   },
 
@@ -70,36 +73,24 @@ const EditMap = React.createClass({
   },
 
   startDrawing: function () {
-    this.draw.changeMode('draw_polygon');
+    this.drawPlugin.changeMode('draw_polygon');
     let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
     drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
   },
 
   limitDrawing: function (id) {
-    this.draw.changeMode('direct_select', {featureId: id});
-  },
-
-  disableDrawIcon: function () {
     let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
     drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon disabled';
+    // this.drawPlugin.changeMode('direct_select', {featureId: id});
   },
 
-  addTrashIconListener: function () {
-    let trashIcon = document.querySelector('.mapbox-gl-draw_trash');
-    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
-    trashIcon.addEventListener('mouseup', () => {
-      drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
-    });
-  },
+  handleDraw: function () {
+    const edits = this.drawPlugin.getAll();
+    const editCount = edits.features.length;
 
-  handleClick: function () {
-    const edits = this.draw.getAll();
-
-    if (edits.features.length === 0) {
+    if (editCount === 0) {
       this.startDrawing();
-    } else if (edits.features.length === 1) {
-      this.disableDrawIcon();
-    } else if (edits.features.length > 1) {
+    } else if (editCount === 1) {
       this.limitDrawing(edits.features[0].id);
     }
   },
