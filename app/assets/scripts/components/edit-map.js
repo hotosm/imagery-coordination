@@ -40,6 +40,7 @@ const EditMap = React.createClass({
   componentWillReceiveProps: function (nextProps) {
     const nextAOI = nextProps.results;
     if (nextAOI.geometry.coordinates[0]) {
+      this.removeSource();
       this.loadExistingSource(nextAOI);
       this.zoomToFeature(nextAOI);
     }
@@ -78,6 +79,11 @@ const EditMap = React.createClass({
       }
     });
     this.addLayer();
+  },
+
+  removeSource: function () {
+    this.map.removeSource('edit-layer');
+    this.map.removeLayer('edit-layer');
   },
 
   addLayer: function () {
