@@ -7,6 +7,6 @@ module.exports = {
   auth0Client: 'qTQW5L362p0DWpuNAcx5SHggOY1p65bG',
   auth0Domain: 'danielfdsilva.eu.auth0.com',
 
-  api: ''
+  api: 'https://imagery-requests-staging.herokuapp.com'
 };
 
