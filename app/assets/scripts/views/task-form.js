@@ -217,7 +217,7 @@ var TaskForm = React.createClass({
   },
 
   renderFrom: function (data = {}) {
-    const geometry = geometryToFeature([this.props.task.data]);
+    const geometry = geometryToFeature(this.state.data.geometry);
     let editing = !!this.props.params.taskid;
     return (
       <div className='task-form'>

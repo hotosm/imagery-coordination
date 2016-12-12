@@ -31,10 +31,18 @@ const EditMap = React.createClass({
 
     this.map.on('load', () => {
       const prevAOI = this.props.results;
-      prevAOI
+      prevAOI.geometry.coordinates[0]
         ? this.loadExistingSource(prevAOI)
         : this.addNewSource();
     });
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    const nextAOI = nextProps.results;
+    if (nextAOI.geometry.coordinates[0]) {
+      this.loadExistingSource(nextAOI);
+      this.zoomToFeature(nextAOI);
+    }
   },
 
   addDraw: function () {
