@@ -40,7 +40,6 @@ const EditMap = React.createClass({
   componentWillReceiveProps: function (nextProps) {
     const nextAOI = nextProps.results;
     if (nextAOI.geometry.coordinates[0]) {
-      this.removeSource();
       this.loadExistingSource(nextAOI);
       this.zoomToFeature(nextAOI);
     }
@@ -62,12 +61,13 @@ const EditMap = React.createClass({
   },
 
   loadExistingSource: function (prevAOI) {
-    this.map.addSource('edit-layer', {
-      type: 'geojson',
-      data: prevAOI
-    });
-    this.addLayer();
+    prevAOI.id = 'edit-layer';
+    this.limitDrawing();
     this.zoomToFeature(prevAOI);
+    this.drawPlugin.set({
+      'type': 'FeatureCollection',
+      'features': [prevAOI]
+    });
   },
 
   addNewSource: function () {
@@ -81,21 +81,12 @@ const EditMap = React.createClass({
     this.addLayer();
   },
 
-  removeSource: function () {
-    this.map.removeSource('edit-layer');
-    this.map.removeLayer('edit-layer');
-  },
-
   addLayer: function () {
     this.map.addLayer({
       'id': 'edit-layer',
       'type': 'fill',
       'source': 'edit-layer',
       'layout': {},
-      'paint': {
-        'fill-color': '#73b6e6',
-        'fill-outline-color': '#fff'
-      },
       'filter': [
         'all',
         ['==', '$type', 'Polygon']
