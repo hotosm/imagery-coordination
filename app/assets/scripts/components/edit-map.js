@@ -9,7 +9,8 @@ const EditMap = React.createClass({
   displayName: 'DisplayMap',
 
   propTypes: {
-    mapId: T.string
+    mapId: T.string,
+    mapClass: T.string
   },
 
   map: null,
@@ -93,7 +94,7 @@ const EditMap = React.createClass({
   },
 
   render: function () {
-    return <div className='map-container bleed-full' id={this.props.mapId}></div>;
+    return <div className={this.props.mapClass} id={this.props.mapId}></div>;
   }
 });
 
