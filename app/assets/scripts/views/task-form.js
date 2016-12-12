@@ -231,7 +231,7 @@ var TaskForm = React.createClass({
             }
           </div>
 
-          <EditMap mapId='map--task-page--edit' results={geometry} />
+          <EditMap mapId='map--task-page--edit' geometry={geometry} />
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>

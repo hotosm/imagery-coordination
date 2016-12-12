@@ -11,7 +11,8 @@ const EditMap = React.createClass({
 
   propTypes: {
     mapId: T.string,
-    results: T.object
+    geometry: T.object,
+    getFeature: T.object
   },
 
   map: null,
@@ -30,7 +31,7 @@ const EditMap = React.createClass({
     this.addDraw();
 
     this.map.on('load', () => {
-      const prevAOI = this.props.results;
+      const prevAOI = this.props.geometry;
       prevAOI.geometry.coordinates[0]
         ? this.loadExistingSource(prevAOI)
         : this.addNewSource();
@@ -38,7 +39,7 @@ const EditMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const nextAOI = nextProps.results;
+    const nextAOI = nextProps.geometry;
     if (nextAOI.geometry.coordinates[0]) {
       this.loadExistingSource(nextAOI);
       this.zoomToFeature(nextAOI);
@@ -121,6 +122,11 @@ const EditMap = React.createClass({
     } else if (editCount === 1) {
       this.limitDrawing(edits.features[0].id);
     }
+  },
+
+  passEdits: function () {
+    // Whenever a new feature is added, the map will emit the generated JSON
+    // to be recieved by its parent form element.
   },
 
   render: function () {
