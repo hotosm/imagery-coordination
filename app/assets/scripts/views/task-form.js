@@ -8,6 +8,8 @@ import GJV from 'geojson-validation';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
+import { geometryToFeature } from '../utils/features';
+
 momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom, fetchRequest, invalidateRequest } from '../actions';
@@ -215,6 +217,7 @@ var TaskForm = React.createClass({
   },
 
   renderFrom: function (data = {}) {
+    const geometry = geometryToFeature([this.props.task.data]);
     let editing = !!this.props.params.taskid;
     return (
       <div className='task-form'>
@@ -228,7 +231,7 @@ var TaskForm = React.createClass({
             }
           </div>
 
-          <EditMap mapId='map--task-page--edit' />
+          <EditMap mapId='map--task-page--edit' results={geometry} />
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>

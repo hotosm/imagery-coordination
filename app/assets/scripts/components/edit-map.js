@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
+import extent from '@turf/bbox';
 
 import { mbStyles } from '../utils/mapbox-styles';
 
@@ -9,7 +10,8 @@ const EditMap = React.createClass({
   displayName: 'DisplayMap',
 
   propTypes: {
-    mapId: T.string
+    mapId: T.string,
+    results: T.object
   },
 
   map: null,
@@ -28,7 +30,10 @@ const EditMap = React.createClass({
     this.addDraw();
 
     this.map.on('load', () => {
-      this.addEditLayer();
+      const prevAOI = this.props.results;
+      prevAOI
+        ? this.loadExistingSource(prevAOI)
+        : this.addNewSource();
     });
   },
 
@@ -47,7 +52,16 @@ const EditMap = React.createClass({
     this.startDrawing();
   },
 
-  addEditLayer: function () {
+  loadExistingSource: function (prevAOI) {
+    this.map.addSource('edit-layer', {
+      type: 'geojson',
+      data: prevAOI
+    });
+    this.addLayer();
+    this.zoomToFeature(prevAOI);
+  },
+
+  addNewSource: function () {
     this.map.addSource('edit-layer', {
       type: 'geojson',
       data: {
@@ -55,6 +69,10 @@ const EditMap = React.createClass({
         features: []
       }
     });
+    this.addLayer();
+  },
+
+  addLayer: function () {
     this.map.addLayer({
       'id': 'edit-layer',
       'type': 'fill',
@@ -68,6 +86,14 @@ const EditMap = React.createClass({
         'all',
         ['==', '$type', 'Polygon']
       ]
+    });
+  },
+
+  zoomToFeature: function (feat) {
+    this.map.fitBounds(extent(feat), {
+      padding: 15,
+      // ease-in-out quint
+      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
     });
   },
 
