@@ -164,14 +164,12 @@ var Home = React.createClass({
 
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
-<<<<<<< HEAD
-    const geometry = combineFeatureResults(this.props.requests.data.results);
-=======
     let token = this.props.user.token;
     let roles = _.get(this.props.user, 'profile.roles', []);
 
     let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
->>>>>>> 5605f1ed49bb638994a8acad38f9ca95842d4fd4
+
+    const geometry = combineFeatureResults(this.props.requests.data.results);
 
     return (
       <section className='section section--home'>
