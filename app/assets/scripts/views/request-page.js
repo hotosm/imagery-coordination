@@ -87,7 +87,7 @@ var RequestPage = React.createClass({
         </section>
         <section className='tasks-list-container'>
           <h2>Completed tasks ({completedTasks.length})</h2>
-          {activeTasks.length ? (
+          {completedTasks.length ? (
             <ul className='tasks-list'>
               {completedTasks.map(this.renderTaskCard)}
             </ul>
