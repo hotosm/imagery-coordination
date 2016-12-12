@@ -21,10 +21,13 @@ const requireAuth = (nextState, replace) => {
   }
 };
 
-const requireRole = (role) => (nextState, replace) => {
+const requireRole = (allowedRoles) => (nextState, replace) => {
+  allowedRoles = _.castArray(allowedRoles);
   let user = store.getState().user;
-  let roles = _.get(user, 'profile.roles', []);
-  if (!isLoggedIn(user.token) || roles.indexOf(role) === -1) {
+  console.log('user', user);
+  let userRoles = _.get(user, 'profile.roles', []);
+  let hasRole = allowedRoles.some(o => userRoles.indexOf(o) !== -1);
+  if (!isLoggedIn(user.token) || !hasRole) {
     replace({ pathname: '/' });
   }
 };
@@ -36,6 +39,7 @@ import UhOh from './views/uhoh';
 import Dashboard from './views/dashboard';
 import Request from './views/request-page';
 import RequestForm from './views/request-form';
+import TaskForm from './views/task-form';
 import Task from './views/task-page';
 import About from './views/about';
 
@@ -58,6 +62,10 @@ render((
         <Route path='/about' component={About}/>
         <Route path='/requests/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
         <Route path='/requests/:reqid/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
+
+        <Route path='/requests/:reqid/tasks/edit' component={TaskForm} onEnter={requireRole('coordinator')} />
+        <Route path='/requests/:reqid/tasks/:taskid/edit' component={TaskForm} onEnter={requireRole(['coordinator', 'surveyor'])} />
+
         <Route path='/requests/:reqid' component={Request} />
         <Route path='/requests/:reqid/tasks/:taskid' component={Task} />
         <IndexRoute component={Home} pageClass='page--homepage' />

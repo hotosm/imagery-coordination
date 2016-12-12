@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
+import _ from 'lodash';
 
 import { isLoggedIn } from '../utils/auth-service';
 
@@ -54,7 +55,7 @@ var TaskUpdateForm = React.createClass({
 
   render: function () {
     let token = this.props.user.token;
-    let roles = this.props.user.profile.roles;
+    let roles = _.get(this.props.user, 'profile.roles', []);
 
     if (!isLoggedIn(token)) {
       return null;

@@ -8,6 +8,7 @@ import moment from 'moment';
 import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
 // import { geometryToFeature } from '../utils/features';
+import { isLoggedIn } from '../utils/auth-service';
 
 import TaskUpdateForm from '../components/task-update-form';
 // import DisplayMap from '../components/display-map';
@@ -95,7 +96,23 @@ var TaskPage = React.createClass({
       ? moment(data.timePeriodProvided.to).format('YYYY/MM/DD')
       : 'n/a';
 
+    let token = this.props.user.token;
+    let roles = _.get(this.props.user, 'profile.roles', []);
+
+    // Who can edit a request:
+    // - any coordinator
+    // - assigned surveyor
+    let allowedUser = false;
+    if (isLoggedIn(token)) {
+      if (roles.indexOf('coordinator') !== -1) {
+        allowedUser = true;
+      } else if (roles.indexOf('surveyor') !== -1 && this.props.user.profile.user_id === data.assigneeId) {
+        allowedUser = true;
+      }
+    }
+
     // const geometry = geometryToFeature([this.props.task.data]);
+
 
     return (
       <section className='section section--page'>
@@ -104,6 +121,13 @@ var TaskPage = React.createClass({
             <div className='section__headline'>
               <p className='section__subtitle'><Link to={`/requests/${data.requestId}`}>{data.requestInfo.name}</Link></p>
               <h1 className='section__title'>{data.name}</h1>
+            </div>
+            {allowedUser ? (
+            <div className='section__actions'>
+              <Link to={`/requests/${data.requestId}/tasks/${data._id}/edit`} className='button button--primary'><span>Edit task</span></Link>
+            </div>
+            ) : null}
+            <div className='section__stats'>
               <p className={`status-indicator status-indicator--${data.status}`}>{_.capitalize(data.status)}</p>
               <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')}</p>
               <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
