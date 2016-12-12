@@ -9,7 +9,8 @@ const DisplayMap = React.createClass({
 
   propTypes: {
     mapId: T.string,
-    results: T.object
+    results: T.object,
+    mapClass: T.string
   },
 
   componentDidMount: function () {
@@ -66,7 +67,7 @@ const DisplayMap = React.createClass({
   },
 
   render: function () {
-    return <div className='map-container bleed-full' id={this.props.mapId}></div>;
+    return <div className={this.props.mapClass} id={this.props.mapId}></div>;
   }
 });
 

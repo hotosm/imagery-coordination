@@ -78,7 +78,7 @@ const EditMap = React.createClass({
     drawIconClasses.add('active');
   },
 
-  limitDrawing: function (id) {
+  limitDrawing: function () {
     let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
     drawIconClasses.remove('active');
     drawIconClasses.add('disabled');
@@ -91,7 +91,7 @@ const EditMap = React.createClass({
     if (editCount === 0) {
       this.startDrawing();
     } else if (editCount === 1) {
-      this.limitDrawing(edits.features[0].id);
+      this.limitDrawing();
     }
   },
 
