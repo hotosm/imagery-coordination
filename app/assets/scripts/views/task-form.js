@@ -261,7 +261,7 @@ var TaskForm = React.createClass({
           <div className='form__group'>
             <label className='form__label'>To deliver by</label>
             <DateTimePicker
-              max={this.dateOrUndefined('deliveryTime') || new Date()}
+              min={new Date()}
               finalView='decade'
               format={'YYYY-MM-DD'}
               value={this.getValueForDate('deliveryTime')}
