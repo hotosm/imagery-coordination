@@ -12,6 +12,8 @@ momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom, fetchRequest, invalidateRequest } from '../actions';
 
+import EditMap from '../components/edit-map';
+
 var TaskForm = React.createClass({
   displayName: 'TaskForm',
 
@@ -226,7 +228,7 @@ var TaskForm = React.createClass({
             }
           </div>
 
-          <div className='map-container'>Map goes here</div>
+          <EditMap mapId='map--task-page--edit' />
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>
