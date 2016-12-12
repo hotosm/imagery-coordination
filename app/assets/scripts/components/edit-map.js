@@ -73,13 +73,15 @@ const EditMap = React.createClass({
   },
 
   startDrawing: function () {
-    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
-    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
+    const drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
+    drawIconClasses.remove('disabled');
+    drawIconClasses.add('active');
   },
 
   limitDrawing: function (id) {
-    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
-    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon disabled';
+    let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
+    drawIconClasses.remove('active');
+    drawIconClasses.add('disabled');
   },
 
   handleDraw: function () {
