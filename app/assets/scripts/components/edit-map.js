@@ -121,12 +121,17 @@ const EditMap = React.createClass({
       this.startDrawing();
     } else if (editCount === 1) {
       this.limitDrawing(edits.features[0].id);
+      this.passEdits(edits);
     }
   },
 
-  passEdits: function () {
+  passEdits: function (edits) {
     // Whenever a new feature is added, the map will emit the generated JSON
-    // to be recieved by its parent form element.
+    // to be received by its parent form element.
+
+    // How to implement the state update in this project?
+
+    console.log(edits);
   },
 
   render: function () {
