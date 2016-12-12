@@ -139,7 +139,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <EditMap mapId='map--task-page--edit' mapClass={'map-container bleed-full'} />
+            <EditMap mapId='map--task-page--edit' className={'map-container bleed-full'} />
             {/* <DisplayMap mapId='map--task-page' mapClass={'map-container bleed-full'} results={geometry} /> */}
             <div className='details'>
               <div className='details__col--medium'>

@@ -3,12 +3,10 @@ import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
 
-import config from '../config';
-
 import { mbStyles } from '../utils/mapbox-styles';
 
 const EditMap = React.createClass({
-  displayName: 'DisplayMap',
+  displayName: 'EditMap',
 
   propTypes: {
     mapId: T.string,
@@ -19,8 +17,6 @@ const EditMap = React.createClass({
   drawPlugin: null,
 
   componentDidMount: function () {
-    mapboxgl.accessToken = config.mbToken;
-
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',

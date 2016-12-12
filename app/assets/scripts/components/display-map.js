@@ -4,19 +4,16 @@ import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
-import config from '../config';
-
 const DisplayMap = React.createClass({
   displayName: 'DisplayMap',
 
   propTypes: {
     mapId: T.string,
     results: T.object,
-    mapClass: T.string
+    className: T.string
   },
 
   componentDidMount: function () {
-    mapboxgl.accessToken = config.mbToken;
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -69,7 +66,7 @@ const DisplayMap = React.createClass({
   },
 
   render: function () {
-    return <div className={this.props.mapClass} id={this.props.mapId}></div>;
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 

@@ -192,7 +192,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap mapId={'map--home'} mapClass={'map-container bleed-full'} results={geometry} />
+            <DisplayMap mapId={'map--home'} className={'map-container bleed-full'} results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
