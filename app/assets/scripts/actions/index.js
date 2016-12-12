@@ -95,8 +95,9 @@ export function receiveRequest (request, error = null) {
   return { type: RECEIVE_REQUEST, data: request, error, receivedAt: Date.now() };
 }
 
-export function fetchRequest (uid) {
-  return fetcher(`${config.api}/requests/${uid}`, requestRequest, receiveRequest);
+export function fetchRequest (uid, filters) {
+  let f = buildAPIQS(filters);
+  return fetcher(`${config.api}/requests/${uid}?${f}`, requestRequest, receiveRequest);
 }
 
 // Tasks
@@ -301,4 +302,3 @@ function patchAuthenticated (url, data, requestFn, receiveFn) {
   };
   return f(url, opt, requestFn, receiveFn);
 }
-

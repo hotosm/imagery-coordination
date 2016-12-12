@@ -11,6 +11,9 @@ import c from 'classnames';
 import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
+import { combineFeatureResults } from '../utils/features';
+
+import DisplayMap from '../components/display-map';
 import { isLoggedIn } from '../utils/auth-service';
 
 var Home = React.createClass({
@@ -27,7 +30,7 @@ var Home = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequests();
+    this.props._fetchRequests({footprint: true});
     this.props._fetchGeneralStats();
   },
 
@@ -53,12 +56,15 @@ var Home = React.createClass({
 
   handlePageClick: function (d) {
     let f = this.getFilters();
+    f.footprint = true;
     f.page = d.selected + 1;
     this.props._fetchRequests(f);
   },
 
   onFilterChange: function () {
-    this.props._fetchRequests(this.getFilters());
+    let f = this.getFilters();
+    f.footprint = true;
+    this.props._fetchRequests(f);
   },
 
   renderRequestList: function () {
@@ -158,9 +164,10 @@ var Home = React.createClass({
 
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
+    const geometry = combineFeatureResults(this.props.requests.data.results);
+
     let token = this.props.user.token;
     let roles = _.get(this.props.user, 'profile.roles', []);
-
     let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
 
     return (
@@ -183,7 +190,8 @@ var Home = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <div className='map-container bleed-full'>Map goes here</div>
+
+            <DisplayMap mapId={'map--home'} results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
