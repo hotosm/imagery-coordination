@@ -8,11 +8,10 @@ import moment from 'moment';
 import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
 import * as userUtils from '../utils/users';
 import { isLoggedIn } from '../utils/auth-service';
-// import { geometryToFeature } from '../utils/features';
+import { geometryToFeature } from '../utils/features';
 
 import TaskUpdateForm from '../components/task-update-form';
-// import DisplayMap from '../components/display-map';
-import EditMap from '../components/edit-map';
+import DisplayMap from '../components/display-map';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
@@ -111,7 +110,7 @@ var TaskPage = React.createClass({
       }
     }
 
-    // const geometry = geometryToFeature([this.props.task.data]);
+    const geometry = geometryToFeature([this.props.task.data]);
 
     return (
       <section className='section section--page'>
@@ -138,8 +137,7 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <EditMap mapId='map--task-page--edit' />
-            {/* <DisplayMap mapId='map--task-page' results={geometry} /> */}
+            <DisplayMap mapId='map--task-page' results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>
