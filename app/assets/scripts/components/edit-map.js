@@ -3,6 +3,8 @@ import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
 
+import config from '../config';
+
 import { mbStyles } from '../utils/mapbox-styles';
 
 const EditMap = React.createClass({
@@ -17,7 +19,7 @@ const EditMap = React.createClass({
   drawPlugin: null,
 
   componentDidMount: function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
+    mapboxgl.accessToken = config.mbToken;
 
     this.map = new mapboxgl.Map({
       container: this.props.mapId,

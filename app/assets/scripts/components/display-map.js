@@ -4,6 +4,8 @@ import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
+import config from '../config';
+
 const DisplayMap = React.createClass({
   displayName: 'DisplayMap',
 
@@ -14,7 +16,7 @@ const DisplayMap = React.createClass({
   },
 
   componentDidMount: function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
+    mapboxgl.accessToken = config.mbToken;
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
