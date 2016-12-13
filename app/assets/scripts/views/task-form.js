@@ -11,7 +11,7 @@ import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
 
 momentLocalizer(moment);
 
-import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom, fetchRequest, invalidateRequest } from '../actions';
+import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom, fetchRequest, invalidateRequest, deleteTask } from '../actions';
 
 import EditMap from '../components/edit-map';
 
@@ -26,6 +26,7 @@ var TaskForm = React.createClass({
     _resetTaskFrom: T.func,
     _fetchRequest: T.func,
     _invalidateRequest: T.func,
+    _deleteTask: T.func,
 
     params: T.object,
     task: T.object,
@@ -157,6 +158,18 @@ var TaskForm = React.createClass({
   onFeatureRemove: function () {
     let data = Object.assign({}, this.state.data, {geometry: ''});
     this.setState({data});
+  },
+
+  onDeleteClick: function (e) {
+    e.preventDefault();
+
+    let msg = `Are you sure you want to delete ${this.props.task.data.name}?
+This action is permanent.`;
+
+    if (confirm(msg)) {
+      this.props._deleteTask(this.props.params.reqid, this.props.params.taskid);
+      hashHistory.push(`/requests/${this.props.params.reqid}`);
+    }
   },
 
   componentDidMount: function () {
@@ -333,6 +346,8 @@ var TaskForm = React.createClass({
       reqName = this.props.request.data.name;
     }
 
+    let showDelete = editing && this.props.user.profile.roles.indexOf('coordinator') !== -1;
+
     return (
       <section className='section section--page'>
         <header className='section__header'>
@@ -341,6 +356,11 @@ var TaskForm = React.createClass({
               <p className='section__subtitle'><Link to={`/requests/${reqId}`}>{reqName}</Link></p>
               <h1 className='section__title'>{pageTitle}</h1>
             </div>
+            {showDelete ? (
+            <div className='section__actions'>
+              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete</span></a>
+            </div>
+            ) : null}
           </div>
         </header>
         <div className='section__body'>
@@ -377,7 +397,8 @@ function dispatcher (dispatch) {
     _patchTask: (...args) => dispatch(patchTask(...args)),
     _resetTaskFrom: (...args) => dispatch(resetTaskFrom(...args)),
     _fetchRequest: (...args) => dispatch(fetchRequest(...args)),
-    _invalidateRequest: (...args) => dispatch(invalidateRequest(...args))
+    _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
+    _deleteTask: (...args) => dispatch(deleteTask(...args))
   };
 }
 

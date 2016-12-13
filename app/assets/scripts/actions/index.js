@@ -47,6 +47,12 @@ export const RESET_TASK_FORM = 'RESET_TASK_FORM';
 export const START_POST_TASK = 'START_POST_TASK';
 export const FINISH_POST_TASK = 'FINISH_POST_TASK';
 
+export const START_DELETE_REQUEST = 'START_DELETE_REQUEST';
+export const FINISH_DELETE_REQUEST = 'FINISH_DELETE_REQUEST';
+
+export const START_DELETE_TASK = 'START_DELETE_TASK';
+export const FINISH_DELETE_TASK = 'FINISH_DELETE_TASK';
+
 // User
 
 export function setUserToken (token) {
@@ -190,11 +196,12 @@ export function addTaskStatusUpdate (requid, tuid, data) {
   return postAuthenticated(`${config.api}/requests/${requid}/tasks/${tuid}/updates`, data, startAddTaskStatusUpdate, finishAddTaskStatusUpdate);
 }
 
-// Add task
+// Request form related
 
 export function resetRequestFrom () {
   return { type: RESET_REQUEST_FORM };
 }
+
 export function startPostRequest () {
   return { type: START_POST_REQUEST };
 }
@@ -211,11 +218,24 @@ export function patchRequest (requid, data) {
   return patchAuthenticated(`${config.api}/requests/${requid}`, data, startPostRequest, finishPostRequest);
 }
 
-// Add task
+export function startDeleteRequest () {
+  return { type: START_DELETE_REQUEST };
+}
+
+export function finishDeleteRequest (data, error = null) {
+  return { type: FINISH_DELETE_REQUEST, data: data, error, receivedAt: Date.now() };
+}
+
+export function deleteRequest (requid, tuid) {
+  return deleteAuthenticated(`${config.api}/requests/${requid}`, startDeleteRequest, finishDeleteRequest);
+}
+
+// Task form related
 
 export function resetTaskFrom () {
   return { type: RESET_TASK_FORM };
 }
+
 export function startPostTask () {
   return { type: START_POST_TASK };
 }
@@ -230,6 +250,18 @@ export function postTask (requid, data) {
 
 export function patchTask (requid, tuid, data) {
   return patchAuthenticated(`${config.api}/requests/${requid}/tasks/${tuid}`, data, startPostTask, finishPostTask);
+}
+
+export function startDeleteTask () {
+  return { type: START_DELETE_TASK };
+}
+
+export function finishDeleteTask (data, error = null) {
+  return { type: FINISH_DELETE_TASK, data: data, error, receivedAt: Date.now() };
+}
+
+export function deleteTask (requid, tuid) {
+  return deleteAuthenticated(`${config.api}/requests/${requid}/tasks/${tuid}`, startDeleteTask, finishDeleteTask);
 }
 
 // Stats
@@ -299,6 +331,16 @@ function patchAuthenticated (url, data, requestFn, receiveFn) {
       'Authorization': `Bearer ${store.getState().user.token}`
     },
     body: JSON.stringify(data)
+  };
+  return f(url, opt, requestFn, receiveFn);
+}
+
+function deleteAuthenticated (url, requestFn, receiveFn) {
+  let opt = {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${store.getState().user.token}`
+    }
   };
   return f(url, opt, requestFn, receiveFn);
 }
