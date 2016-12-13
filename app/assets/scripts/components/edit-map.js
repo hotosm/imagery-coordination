@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
 import extent from '@turf/bbox';
+import _ from 'lodash';
 
 import { mbStyles } from '../utils/mapbox-styles';
 
@@ -30,15 +31,18 @@ const EditMap = React.createClass({
 
     this.map.on('load', () => {
       const prevAOI = this.props.geometry;
-      prevAOI.geometry.coordinates[0]
+      prevAOI && prevAOI.geometry.coordinates
         ? this.loadExistingSource(prevAOI)
         : this.addNewSource();
     });
   },
 
   componentWillReceiveProps: function (nextProps) {
+    const lastAOI = this.props.geometry;
     const nextAOI = nextProps.geometry;
-    if (nextAOI.geometry.coordinates[0]) {
+
+    if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
+     (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
       this.loadExistingSource(nextAOI);
       this.zoomToFeature(nextAOI);
     }
