@@ -79,7 +79,6 @@ var TaskPage = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -137,7 +136,9 @@ var TaskPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <DisplayMap mapId='map--task-page' results={geometry} />
+
+            <DisplayMap mapId='map--task-page' mapClass={'map-container bleed-full'} results={geometry} />
+
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

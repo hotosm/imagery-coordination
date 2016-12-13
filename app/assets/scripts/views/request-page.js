@@ -65,7 +65,6 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -90,7 +89,7 @@ var RequestPage = React.createClass({
         </section>
         <section className='tasks-list-container'>
           <h2>Completed tasks ({completedTasks.length})</h2>
-          {activeTasks.length ? (
+          {completedTasks.length ? (
             <ul className='tasks-list'>
               {completedTasks.map(this.renderTaskCard)}
             </ul>
@@ -110,7 +109,6 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -165,7 +163,7 @@ var RequestPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <DisplayMap mapId={'map--request-page'} results={geometry} />
+            <DisplayMap mapId={'map--request-page'} className={'map-container bleed-full'} results={geometry} />
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

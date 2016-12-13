@@ -7,20 +7,18 @@ import extent from '@turf/bbox';
 import { mbStyles } from '../utils/mapbox-styles';
 
 const EditMap = React.createClass({
-  displayName: 'DisplayMap',
+  displayName: 'EditMap',
 
   propTypes: {
     mapId: T.string,
-    geometry: T.object,
-    getFeature: T.object
+    className: T.string,
+    geometry: T.object
   },
 
   map: null,
   drawPlugin: null,
 
   componentDidMount: function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
-
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -104,13 +102,15 @@ const EditMap = React.createClass({
   },
 
   startDrawing: function () {
-    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
-    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon active';
+    const drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
+    drawIconClasses.remove('disabled');
+    drawIconClasses.add('active');
   },
 
-  limitDrawing: function (id) {
-    let drawIcon = document.querySelector('.mapbox-gl-draw_polygon');
-    drawIcon.className = 'mapbox-gl-draw_ctrl-draw-btn mapbox-gl-draw_polygon disabled';
+  limitDrawing: function () {
+    let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
+    drawIconClasses.remove('active');
+    drawIconClasses.add('disabled');
   },
 
   handleDraw: function () {
@@ -120,7 +120,7 @@ const EditMap = React.createClass({
     if (editCount === 0) {
       this.startDrawing();
     } else if (editCount === 1) {
-      this.limitDrawing(edits.features[0].id);
+      this.limitDrawing();
       this.passEdits(edits);
     }
   },
@@ -135,7 +135,7 @@ const EditMap = React.createClass({
   },
 
   render: function () {
-    return <div className='map-container bleed-full' id={this.props.mapId}></div>;
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 

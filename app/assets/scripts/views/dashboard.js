@@ -74,7 +74,6 @@ var Dashboard = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -179,7 +178,7 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <DisplayMap mapId={'map--dashboard'} results={geometry}/>
+              <DisplayMap mapId={'map--dashboard'} className={'map-container'} results={geometry}/>
             </div>
 
           </div>

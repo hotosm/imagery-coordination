@@ -9,11 +9,11 @@ const DisplayMap = React.createClass({
 
   propTypes: {
     mapId: T.string,
-    results: T.object
+    results: T.object,
+    className: T.string
   },
 
   componentDidMount: function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q';
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -66,7 +66,7 @@ const DisplayMap = React.createClass({
   },
 
   render: function () {
-    return <div className='map-container bleed-full' id={this.props.mapId}></div>;
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 

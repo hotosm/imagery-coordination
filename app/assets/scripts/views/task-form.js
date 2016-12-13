@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { Link, hashHistory } from 'react-router';
 import moment from 'moment';
 import _ from 'lodash';
-import GJV from 'geojson-validation';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
+import { validateGeoJSONPolygon } from '../utils/utils';
 
 import { geometryToFeature } from '../utils/features';
 
@@ -134,29 +134,22 @@ var TaskForm = React.createClass({
     let reader = new FileReader();
 
     reader.onload = (e) => {
-      let err = Object.assign({}, this.state.errors);
+      let errors = Object.assign({}, this.state.errors);
       try {
         let geojson = JSON.parse(reader.result);
-        console.log('geojson', geojson);
-        if (!geojson.geometry) {
-          err.geometryFile = true;
-          return this.setState({errors: err});
-        }
-
-        GJV.isPolygon(geojson.geometry, (valid, errs) => {
-          if (!valid) {
-            console.log(errs);
-            err.geometryFile = true;
-            this.setState({errors: err});
+        validateGeoJSONPolygon(geojson, (err, res) => {
+          if (err) {
+            errors.geometryFile = err;
+            this.setState({errors: errors});
           } else {
-            err.geometryFile = false;
-            let data = Object.assign({}, this.state.data, {geometry: geojson.geometry.coordinates[0]});
-            this.setState({errors: err, data});
+            let data = Object.assign({}, this.state.data, {geometry: res});
+            errors.geometryFile = null;
+            this.setState({errors: errors, data});
           }
         });
       } catch (e) {
-        err.geometryFile = true;
-        this.setState({errors: err});
+        errors.geometryFile = 'File is not in a valid format. Needs to be a GeoJSON';
+        this.setState({errors: errors});
       }
     };
     reader.readAsText(e.target.files[0]);
@@ -226,12 +219,12 @@ var TaskForm = React.createClass({
             <label className='form__label'>Area of interest</label>
             <input type='file' name='task-area-file' onChange={this.onFileChange} />
             {this.state.errors.geometryFile
-              ? <p className='message message--alert'>File is not in a valid format. Needs to be a GeoJSON Feature Polygon.</p>
+              ? <p className='message message--alert'>{this.state.errors.geometryFile}</p>
               : null
             }
           </div>
 
-          <EditMap mapId='map--task-page--edit' geometry={geometry} />
+          <EditMap mapId='map--task-page--edit' className='map-container bleed-full' geometry={geometry} />
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>
@@ -273,7 +266,7 @@ var TaskForm = React.createClass({
           <div className='form__group'>
             <label className='form__label'>To deliver by</label>
             <DateTimePicker
-              max={this.dateOrUndefined('deliveryTime') || new Date()}
+              min={new Date()}
               finalView='decade'
               format={'YYYY-MM-DD'}
               value={this.getValueForDate('deliveryTime')}
