@@ -2,9 +2,19 @@
   margin-bottom: 2rem;
   height: 16rem;
   background-color: tint($base-color, 96%);
+
   .mapbox-gl-draw_polygon {
     &.disabled {
-      opacity: .25;
+      opacity: 0.25;
     }
+  }
+
+  &--edit,
+  &--display {
+    height: 30rem;
+  }
+
+  &--dashboard {
+    height: 40rem;
   }
 }

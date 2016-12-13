@@ -137,7 +137,10 @@ var TaskPage = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap mapId='map--task-page' className={'map-container bleed-full'} results={geometry} />
+            <DisplayMap
+              mapId='map-task-page'
+              className='map-container map-container--display bleed-full'
+              results={geometry} />
 
             <div className='details'>
               <div className='details__col--medium'>

@@ -229,8 +229,8 @@ var TaskForm = React.createClass({
           </div>
 
           <EditMap
-            mapId='map--task-page--edit'
-            className='map-container bleed-full'
+            mapId='map-task-edit'
+            className='map-container map-container--edit bleed-full'
             geometry={geometry}
             onFeatureDraw={this.onFeatureDraw}
             onFeatureRemove={this.onFeatureRemove} />
