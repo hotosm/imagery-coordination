@@ -24,6 +24,7 @@ export function validateGeoJSONPolygon (geojson, cb) {
   let isF = true;
 
   GJV.isFeatureCollection(geojson, (valid, errs) => {
+    console.log(valid);
     console.log(geojson);
     if (!valid) isFc = false;
     console.log('erros', errs);
