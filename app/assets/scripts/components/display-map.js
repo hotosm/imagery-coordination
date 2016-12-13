@@ -27,10 +27,12 @@ const DisplayMap = React.createClass({
   },
 
   setupFeature: function () {
-    if (this.map.loaded() && this.props.results) {
-      let feat = this.props.results;
-      this.addFeature(feat);
-      this.zoomToFeature(feat);
+    const feat = this.props.results;
+    if (this.map.loaded() && feat) {
+      if (feat.features.length) {
+        this.addFeature(feat);
+        this.zoomToFeature(feat);
+      }
     }
   },
 
