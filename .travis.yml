@@ -5,8 +5,8 @@ node_js:
 env:
   global:
   - CXX=g++-4.8
-  - DEPLOY_BRANCH=master
-  - secure: "" # GH_TOKEN
+  - DEPLOY_BRANCH=develop
+  - secure: "cJOLHRIF57ZmdQlKnx/CTXEFP0wn4lqzzqIn5FlebdGRTM3LhTtfuSdkZqIsJE1avIdIzezhbpS29VMCNKxniuvg7CsUgWa0hrqSKFgOsHXO+Ax1m04TKuJVd9YVZGzNiL+bY3wuU7TRULOOk+G1fBKyZyfc/lqGqSo8Kn2WNO8=" # GH_TOKEN
 
 addons:
   apt:

@@ -8,5 +8,5 @@ module.exports = {
   auth0Domain: 'danielfdsilva.eu.auth0.com',
   mbToken: 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q',
 
-  api: ''
+  api: 'https://imagery-requests-staging.herokuapp.com'
 };
