@@ -59,7 +59,6 @@ store.dispatch(fetchUsers());
 render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
-      <Route path='/404' component={UhOh} />
       <Route path='/' component={App} auth={auth}>
         <Route path='/dashboard' component={Dashboard} onEnter={requireAuth} />
         <Route path='/about' component={About}/>
@@ -72,6 +71,7 @@ render((
         <Route path='/requests/:reqid' component={Request} />
         <Route path='/requests/:reqid/tasks/:taskid' component={Task} />
         <IndexRoute component={Home} pageClass='page--homepage' />
+        <Route path="*" component={UhOh}/>
       </Route>
     </Router>
   </Provider>

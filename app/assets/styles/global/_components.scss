@@ -77,3 +77,12 @@
     color: $danger-color;
   }
 }
+
+.button--delete {
+  @extend .button;
+  @include button-variation("filled", "dark", $danger-color);
+
+  ::before {
+    @extend %oam-ds-icon-trash-bin;
+  }
+}

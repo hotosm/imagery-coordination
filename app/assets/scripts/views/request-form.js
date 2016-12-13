@@ -10,7 +10,7 @@ import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
 momentLocalizer(moment);
 
-import { fetchRequest, invalidateRequest, postRequest, patchRequest, resetRequestFrom } from '../actions';
+import { fetchRequest, invalidateRequest, postRequest, patchRequest, resetRequestFrom, deleteRequest } from '../actions';
 
 var RequestForm = React.createClass({
   displayName: 'RequestForm',
@@ -21,6 +21,7 @@ var RequestForm = React.createClass({
     _postRequest: T.func,
     _patchRequest: T.func,
     _resetRequestFrom: T.func,
+    _deleteRequest: T.func,
 
     params: T.object,
     request: T.object,
@@ -112,6 +113,18 @@ var RequestForm = React.createClass({
   onFieldChange: function (field, e) {
     let data = Object.assign({}, this.state.data, {[field]: e.target.value});
     this.setState({data});
+  },
+
+  onDeleteClick: function (e) {
+    e.preventDefault();
+
+    let msg = `Are you sure you want to delete ${this.props.request.data.name}?
+This action is permanent, and all associated tasks will be deleted as well.`;
+
+    if (confirm(msg)) {
+      this.props._deleteRequest(this.props.params.reqid);
+      hashHistory.push(`/`);
+    }
   },
 
   componentDidMount: function () {
@@ -267,6 +280,11 @@ var RequestForm = React.createClass({
             <div className='section__headline'>
               <h1 className='section__title'>{pageTitle}</h1>
             </div>
+            {editing ? (
+            <div className='section__actions'>
+              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete</span></a>
+            </div>
+            ) : null}
           </div>
         </header>
         <div className='section__body'>
@@ -298,7 +316,8 @@ function dispatcher (dispatch) {
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
     _postRequest: (...args) => dispatch(postRequest(...args)),
     _patchRequest: (...args) => dispatch(patchRequest(...args)),
-    _resetRequestFrom: (...args) => dispatch(resetRequestFrom(...args))
+    _resetRequestFrom: (...args) => dispatch(resetRequestFrom(...args)),
+    _deleteRequest: (...args) => dispatch(deleteRequest(...args))
   };
 }
 

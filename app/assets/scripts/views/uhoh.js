@@ -6,10 +6,20 @@ var UhOh = React.createClass({
 
   render: function () {
     return (
-      <div>
-        <h1>Uh Oh!</h1>
-        <p>You're seaching for something that doesn't exist...</p>
-      </div>
+      <section className='section section--page'>
+        <header className='section__header'>
+          <div className='inner'>
+            <div className='section__headline'>
+              <h1 className='section__title'>Uh Oh!</h1>
+            </div>
+          </div>
+        </header>
+        <div className='section__body'>
+          <div className='inner'>
+            You're seaching for something that doesn't exist...
+          </div>
+        </div>
+      </section>
     );
   }
 });
