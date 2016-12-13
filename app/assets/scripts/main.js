@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, hashHistory, applyRouterMiddleware } from 'react-router';
 import { useScroll } from 'react-router-scroll';
 import { syncHistoryWithStore } from 'react-router-redux';
+import mapboxgl from 'mapbox-gl';
 import _ from 'lodash';
 
 import AuthService, { isLoggedIn } from './utils/auth-service';
@@ -31,6 +32,8 @@ const requireRole = (allowedRoles) => (nextState, replace) => {
     replace({ pathname: '/' });
   }
 };
+
+mapboxgl.accessToken = config.mbToken;
 
 // Views.
 import App from './views/app';

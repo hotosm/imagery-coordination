@@ -7,8 +7,10 @@ import ReactPaginate from 'react-paginate';
 import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
+import { geometryToFeature } from '../utils/features';
 
 import TaskCard from '../components/task-card';
+import DisplayMap from '../components/display-map';
 
 var Dashboard = React.createClass({
   displayName: 'Dashboard',
@@ -125,6 +127,7 @@ var Dashboard = React.createClass({
 
   render: function () {
     let activeTab = this.props.dashboard.activeTab;
+    const geometry = geometryToFeature(this.props.userTasks.data.results);
 
     return (
       <section className='section section--page'>
@@ -176,7 +179,7 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <div className='map-container'>Map goes here</div>
+              <DisplayMap mapId={'map--dashboard'} className={'map-container'} results={geometry}/>
             </div>
 
           </div>
