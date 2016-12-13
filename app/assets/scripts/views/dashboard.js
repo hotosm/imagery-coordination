@@ -178,7 +178,10 @@ var Dashboard = React.createClass({
             </div>
 
             <div className='col--sec'>
-              <DisplayMap mapId={'map--dashboard'} className={'map-container'} results={geometry}/>
+              <DisplayMap
+                mapId='map-dashboard'
+                className='map-container map-container--dashboard'
+                results={geometry}/>
             </div>
 
           </div>
