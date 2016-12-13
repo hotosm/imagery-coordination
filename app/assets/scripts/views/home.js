@@ -74,7 +74,6 @@ var Home = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -166,7 +165,6 @@ var Home = React.createClass({
     let reqCount = this.props.requests.data.meta.found;
     let token = this.props.user.token;
     let roles = _.get(this.props.user, 'profile.roles', []);
-
     let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
 
     const geometry = combineFeatureResults(this.props.requests.data.results);
@@ -192,7 +190,10 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap mapId={'map--home'} className={'map-container bleed-full'} results={geometry} />
+            <DisplayMap
+              mapId='map-home'
+              className='map-container map-container--display bleed-full'
+              results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 

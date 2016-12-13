@@ -65,7 +65,6 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -110,7 +109,6 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      // return <LoadingMessage />;
       return <p>Loading</p>;
     }
 
@@ -165,7 +163,12 @@ var RequestPage = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <DisplayMap mapId={'map--request-page'} className={'map-container bleed-full'} results={geometry} />
+
+            <DisplayMap
+              mapId='map-request-page'
+              className='map-container map-container--display bleed-full'
+              results={geometry} />
+
             <div className='details'>
               <div className='details__col--medium'>
                 <dl>

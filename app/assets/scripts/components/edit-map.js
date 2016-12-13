@@ -2,6 +2,8 @@
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
+import extent from '@turf/bbox';
+import _ from 'lodash';
 
 import { mbStyles } from '../utils/mapbox-styles';
 
@@ -10,7 +12,10 @@ const EditMap = React.createClass({
 
   propTypes: {
     mapId: T.string,
-    mapClass: T.string
+    className: T.string,
+    onFeatureDraw: T.func,
+    onFeatureRemove: T.func,
+    geometry: T.object
   },
 
   map: null,
@@ -27,8 +32,21 @@ const EditMap = React.createClass({
     this.addDraw();
 
     this.map.on('load', () => {
-      this.addEditLayer();
+      const prevAOI = this.props.geometry;
+      prevAOI && prevAOI.geometry.coordinates
+        ? this.loadExistingSource(prevAOI)
+        : this.addNewSource();
     });
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    const lastAOI = this.props.geometry;
+    const nextAOI = nextProps.geometry;
+
+    if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
+     (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
+      this.loadExistingSource(nextAOI);
+    }
   },
 
   addDraw: function () {
@@ -43,10 +61,22 @@ const EditMap = React.createClass({
     this.map.addControl(this.drawPlugin);
     this.map.on('draw.create', () => this.handleDraw());
     this.map.on('draw.delete', () => this.handleDraw());
+    this.map.on('draw.update', () => this.handleDraw());
     this.startDrawing();
   },
 
-  addEditLayer: function () {
+  loadExistingSource: function (aoi) {
+    aoi = Object.assign({}, aoi);
+    aoi.id = 'edit-layer';
+    this.limitDrawing();
+    this.zoomToFeature(aoi);
+    this.drawPlugin.set({
+      'type': 'FeatureCollection',
+      'features': [aoi]
+    });
+  },
+
+  addNewSource: function () {
     this.map.addSource('edit-layer', {
       type: 'geojson',
       data: {
@@ -54,19 +84,27 @@ const EditMap = React.createClass({
         features: []
       }
     });
+    this.addLayer();
+  },
+
+  addLayer: function () {
     this.map.addLayer({
       'id': 'edit-layer',
       'type': 'fill',
       'source': 'edit-layer',
       'layout': {},
-      'paint': {
-        'fill-color': '#73b6e6',
-        'fill-outline-color': '#fff'
-      },
       'filter': [
         'all',
         ['==', '$type', 'Polygon']
       ]
+    });
+  },
+
+  zoomToFeature: function (feat) {
+    this.map.fitBounds(extent(feat), {
+      padding: 15,
+      // ease-in-out quint
+      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
     });
   },
 
@@ -88,13 +126,15 @@ const EditMap = React.createClass({
 
     if (editCount === 0) {
       this.startDrawing();
+      this.props.onFeatureRemove();
     } else if (editCount === 1) {
       this.limitDrawing();
+      this.props.onFeatureDraw(edits);
     }
   },
 
   render: function () {
-    return <div className={this.props.mapClass} id={this.props.mapId}></div>;
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 
