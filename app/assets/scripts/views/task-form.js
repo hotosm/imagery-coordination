@@ -6,9 +6,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
-import { validateGeoJSONPolygon } from '../utils/utils';
 
-import { geometryToFeature } from '../utils/features';
+import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
 
 momentLocalizer(moment);
 
@@ -59,10 +58,10 @@ var TaskForm = React.createClass({
       control = false;
     }
 
-    // if (this.state.data.geometry === '') {
-    //   errors.geometry = true;
-    //   control = false;
-    // }
+    if (this.state.data.geometry === '') {
+      errors.geometry = true;
+      control = false;
+    }
 
     this.setState({errors});
     return control;
@@ -86,14 +85,6 @@ var TaskForm = React.createClass({
           ? moment(this.state.data.deliveryTime).format('YYYY-MM-DD')
           : null
       };
-
-      // payload.geometry = [
-      //   [ 82.265625, 47.754097979680026 ],
-      //   [ 82.265625, 59.17592824927136 ],
-      //   [ 116.71874999999999, 59.17592824927136 ],
-      //   [ 116.71874999999999, 47.754097979680026 ],
-      //   [ 82.265625, 47.754097979680026 ]
-      // ];
 
       if (this.props.params.taskid) {
         this.props._patchTask(this.props.params.reqid, this.props.params.taskid, payload);
@@ -144,6 +135,7 @@ var TaskForm = React.createClass({
           } else {
             let data = Object.assign({}, this.state.data, {geometry: res});
             errors.geometryFile = null;
+            errors.geometry = null;
             this.setState({errors: errors, data});
           }
         });
@@ -153,6 +145,18 @@ var TaskForm = React.createClass({
       }
     };
     reader.readAsText(e.target.files[0]);
+  },
+
+  onFeatureDraw: function (fc) {
+    let geometry = fc.features[0].geometry.coordinates[0];
+    let data = Object.assign({}, this.state.data, {geometry});
+    let errors = Object.assign({}, this.state.errors, {geometry: null, geometryFile: null});
+    this.setState({data, errors});
+  },
+
+  onFeatureRemove: function () {
+    let data = Object.assign({}, this.state.data, {geometry: ''});
+    this.setState({data});
   },
 
   componentDidMount: function () {
@@ -224,7 +228,17 @@ var TaskForm = React.createClass({
             }
           </div>
 
-          <EditMap mapId='map--task-page--edit' className='map-container bleed-full' geometry={geometry} />
+          <EditMap
+            mapId='map--task-page--edit'
+            className='map-container bleed-full'
+            geometry={geometry}
+            onFeatureDraw={this.onFeatureDraw}
+            onFeatureRemove={this.onFeatureRemove} />
+
+            {this.state.errors.geometry
+              ? <p className='message message--alert'>A task polygon is needed. Draw one or provide a file.</p>
+              : null
+            }
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>

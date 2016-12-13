@@ -13,6 +13,8 @@ const EditMap = React.createClass({
   propTypes: {
     mapId: T.string,
     className: T.string,
+    onFeatureDraw: T.func,
+    onFeatureRemove: T.func,
     geometry: T.object
   },
 
@@ -44,7 +46,6 @@ const EditMap = React.createClass({
     if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
      (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
       this.loadExistingSource(nextAOI);
-      this.zoomToFeature(nextAOI);
     }
   },
 
@@ -60,16 +61,18 @@ const EditMap = React.createClass({
     this.map.addControl(this.drawPlugin);
     this.map.on('draw.create', () => this.handleDraw());
     this.map.on('draw.delete', () => this.handleDraw());
+    this.map.on('draw.update', () => this.handleDraw());
     this.startDrawing();
   },
 
-  loadExistingSource: function (prevAOI) {
-    prevAOI.id = 'edit-layer';
+  loadExistingSource: function (aoi) {
+    aoi = Object.assign({}, aoi);
+    aoi.id = 'edit-layer';
     this.limitDrawing();
-    this.zoomToFeature(prevAOI);
+    this.zoomToFeature(aoi);
     this.drawPlugin.set({
       'type': 'FeatureCollection',
-      'features': [prevAOI]
+      'features': [aoi]
     });
   },
 
@@ -123,19 +126,11 @@ const EditMap = React.createClass({
 
     if (editCount === 0) {
       this.startDrawing();
+      this.props.onFeatureRemove();
     } else if (editCount === 1) {
       this.limitDrawing();
-      this.passEdits(edits);
+      this.props.onFeatureDraw(edits);
     }
-  },
-
-  passEdits: function (edits) {
-    // Whenever a new feature is added, the map will emit the generated JSON
-    // to be received by its parent form element.
-
-    // How to implement the state update in this project?
-
-    console.log(edits);
   },
 
   render: function () {
