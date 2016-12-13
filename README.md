@@ -14,14 +14,6 @@ $ npm install
 
 ### Getting started
 
-Before launching, the file at /app/assets/config/local.js must export an object containing the API's address and a valid Mapbox token, e.g.
-```
-module.exports = {
-  api: 'http://localhost:4000',
-  mbToken: 'pk.eyJ1I...'
-};
-```
-When that id done, the site can be launched using the command
 ```
 $ npm run serve
 ```
