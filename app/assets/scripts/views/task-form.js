@@ -11,8 +11,7 @@ import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
 
 momentLocalizer(moment);
 
-import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
-  fetchRequest, invalidateRequest, deleteTask, setMapBaseLayer } from '../actions';
+import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom, fetchRequest, invalidateRequest, deleteTask } from '../actions';
 
 import EditMap from '../components/edit-map';
 
@@ -28,15 +27,13 @@ var TaskForm = React.createClass({
     _fetchRequest: T.func,
     _invalidateRequest: T.func,
     _deleteTask: T.func,
-    _setMapBaseLayer: T.func,
 
     params: T.object,
     task: T.object,
     request: T.object,
     taskForm: T.object,
     users: T.object,
-    user: T.object,
-    mapState: T.object
+    user: T.object
   },
 
   getInitialState: function () {
@@ -249,9 +246,7 @@ This action is permanent.`;
             className='map-container map-container--edit bleed-full'
             geometry={geometry}
             onFeatureDraw={this.onFeatureDraw}
-            onFeatureRemove={this.onFeatureRemove}
-            onBaseLayerSelect={this.props._setMapBaseLayer}
-            selectedLayer={this.props.mapState.baseLayer} />
+            onFeatureRemove={this.onFeatureRemove} />
 
             {this.state.errors.geometry
               ? <p className='message message--alert'>A task polygon is needed. Draw one or provide a file.</p>
@@ -390,8 +385,7 @@ function selector (state) {
     request: state.request,
     taskForm: state.taskForm,
     users: state.users,
-    user: state.user,
-    mapState: state.map
+    user: state.user
   };
 }
 
@@ -404,8 +398,7 @@ function dispatcher (dispatch) {
     _resetTaskFrom: (...args) => dispatch(resetTaskFrom(...args)),
     _fetchRequest: (...args) => dispatch(fetchRequest(...args)),
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
-    _deleteTask: (...args) => dispatch(deleteTask(...args)),
-    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
+    _deleteTask: (...args) => dispatch(deleteTask(...args))
   };
 }
 

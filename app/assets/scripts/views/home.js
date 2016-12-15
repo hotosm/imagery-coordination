@@ -8,7 +8,7 @@ import numeral from 'numeral';
 import moment from 'moment';
 import c from 'classnames';
 
-import { fetchRequests, fetchGeneralStats, invalidateRequests, setMapBaseLayer } from '../actions';
+import { fetchRequests, fetchGeneralStats, invalidateRequests } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { combineFeatureResults } from '../utils/features';
@@ -23,12 +23,10 @@ var Home = React.createClass({
     _fetchRequests: T.func,
     _fetchGeneralStats: T.func,
     _invalidateRequests: T.func,
-    _setMapBaseLayer: T.func,
 
     requests: T.object,
     generalStats: T.object,
-    user: T.object,
-    mapState: T.object
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -195,9 +193,7 @@ var Home = React.createClass({
             <DisplayMap
               mapId='map-home'
               className='map-container map-container--display bleed-full'
-              results={geometry}
-              onBaseLayerChange={this.props._setMapBaseLayer}
-              selectedLayer={this.props.mapState.baseLayer} />
+              results={geometry} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
@@ -248,8 +244,7 @@ function selector (state) {
   return {
     requests: state.requests,
     generalStats: state.generalStats,
-    user: state.user,
-    mapState: state.map
+    user: state.user
   };
 }
 
@@ -257,8 +252,7 @@ function dispatcher (dispatch) {
   return {
     _fetchRequests: (...args) => dispatch(fetchRequests(...args)),
     _fetchGeneralStats: (...args) => dispatch(fetchGeneralStats(...args)),
-    _invalidateRequests: (...args) => dispatch(invalidateRequests(...args)),
-    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
+    _invalidateRequests: (...args) => dispatch(invalidateRequests(...args))
   };
 }
 

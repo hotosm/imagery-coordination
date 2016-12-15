@@ -7,7 +7,7 @@ import c from 'classnames';
 import moment from 'moment';
 import numeral from 'numeral';
 
-import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks, setMapBaseLayer } from '../actions';
+import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks } from '../actions';
 import * as userUtils from '../utils/users';
 import { combineFeatureResults } from '../utils/features';
 import { isLoggedIn } from '../utils/auth-service';
@@ -23,13 +23,11 @@ var RequestPage = React.createClass({
     _fetchRequestTasks: T.func,
     _invalidateRequest: T.func,
     _invalidateTasks: T.func,
-    _setMapBaseLayer: T.func,
 
     params: T.object,
     request: T.object,
     tasks: T.object,
-    user: T.object,
-    mapState: T.object
+    user: T.object
   },
 
   componentDidMount: function () {
@@ -169,9 +167,7 @@ var RequestPage = React.createClass({
             <DisplayMap
               mapId='map-request-page'
               className='map-container map-container--display bleed-full'
-              results={geometry}
-              onBaseLayerChange={this.props._setMapBaseLayer}
-              selectedLayer={this.props.mapState.baseLayer} />
+              results={geometry} />
 
             <div className='details'>
               <div className='details__col--medium'>
@@ -220,8 +216,7 @@ function selector (state) {
   return {
     request: state.request,
     tasks: state.tasks,
-    user: state.user,
-    mapState: state.map
+    user: state.user
   };
 }
 
@@ -230,8 +225,7 @@ function dispatcher (dispatch) {
     _fetchRequest: (...args) => dispatch(fetchRequest(...args)),
     _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
-    _invalidateTasks: (...args) => dispatch(invalidateTasks(...args)),
-    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
+    _invalidateTasks: (...args) => dispatch(invalidateTasks(...args))
   };
 }
 

@@ -5,19 +5,16 @@ import GLDraw from 'mapbox-gl-draw';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
-import MapLayers from './map-layers';
 import { mbStyles } from '../utils/mapbox-styles';
 
 const EditMap = React.createClass({
   displayName: 'EditMap',
 
   propTypes: {
-    selectedLayer: T.object,
     mapId: T.string,
     className: T.string,
     onFeatureDraw: T.func,
     onFeatureRemove: T.func,
-    onBaseLayerSelect: T.func,
     geometry: T.object
   },
 
@@ -27,41 +24,10 @@ const EditMap = React.createClass({
   componentDidMount: function () {
     this.map = new mapboxgl.Map({
       container: this.props.mapId,
-      style: {
-        'version': 8,
-        'sources': {
-          'raster-tiles': {
-            'type': 'raster',
-            'tiles': [this.props.selectedLayer.url],
-            'tileSize': 256
-          }
-        },
-        'layers': [{
-          'id': 'simple-tiles',
-          'type': 'raster',
-          'source': 'raster-tiles',
-          'minzoom': 0,
-          'maxzoom': 22
-        }]
-      },
+      style: 'mapbox://styles/mapbox/streets-v9',
       center: [0, 20],
       zoom: 1
     });
-
-    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // disable map rotation using right click + drag
-    this.map.dragRotate.disable();
-    // disable map rotation using touch rotation gesture
-    this.map.touchZoomRotate.disableRotation();
-    // Disable scroll zoom
-    this.map.scrollZoom.disable();
-
-    // Hack the controls to match the style.
-    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
-    controls.classList.add('button-group', 'button-group--vertical');
-    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-compass').remove();
 
     this.addDraw();
 
@@ -80,16 +46,6 @@ const EditMap = React.createClass({
     if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
      (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
       this.loadExistingSource(nextAOI);
-    }
-
-    if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
-      this.map
-        .removeSource('raster-tiles')
-        .addSource('raster-tiles', {
-          'type': 'raster',
-          'tiles': [nextProps.selectedLayer.url],
-          'tileSize': 256
-        });
     }
   },
 
@@ -178,14 +134,7 @@ const EditMap = React.createClass({
   },
 
   render: function () {
-    return (
-      <div className={this.props.className}>
-        <div className='map-layers'>
-          <MapLayers selectedLayer={this.props.selectedLayer} onBaseLayerSelect={this.props.onBaseLayerSelect} />
-        </div>
-        <div id={this.props.mapId} ref='map'></div>
-      </div>
-    );
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 
