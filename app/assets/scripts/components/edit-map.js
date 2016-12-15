@@ -7,10 +7,14 @@ import _ from 'lodash';
 
 import { mbStyles } from '../utils/mapbox-styles';
 
+import MapLayers from './map-layers';
+
 const EditMap = React.createClass({
   displayName: 'EditMap',
 
   propTypes: {
+    setBaseLayer: T.func,
+    selectedLayer: T.object,
     mapId: T.string,
     className: T.string,
     onFeatureDraw: T.func,
@@ -23,8 +27,24 @@ const EditMap = React.createClass({
 
   componentDidMount: function () {
     this.map = new mapboxgl.Map({
-      container: this.props.mapId,
-      style: 'mapbox://styles/mapbox/streets-v9',
+      container: this.refs.map,
+      style: {
+        'version': 8,
+        'sources': {
+          'raster-tiles': {
+            'type': 'raster',
+            'tiles': [this.props.selectedLayer.url],
+            'tileSize': 256
+          }
+        },
+        'layers': [{
+          'id': 'simple-tiles',
+          'type': 'raster',
+          'source': 'raster-tiles',
+          'minzoom': 0,
+          'maxzoom': 22
+        }]
+      },
       center: [0, 20],
       zoom: 1
     });
@@ -46,6 +66,18 @@ const EditMap = React.createClass({
     if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
      (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
       this.loadExistingSource(nextAOI);
+    }
+
+    console.log(nextProps.selectedLayer);
+
+    if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
+      this.map
+        .removeSource('raster-tiles')
+        .addSource('raster-tiles', {
+          'type': 'raster',
+          'tiles': [nextProps.selectedLayer.url],
+          'tileSize': 256
+        });
     }
   },
 
@@ -134,7 +166,14 @@ const EditMap = React.createClass({
   },
 
   render: function () {
-    return <div className={this.props.className} id={this.props.mapId}></div>;
+    return (
+      <div className={this.props.className}>
+        <div className='map-layers'>
+          <MapLayers selectedLayer={this.props.selectedLayer} setBaseLayer={this.props.setBaseLayer} />
+        </div>
+        <div id={this.props.mapId} ref='map'></div>
+      </div>
+    );
   }
 });
 
