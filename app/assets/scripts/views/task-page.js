@@ -111,10 +111,7 @@ var TaskPage = React.createClass({
       }
     }
 
-    const geometry = {
-      'type': 'FeatureCollection',
-      'features': [geometryToFeature([this.props.task.data])]
-    };
+    const geometry = geometryToFeature([this.props.task.data]);
 
     return (
       <section className='section section--page'>

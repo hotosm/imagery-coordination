@@ -63,9 +63,8 @@ const DisplayMap = React.createClass({
 
   setupFeature: function () {
     const feat = this.props.results;
-    console.log('feat', feat);
     if (this.map.loaded() && feat) {
-      if (feat.features.length) {
+      if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
         this.addFeature(feat);
         this.zoomToFeature(feat);
       }
