@@ -4,14 +4,10 @@ import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
-import MapLayers from './map-layers';
-
 const DisplayMap = React.createClass({
   displayName: 'DisplayMap',
 
   propTypes: {
-    onBaseLayerChange: T.func,
-    selectedLayer: T.object,
     mapId: T.string,
     results: T.object,
     className: T.string
@@ -19,42 +15,11 @@ const DisplayMap = React.createClass({
 
   componentDidMount: function () {
     this.map = new mapboxgl.Map({
-      container: this.refs.map,
-      style: {
-        'version': 8,
-        'sources': {
-          'raster-tiles': {
-            'type': 'raster',
-            'tiles': [this.props.selectedLayer.url],
-            'tileSize': 256
-          }
-        },
-        'layers': [{
-          'id': 'simple-tiles',
-          'type': 'raster',
-          'source': 'raster-tiles',
-          'minzoom': 0,
-          'maxzoom': 22
-        }]
-      },
+      container: this.props.mapId,
+      style: 'mapbox://styles/mapbox/streets-v9',
       center: [0, 20],
       zoom: 1
     });
-
-    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // disable map rotation using right click + drag
-    this.map.dragRotate.disable();
-    // disable map rotation using touch rotation gesture
-    this.map.touchZoomRotate.disableRotation();
-    // Disable scroll zoom
-    this.map.scrollZoom.disable();
-
-    // Hack the controls to match the style.
-    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
-    controls.classList.add('button-group', 'button-group--vertical');
-    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-compass').remove();
 
     this.map.on('load', () => {
       this.setupFeature();
@@ -64,7 +29,7 @@ const DisplayMap = React.createClass({
   setupFeature: function () {
     const feat = this.props.results;
     if (this.map.loaded() && feat) {
-      if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
+      if (feat.features.length) {
         this.addFeature(feat);
         this.zoomToFeature(feat);
       }
@@ -75,16 +40,6 @@ const DisplayMap = React.createClass({
     let nextFeat = nextProps.results;
     if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
       this.setupFeature();
-    }
-
-    if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
-      this.map
-        .removeSource('raster-tiles')
-        .addSource('raster-tiles', {
-          'type': 'raster',
-          'tiles': [nextProps.selectedLayer.url],
-          'tileSize': 256
-        });
     }
   },
 
@@ -113,14 +68,7 @@ const DisplayMap = React.createClass({
   },
 
   render: function () {
-    return (
-      <div className={this.props.className}>
-        <div className='map-layers'>
-          <MapLayers selectedLayer={this.props.selectedLayer} onBaseLayerSelect={this.props.onBaseLayerChange} />
-        </div>
-        <div id={this.props.mapId} ref='map'></div>
-      </div>
-    );
+    return <div className={this.props.className} id={this.props.mapId}></div>;
   }
 });
 
