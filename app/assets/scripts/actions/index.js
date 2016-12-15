@@ -53,6 +53,9 @@ export const FINISH_DELETE_REQUEST = 'FINISH_DELETE_REQUEST';
 export const START_DELETE_TASK = 'START_DELETE_TASK';
 export const FINISH_DELETE_TASK = 'FINISH_DELETE_TASK';
 
+export const SET_MAP_LAYER = 'SET_MAP_LAYER';
+export const RESET_MAP_LAYER = 'SET_MAP_LAYER';
+
 // User
 
 export function setUserToken (token) {
@@ -276,6 +279,16 @@ export function receiveGeneralStats (users, error = null) {
 
 export function fetchGeneralStats () {
   return fetcher(`${config.api}/stats`, requestGeneralStats, receiveGeneralStats);
+}
+
+// Map
+
+export function setMapBaseLayer (layer) {
+  return { type: SET_MAP_LAYER, layer };
+}
+
+export function resetMapBaseLayer () {
+  return { type: RESET_MAP_LAYER };
 }
 
 // Fetcher function

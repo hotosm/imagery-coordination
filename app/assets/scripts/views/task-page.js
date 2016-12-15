@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { invalidateTask, fetchTask, addTaskStatusUpdate } from '../actions';
+import { invalidateTask, fetchTask, addTaskStatusUpdate, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
 import { isLoggedIn } from '../utils/auth-service';
 import { geometryToFeature } from '../utils/features';
@@ -20,10 +20,12 @@ var TaskPage = React.createClass({
     _invalidateTask: T.func,
     _fetchTask: T.func,
     _addTaskStatusUpdate: T.func,
+    _setMapBaseLayer: T.func,
 
     params: T.object,
     task: T.object,
-    user: T.object
+    user: T.object,
+    mapState: T.object
   },
 
   componentDidMount: function () {
@@ -140,7 +142,9 @@ var TaskPage = React.createClass({
             <DisplayMap
               mapId='map-task-page'
               className='map-container map-container--display bleed-full'
-              results={geometry} />
+              results={geometry}
+              onBaseLayerChange={this.props._setMapBaseLayer}
+              selectedLayer={this.props.mapState.baseLayer} />
 
             <div className='details'>
               <div className='details__col--medium'>
@@ -170,7 +174,8 @@ var TaskPage = React.createClass({
 function selector (state) {
   return {
     task: state.task,
-    user: state.user
+    user: state.user,
+    mapState: state.map
   };
 }
 
@@ -178,7 +183,8 @@ function dispatcher (dispatch) {
   return {
     _invalidateTask: (...args) => dispatch(invalidateTask(...args)),
     _fetchTask: (...args) => dispatch(fetchTask(...args)),
-    _addTaskStatusUpdate: (...args) => dispatch(addTaskStatusUpdate(...args))
+    _addTaskStatusUpdate: (...args) => dispatch(addTaskStatusUpdate(...args)),
+    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
   };
 }
 

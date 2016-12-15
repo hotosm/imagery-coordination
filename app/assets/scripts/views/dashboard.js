@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import c from 'classnames';
 import ReactPaginate from 'react-paginate';
 
-import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks } from '../actions';
+import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { geometryToFeature } from '../utils/features';
@@ -19,10 +19,12 @@ var Dashboard = React.createClass({
     _selectDashboardTab: T.func,
     _invalidateUserTasks: T.func,
     _fetchRequestUserTasks: T.func,
+    _setMapBaseLayer: T.func,
 
     user: T.object,
     dashboard: T.object,
-    userTasks: T.object
+    userTasks: T.object,
+    mapState: T.object
   },
 
   componentDidMount: function () {
@@ -181,7 +183,9 @@ var Dashboard = React.createClass({
               <DisplayMap
                 mapId='map-dashboard'
                 className='map-container map-container--dashboard'
-                results={geometry}/>
+                results={geometry}
+                onBaseLayerChange={this.props._setMapBaseLayer}
+                selectedLayer={this.props.mapState.baseLayer} />
             </div>
 
           </div>
@@ -198,7 +202,8 @@ function selector (state) {
   return {
     user: state.user,
     dashboard: state.dashboard,
-    userTasks: state.userTasks
+    userTasks: state.userTasks,
+    mapState: state.map
   };
 }
 
@@ -206,7 +211,8 @@ function dispatcher (dispatch) {
   return {
     _selectDashboardTab: (...args) => dispatch(selectDashboardTab(...args)),
     _invalidateUserTasks: (...args) => dispatch(invalidateUserTasks(...args)),
-    _fetchRequestUserTasks: (...args) => dispatch(fetchRequestUserTasks(...args))
+    _fetchRequestUserTasks: (...args) => dispatch(fetchRequestUserTasks(...args)),
+    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
   };
 }
 
