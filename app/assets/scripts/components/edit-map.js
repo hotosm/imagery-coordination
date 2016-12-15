@@ -49,6 +49,21 @@ const EditMap = React.createClass({
       zoom: 1
     });
 
+    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    // disable map rotation using right click + drag
+    this.map.dragRotate.disable();
+    // disable map rotation using touch rotation gesture
+    this.map.touchZoomRotate.disableRotation();
+    // Disable scroll zoom
+    this.map.scrollZoom.disable();
+
+    // Hack the controls to match the style.
+    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
+    controls.classList.add('button-group', 'button-group--vertical');
+    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
+    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
+    controls.querySelector('.mapboxgl-ctrl-compass').remove();
+
     this.addDraw();
 
     this.map.on('load', () => {
