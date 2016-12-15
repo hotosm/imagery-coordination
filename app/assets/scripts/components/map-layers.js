@@ -9,13 +9,13 @@ var MapLayers = React.createClass({
   displayName: 'MapLayers',
 
   propTypes: {
-    setBaseLayer: T.func,
+    onBaseLayerSelect: T.func,
     selectedLayer: T.object
   },
 
   onLayerSelect: function (layer, e) {
     e.preventDefault();
-    this.props.setBaseLayer(layer);
+    this.props.onBaseLayerSelect(layer);
   },
 
   render: function () {
@@ -97,7 +97,7 @@ var MapLayerItem = React.createClass({
   },
 
   componentWillUnmount: function () {
-    // this.map.remove();
+    this.map.remove();
   },
 
   render: function () {

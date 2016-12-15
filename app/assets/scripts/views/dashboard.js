@@ -184,7 +184,7 @@ var Dashboard = React.createClass({
                 mapId='map-dashboard'
                 className='map-container map-container--dashboard'
                 results={geometry}
-                setBaseLayer={this.props._setMapBaseLayer}
+                onBaseLayerChange={this.props._setMapBaseLayer}
                 selectedLayer={this.props.mapState.baseLayer} />
             </div>
 

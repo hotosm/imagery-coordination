@@ -196,7 +196,7 @@ var Home = React.createClass({
               mapId='map-home'
               className='map-container map-container--display bleed-full'
               results={geometry}
-              setBaseLayer={this.props._setMapBaseLayer}
+              onBaseLayerChange={this.props._setMapBaseLayer}
               selectedLayer={this.props.mapState.baseLayer} />
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>

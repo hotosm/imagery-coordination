@@ -10,7 +10,7 @@ const DisplayMap = React.createClass({
   displayName: 'DisplayMap',
 
   propTypes: {
-    setBaseLayer: T.func,
+    onBaseLayerChange: T.func,
     selectedLayer: T.object,
     mapId: T.string,
     results: T.object,
@@ -116,7 +116,7 @@ const DisplayMap = React.createClass({
     return (
       <div className={this.props.className}>
         <div className='map-layers'>
-          <MapLayers selectedLayer={this.props.selectedLayer} setBaseLayer={this.props.setBaseLayer} />
+          <MapLayers selectedLayer={this.props.selectedLayer} onBaseLayerSelect={this.props.onBaseLayerChange} />
         </div>
         <div id={this.props.mapId} ref='map'></div>
       </div>

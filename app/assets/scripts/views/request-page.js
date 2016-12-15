@@ -170,7 +170,7 @@ var RequestPage = React.createClass({
               mapId='map-request-page'
               className='map-container map-container--display bleed-full'
               results={geometry}
-              setBaseLayer={this.props._setMapBaseLayer}
+              onBaseLayerChange={this.props._setMapBaseLayer}
               selectedLayer={this.props.mapState.baseLayer} />
 
             <div className='details'>
