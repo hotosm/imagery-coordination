@@ -81,6 +81,11 @@ const EditMap = React.createClass({
     const lastAOI = this.props.geometry;
     const nextAOI = nextProps.geometry;
 
+    if (!nextAOI) {
+      this.drawPlugin.deleteAll();
+      this.startDrawing();
+    }
+
     if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
      (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
       this.loadExistingSource(nextAOI);
