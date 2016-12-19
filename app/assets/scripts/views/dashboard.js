@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import c from 'classnames';
 import ReactPaginate from 'react-paginate';
+import _ from 'lodash';
 
 import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
@@ -91,16 +92,29 @@ var Dashboard = React.createClass({
       <div>
         <ul className='tasks-list'>
           {data.results.map(o => {
+            // Conditionals for the edit button.
+            let editType = 'none';
+            let roles = _.get(this.props.user, 'profile.roles', []);
+            let userId = _.get(this.props.user, 'profile.user_id', null);
+            if (roles.indexOf('coordinator') !== -1) {
+              editType = 'enabled';
+            } else if (roles.indexOf('surveyor') !== -1) {
+              // Only assigned.
+              editType = o.assigneeId === userId ? 'enabled' : 'disabled';
+            }
             return (
               <li className='tasks-list__item' key={o._id}>
                 <TaskCard
                   requestId={o.requestId}
+                  requestName={o.requestInfo.name}
                   id={o._id}
                   name={o.name}
                   status={o.status}
                   authorId={o.authorId}
                   assigneeId={o.assigneeId}
                   updated={o.updated}
+                  geometry={o.geometry}
+                  editType={editType}
                 />
               </li>
             );
@@ -142,7 +156,6 @@ var Dashboard = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <div className='col--main'>
               <div className='list-filters'>
                 <form className='form'>
                   <div className='form__group'>
@@ -173,22 +186,23 @@ var Dashboard = React.createClass({
                 <li className={c('tabbed-nav__item', {'tabbed-nav__item--active': activeTab === 'created'})} onClick={this.onTabClick.bind(null, 'created')}><a href=''>Created</a></li>
               </ul>
 
-              <div className='tabbed-content'>
-                {this.renderUserTasks()}
+              <div className='col--main'>
+                <div className='tabbed-content'>
+                  {this.renderUserTasks()}
+                </div>
+              </div>
+
+              <div className='col--sec'>
+                <DisplayMap
+                  mapId='map-dashboard'
+                  className='map-container map-container--dashboard'
+                  results={geometry}
+                  onBaseLayerChange={this.props._setMapBaseLayer}
+                  selectedLayer={this.props.mapState.baseLayer} />
               </div>
 
             </div>
 
-            <div className='col--sec'>
-              <DisplayMap
-                mapId='map-dashboard'
-                className='map-container map-container--dashboard'
-                results={geometry}
-                onBaseLayerChange={this.props._setMapBaseLayer}
-                selectedLayer={this.props.mapState.baseLayer} />
-            </div>
-
-          </div>
         </div>
       </section>
     );
