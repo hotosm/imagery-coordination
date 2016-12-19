@@ -372,7 +372,7 @@ This action is permanent.`;
         <div className='section__body'>
           <div className='inner'>
             {this.props.taskForm.processing ? <p>Submitting data...</p> : null}
-            {editing && fetching ? <p>Loading</p> : null}
+            {editing && fetching ? <p className='loading-indicator'>Loading...</p> : null}
             {editing && error ? <p>Error</p> : null}
             {!editing || (editing && !fetching) ? this.renderFrom() : null}
           </div>

@@ -76,7 +76,7 @@ var Home = React.createClass({
     }
 
     if (fetching) {
-      return <p>Loading</p>;
+      return <p className='loading-indicator'>Loading...</p>;
     }
 
     if (error) {

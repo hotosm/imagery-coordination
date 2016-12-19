@@ -80,7 +80,7 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      return <p>Loading</p>;
+      return <p className='loading-indicator'>Loading...</p>;
     }
 
     if (error) {
@@ -123,12 +123,24 @@ var RequestPage = React.createClass({
       return null;
     }
 
-    if (fetching) {
-      return <p>Loading</p>;
-    }
-
-    if (error) {
-      return <p>Error</p>;
+    if (error || fetching) {
+      return (
+        <section className='section section--page'>
+          <header className='section__header'>
+            <div className='inner'>
+              <div className='section__headline'>
+                <h1 className='section__title'>Request</h1>
+              </div>
+            </div>
+          </header>
+          <div className='section__body'>
+            <div className='inner'>
+              {error ? <p>Error: {error}</p> : null}
+              {fetching ? <p className='loading-indicator'>Loading...</p> : null}
+            </div>
+          </div>
+        </section>
+      );
     }
 
     const geometry = combineFeatureResults([this.props.request.data]);
