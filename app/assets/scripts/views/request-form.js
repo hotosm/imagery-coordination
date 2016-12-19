@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import c from 'classnames';
 import _ from 'lodash';
-import { hashHistory } from 'react-router';
+import { hashHistory, Link } from 'react-router';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
@@ -246,7 +246,8 @@ This action is permanent, and all associated tasks will be deleted as well.`;
                 value={this.state.data.notes} onChange={this.onFieldChange.bind(null, 'notes')} ></textarea>
           </div>
           <div className='form__actions'>
-            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Edit request' : 'Create request'}</span></button>
+            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Save request' : 'Create request'}</span></button>
+            <Link to={editing ? `requests/${this.props.params.reqid}` : '/'} className={'button button--base'}><span>Cancel</span></Link>
           </div>
         </form>
       </div>

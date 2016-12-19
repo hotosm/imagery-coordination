@@ -314,7 +314,8 @@ This action is permanent.`;
             </select>
           </div>
           <div className='form__actions'>
-            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Edit task' : 'Create task'}</span></button>
+            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Save task' : 'Create task'}</span></button>
+            <Link to={`requests/${this.props.params.reqid}` + (editing ? `/tasks/${this.props.params.taskid}` : '')} className={'button button--base'}><span>Cancel</span></Link>
           </div>
         </form>
       </div>
