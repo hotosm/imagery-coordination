@@ -340,7 +340,7 @@ This action is permanent.`;
           <div className='form__actions'>
             <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save task' : 'Create task'}</span></button>
             {this.props.user.profile.roles.indexOf('coordinator') !== -1 ? (
-              <button type='submit' className={'button button--primary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add another' : 'Create & add another'}</span></button>
+              <button type='submit' className={'button button--secondary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add another' : 'Create & add another'}</span></button>
             ) : null}
             <Link to={`requests/${this.props.params.reqid}` + (editing ? `/tasks/${this.props.params.taskid}` : '')} className={'button button--base'}><span>Cancel</span></Link>
           </div>

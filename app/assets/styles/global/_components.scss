@@ -105,7 +105,7 @@
 }
 
 .button-add-request {
-  @extend .button, .button--primary, .button--large;
+  @extend .button, .button--secondary, .button--large;
 
   &::before {
     @extend %oam-ds-icon-plus;
@@ -113,7 +113,7 @@
 }
 
 .button-add-task {
-  @extend .button, .button--primary;
+  @extend .button, .button--secondary;
 
   &::before {
     @extend %oam-ds-icon-plus;
