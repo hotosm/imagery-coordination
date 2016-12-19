@@ -19,6 +19,10 @@
 .tabbed-nav {
   @extend .clearfix;
   padding: 0;
+  @include media(medium-up) {
+    display: block;
+    @include col(6/12);
+  }
 
   &__item {
     list-style: none;

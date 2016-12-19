@@ -4,31 +4,25 @@
 
 .details {
   @extend .clearfix;
-
-  &__col--medium {
-    @include media(small-up) {
-      @include col(6/12, $cycle: 2);
-    }
-
-    @include media(large-up) {
-      @include col(3/12, $uncycle: 2);
-    }
-  }
-
-  &__col--small {
-    @include media(small-up) {
-      @include col(6/12, $cycle: 2);
-    }
-
-    @include media(large-up) {
-      @include col(2/12, $uncycle: 2);
-    }
-  }
-
-  &__col--wide {
+  &__col--main {
     @include col(12/12);
     @include media(large-up) {
-      @include col(7/12);
+      @include col(8/12);
+    }
+  }
+
+  &__col--sec {
+    @include col(12/12);
+    @include media(large-up) {
+      @include col(4/12);
+    }
+  }
+
+  dl {
+    margin-bottom: 0;
+    
+    dd {
+      margin-bottom: 1rem;
     }
   }
 }

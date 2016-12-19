@@ -61,6 +61,14 @@
 
   .status-indicator {
     margin: 0;
+    // font-weight: $base-font-bold;
+    // padding-left: 1rem;
+
+    // &::before {
+    //   width: 0.75rem;
+    //   height: 0.75rem;
+    //   top: 6px;
+    // }
   }
 
   .request-progress {
@@ -95,7 +103,7 @@
   }
 
   .meta-info {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
   }
 }
 

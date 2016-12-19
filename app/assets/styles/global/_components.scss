@@ -1,13 +1,14 @@
 .status-indicator {
   position: relative;
-  padding-left: 0.75rem;
+  padding-left: 1rem;
+  font-weight: $base-font-bold;
 
   &::before {
     position: absolute;
-    top: 9px;
+    top: 6px;
     left: 0;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.75rem;
+    height: 0.75rem;
     display: block;
     border-radius: $full-border-radius;
     content: '';
@@ -82,7 +83,31 @@
   @extend .button;
   @include button-variation("filled", "dark", $danger-color);
 
-  ::before {
+  &::before {
     @extend %oam-ds-icon-trash-bin;
+  }
+}
+
+.button-add-request {
+  @extend .button, .button--primary, .button--large;
+
+  &::before {
+    @extend %oam-ds-icon-plus;
+  }
+}
+
+.button-add-task {
+  @extend .button, .button--primary;
+
+  &::before {
+    @extend %oam-ds-icon-plus;
+  }
+}
+
+.button-edit {
+  @extend .button, .button--primary;
+
+  &::before {
+    @extend %oam-ds-icon-pencil;
   }
 }

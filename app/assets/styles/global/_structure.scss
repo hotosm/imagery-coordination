@@ -229,6 +229,9 @@
 
   &__stats {
     clear: both;
+    @include media(medium-up) {
+      @include span(8/12);
+    }
   }
 
   // &__subtitle {
@@ -256,6 +259,21 @@
     }
     @include media(medium-up) {
       margin-bottom: 3rem;
+    }
+  }
+}
+
+
+/* ==========================================================================
+   Form
+   ========================================================================== */
+
+.form__actions {
+  .button {
+    margin-right: 1rem;
+
+    &:last-child {
+      margin-right: 0;
     }
   }
 }
