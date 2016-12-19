@@ -177,10 +177,7 @@
 .page__footer {
   box-shadow: inset 0 1px 0 0 $base-alpha-color;
   background: #fff;
-  padding: 2rem 0;
-  text-align: center;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  padding: 1rem 0;
   color: rgba($base-font-color, 0.64);
 
   > .inner {
@@ -189,6 +186,99 @@
   
   *:last-child {
     margin-bottom: 0;
+  }
+
+  .col--main {
+    @extend .clearfix;
+    margin-bottom: 2rem;
+    @include media(medium-up) {
+      @include col(6/12);
+      margin-bottom: 0;
+    }
+  }
+
+  .col--sec {
+    @include media(medium-up) {
+      @include col(6/12);
+      text-align: right;
+      margin-top: 1rem;
+    }
+  }
+
+  .oam-logo {
+    width: 6rem;
+    height: auto;
+    float: left;
+  }
+
+  .related {
+    float: left;
+    padding: 1rem 1rem 1rem 1rem;
+    margin-left: 1rem;
+    border-left: 1px solid rgba($base-font-color, 0.16);
+
+    &__item {
+      list-style: none;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &--upload a {
+        @extend .button, .button--small, .button--primary-unbounded;
+        &::before { @extend %oam-ds-icon-upload; }
+      }
+      &--browse a {
+        @extend .button, .button--small, .button--primary-unbounded;
+        &::before { @extend %oam-ds-icon-magnifier-left; }
+      }
+    }
+  }
+
+
+  .copyright {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .social {
+    @extend .clearfix;
+    padding: 0;
+    margin-bottom: 0;
+    display: inline-block;
+
+    &__item {
+      float: left;
+      list-style: none;
+      margin-right: 0.5rem;
+      font-size: 1.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      span {
+        @extend .visually-hidden;
+      }
+
+      a {
+        display: block;
+        line-height: 1.5rem;
+      }
+
+      &--email a {
+        &::before { @extend %oam-ds-icon-envelope; }
+      }
+      &--github a {
+        &::before { @extend %oam-ds-icon-github; }
+      }
+      // &--slack a {
+      //   &::before { @extend %oam-ds-icon-slack; }
+      // }
+    }
   }
 }
 

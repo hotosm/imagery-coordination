@@ -2,13 +2,13 @@
    Dashboard: content
    ========================================================================== */
 
-.col--main {
+.dashboard__col--main {
   @include media(medium-up) {
     @include col(6/12);
   }
 }
 
-.col--sec {
+.dashboard__col--sec {
   display: none;
   @include media(medium-up) {
     display: block;

@@ -186,13 +186,13 @@ var Dashboard = React.createClass({
                 <li className={c('tabbed-nav__item', {'tabbed-nav__item--active': activeTab === 'created'})} onClick={this.onTabClick.bind(null, 'created')}><a href=''>Created</a></li>
               </ul>
 
-              <div className='col--main'>
+              <div className='dashboard__col--main'>
                 <div className='tabbed-content'>
                   {this.renderUserTasks()}
                 </div>
               </div>
 
-              <div className='col--sec'>
+              <div className='dashboard__col--sec'>
                 <DisplayMap
                   mapId='map-dashboard'
                   className='map-container map-container--dashboard'
