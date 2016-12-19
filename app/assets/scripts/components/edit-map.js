@@ -73,6 +73,10 @@ const EditMap = React.createClass({
     });
   },
 
+  componentWillUnmount: function () {
+    this.map.remove();
+  },
+
   componentWillReceiveProps: function (nextProps) {
     const lastAOI = this.props.geometry;
     const nextAOI = nextProps.geometry;
