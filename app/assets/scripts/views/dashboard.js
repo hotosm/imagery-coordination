@@ -141,7 +141,7 @@ var Dashboard = React.createClass({
   },
 
   renderStats: function () {
-    let { fetched, fetching, data } = this.props.userTasks;
+    let { fetched, data } = this.props.userTasks;
 
     if (!fetched) {
       return null;
