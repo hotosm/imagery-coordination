@@ -59,7 +59,7 @@ const DisplayMap = React.createClass({
     controls.querySelector('.mapboxgl-ctrl-compass').remove();
 
     this.map.on('load', () => {
-      this.setupFeature();
+      this.setupFeature(this.props.results);
     });
 
     this.map.on('zoom', () => {
@@ -75,8 +75,7 @@ const DisplayMap = React.createClass({
     this.map.remove();
   },
 
-  setupFeature: function () {
-    const feat = this.props.results;
+  setupFeature: function (feat) {
     if (this.map.loaded() && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
         this.addFeature(feat);
@@ -87,9 +86,9 @@ const DisplayMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    let nextFeat = nextProps.results;
+    const nextFeat = nextProps.results;
     if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
-      this.setupFeature();
+      this.updateFeature(nextFeat);
     }
 
     if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
@@ -160,6 +159,18 @@ const DisplayMap = React.createClass({
       // ease-in-out quint
       easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
     });
+  },
+
+  updateFeature: function (feat) {
+    if (this.map.getSource('task') && this.map.getSource('points')) {
+      this.map.removeLayer('task');
+      this.map.removeLayer('points');
+      this.map.removeSource('task');
+      this.map.removeSource('points');
+      this.addFeature(feat);
+      this.addPoints(feat);
+      this.zoomToFeature(feat);
+    }
   },
 
   render: function () {
