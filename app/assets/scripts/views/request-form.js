@@ -300,7 +300,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             </div>
             {editing ? (
             <div className='section__actions'>
-              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete</span></a>
+              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete request</span></a>
             </div>
             ) : null}
           </div>
