@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
+import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
@@ -70,6 +71,7 @@ const DisplayMap = React.createClass({
     if (this.map.loaded() && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
         this.addFeature(feat);
+        this.addPoints(feat);
         this.zoomToFeature(feat);
       }
     }
@@ -104,6 +106,25 @@ const DisplayMap = React.createClass({
       'paint': {
         'fill-color': '#088',
         'fill-opacity': 0.32
+      }
+    });
+  },
+
+  addPoints: function (feat) {
+    this.map.addSource('points', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: feat.features.map((f) => center(f))
+      }
+    });
+    this.map.addLayer({
+      'id': 'points',
+      'type': 'circle',
+      'source': 'points',
+      'paint': {
+        'circle-color': '#088',
+        'circle-radius': 8
       }
     });
   },
