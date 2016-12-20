@@ -391,7 +391,7 @@ This action is permanent.`;
             </div>
             {showDelete ? (
             <div className='section__actions'>
-              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete</span></a>
+              <a href='#' className='button--delete' onClick={this.onDeleteClick}><span>Delete task</span></a>
             </div>
             ) : null}
           </div>
