@@ -66,6 +66,12 @@ const EditMap = React.createClass({
     this.addDraw();
 
     this.map.on('load', () => {
+      const trashBttn = document.querySelector('.mapbox-gl-draw_trash');
+      trashBttn.addEventListener('click', () => {
+        if (this.drawPlugin.getMode() === 'direct_select') {
+          this.drawPlugin.deleteAll();
+        }
+      });
       const prevAOI = this.props.geometry;
       prevAOI && prevAOI.geometry.coordinates
         ? this.loadExistingSource(prevAOI)
@@ -115,6 +121,12 @@ const EditMap = React.createClass({
     this.map.on('draw.create', () => this.handleDraw());
     this.map.on('draw.delete', () => this.handleDraw());
     this.map.on('draw.update', () => this.handleDraw());
+    this.map.on('draw.selectionchange', () => {
+      const selected = this.drawPlugin.getSelectedIds();
+      if (selected.length) {
+        this.drawPlugin.changeMode('direct_select', {featureId: selected[0]});
+      }
+    });
     this.startDrawing();
   },
 
