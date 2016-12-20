@@ -78,6 +78,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
+    "@mapbox/geojson-normalize": "0.0.1",
     "@turf/bbox": "^3.7.0",
     "@turf/center": "^3.7.0",
     "auth0-lock": "^10.6.1",

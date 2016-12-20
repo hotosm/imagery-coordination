@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
+import geojsonNormalize from '@mapbox/geojson-normalize';
 import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
@@ -60,6 +61,14 @@ const DisplayMap = React.createClass({
     this.map.on('load', () => {
       this.setupFeature();
     });
+
+    this.map.on('zoom', () => {
+      if (this.map.getZoom() < 8) {
+        this.showPoints();
+      } else {
+        this.hidePoints();
+      }
+    });
   },
 
   componentWillUnmount: function () {
@@ -111,22 +120,38 @@ const DisplayMap = React.createClass({
   },
 
   addPoints: function (feat) {
-    this.map.addSource('points', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: feat.features.map((f) => center(f))
-      }
-    });
-    this.map.addLayer({
-      'id': 'points',
-      'type': 'circle',
-      'source': 'points',
-      'paint': {
-        'circle-color': '#088',
-        'circle-radius': 8
-      }
-    });
+    const fc = geojsonNormalize(feat);
+    if (fc.features) {
+      this.map.addSource('points', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: fc.features.map((feat) => center(feat))
+        }
+      });
+      this.map.addLayer({
+        'id': 'points',
+        'type': 'circle',
+        'source': 'points',
+        'paint': {
+          'circle-color': '#088',
+          'circle-radius': 10
+        },
+        'layout': {
+          'visibility': 'none'
+        }
+      });
+    }
+  },
+
+  showPoints: function () {
+    this.map.setLayoutProperty('points', 'visibility', 'visible');
+    this.map.setLayoutProperty('task', 'visibility', 'none');
+  },
+
+  hidePoints: function () {
+    this.map.setLayoutProperty('points', 'visibility', 'none');
+    this.map.setLayoutProperty('task', 'visibility', 'visible');
   },
 
   zoomToFeature: function (feat) {
