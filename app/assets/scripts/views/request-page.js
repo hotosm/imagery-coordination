@@ -44,16 +44,29 @@ var RequestPage = React.createClass({
   },
 
   renderTaskCard: function (o) {
+    // Conditionals for the edit button.
+    let editType = 'none';
+    let roles = _.get(this.props.user, 'profile.roles', []);
+    let userId = _.get(this.props.user, 'profile.user_id', null);
+    if (roles.indexOf('coordinator') !== -1) {
+      editType = 'enabled';
+    } else if (roles.indexOf('surveyor') !== -1) {
+      // Only assigned.
+      editType = o.assigneeId === userId ? 'enabled' : 'disabled';
+    }
     return (
       <li className='tasks-list__item' key={o._id}>
         <TaskCard
           requestId={o.requestId}
+          requestName={this.props.request.data.name}
           id={o._id}
           name={o.name}
           status={o.status}
           authorId={o.authorId}
           assigneeId={o.assigneeId}
           updated={o.updated}
+          geometry={o.geometry}
+          editType={editType}
         />
       </li>
     );
@@ -67,7 +80,7 @@ var RequestPage = React.createClass({
     }
 
     if (fetching) {
-      return <p>Loading</p>;
+      return <p className='loading-indicator'>Loading...</p>;
     }
 
     if (error) {
@@ -110,12 +123,24 @@ var RequestPage = React.createClass({
       return null;
     }
 
-    if (fetching) {
-      return <p>Loading</p>;
-    }
-
-    if (error) {
-      return <p>Error</p>;
+    if (error || fetching) {
+      return (
+        <section className='section section--page'>
+          <header className='section__header'>
+            <div className='inner'>
+              <div className='section__headline'>
+                <h1 className='section__title'>Request</h1>
+              </div>
+            </div>
+          </header>
+          <div className='section__body'>
+            <div className='inner'>
+              {error ? <p>Error: {error}</p> : null}
+              {fetching ? <p className='loading-indicator'>Loading...</p> : null}
+            </div>
+          </div>
+        </section>
+      );
     }
 
     const geometry = combineFeatureResults([this.props.request.data]);
@@ -149,8 +174,8 @@ var RequestPage = React.createClass({
             </div>
             {allowedUser ? (
             <div className='section__actions'>
-              <Link to={`/requests/${data._id}/edit`} className='button button--primary'><span>Edit request</span></Link>
-              <Link to={`/requests/${data._id}/tasks/edit`} className='button button--primary button--add-task'><span>Add task</span></Link>
+              <Link to={`/requests/${data._id}/edit`} className='button-edit'><span>Edit request</span></Link>
+              <Link to={`/requests/${data._id}/tasks/edit`} className='button-add-task'><span>Add task</span></Link>
             </div>
             ) : null}
             <div className='section__stats'>
@@ -174,23 +199,19 @@ var RequestPage = React.createClass({
               selectedLayer={this.props.mapState.baseLayer} />
 
             <div className='details'>
-              <div className='details__col--medium'>
+              <div className='details__col--sec'>
                 <dl>
                   <dt>Requesting organization</dt>
                   <dd>{data.requestingOrg ? data.requestingOrg : 'n/a'}</dd>
                   <dt>Time period requested</dt>
                   <dd>{timePeriodRequested}</dd>
-                </dl>
-              </div>
-              <div className='details__col--small'>
-                <dl>
                   <dt>Desired GSD</dt>
                   <dd>{data.gsd ? `${data.gsd}m` : 'n/a'}</dd>
                   <dt>Product type</dt>
                   <dd>{data.productType ? data.productType : 'n/a'}</dd>
                 </dl>
               </div>
-              <div className='details__col--wide'>
+              <div className='details__col--main'>
                 <dl>
                   <dt>Purpose</dt>
                   <dd>{data.purpose ? data.purpose : 'Purpose not provided'}</dd>

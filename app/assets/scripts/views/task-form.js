@@ -53,6 +53,8 @@ var TaskForm = React.createClass({
     };
   },
 
+  goToTaskForm: false,
+
   checkErrors: function () {
     let control = true;
     let errors = {};
@@ -69,6 +71,16 @@ var TaskForm = React.createClass({
 
     this.setState({errors});
     return control;
+  },
+
+  onSave: function (e) {
+    this.goToTaskForm = false;
+    this.onFormSubmit(e);
+  },
+
+  onSaveAndAdd: function (e) {
+    this.goToTaskForm = true;
+    this.onFormSubmit(e);
   },
 
   onFormSubmit: function (e) {
@@ -225,7 +237,19 @@ This action is permanent.`;
     let {processing, data: newTask} = nextProps.taskForm;
     // Result came back.
     if (prevProcessing && !processing && newTask._id) {
-      hashHistory.push(`/requests/${newTask.requestId}/tasks/${newTask._id}`);
+      if (this.goToTaskForm) {
+        if (this.props.params.taskid) {
+          // If we were editing a task the url is different.
+          hashHistory.push(`/requests/${newTask.requestId}/tasks/edit`);
+        } else {
+          // If not, reset the page.
+          this.goToTaskForm = false;
+          this.refs.form.reset();
+          this.setState(this.getInitialState());
+        }
+      } else {
+        hashHistory.push(`/requests/${newTask.requestId}/tasks/${newTask._id}`);
+      }
     }
   },
 
@@ -314,7 +338,11 @@ This action is permanent.`;
             </select>
           </div>
           <div className='form__actions'>
-            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Edit task' : 'Create task'}</span></button>
+            <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save task' : 'Create task'}</span></button>
+            {this.props.user.profile.roles.indexOf('coordinator') !== -1 ? (
+              <button type='submit' className={'button button--secondary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add another' : 'Create & add another'}</span></button>
+            ) : null}
+            <Link to={`requests/${this.props.params.reqid}` + (editing ? `/tasks/${this.props.params.taskid}` : '')} className={'button button--base'}><span>Cancel</span></Link>
           </div>
         </form>
       </div>
@@ -371,7 +399,7 @@ This action is permanent.`;
         <div className='section__body'>
           <div className='inner'>
             {this.props.taskForm.processing ? <p>Submitting data...</p> : null}
-            {editing && fetching ? <p>Loading</p> : null}
+            {editing && fetching ? <p className='loading-indicator'>Loading...</p> : null}
             {editing && error ? <p>Error</p> : null}
             {!editing || (editing && !fetching) ? this.renderFrom() : null}
           </div>

@@ -73,9 +73,18 @@ const EditMap = React.createClass({
     });
   },
 
+  componentWillUnmount: function () {
+    this.map.remove();
+  },
+
   componentWillReceiveProps: function (nextProps) {
     const lastAOI = this.props.geometry;
     const nextAOI = nextProps.geometry;
+
+    if (!nextAOI) {
+      this.drawPlugin.deleteAll();
+      this.startDrawing();
+    }
 
     if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
      (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {

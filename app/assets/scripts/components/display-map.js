@@ -61,6 +61,10 @@ const DisplayMap = React.createClass({
     });
   },
 
+  componentWillUnmount: function () {
+    this.map.remove();
+  },
+
   setupFeature: function () {
     const feat = this.props.results;
     if (this.map.loaded() && feat) {
@@ -99,7 +103,7 @@ const DisplayMap = React.createClass({
       'source': 'task',
       'paint': {
         'fill-color': '#088',
-        'fill-opacity': 0.8
+        'fill-opacity': 0.32
       }
     });
   },

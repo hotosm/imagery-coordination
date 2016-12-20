@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import c from 'classnames';
 import _ from 'lodash';
-import { hashHistory } from 'react-router';
+import { hashHistory, Link } from 'react-router';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
@@ -27,6 +27,8 @@ var RequestForm = React.createClass({
     request: T.object,
     requestForm: T.object
   },
+
+  goToTaskForm: false,
 
   getInitialState: function () {
     return {
@@ -57,6 +59,16 @@ var RequestForm = React.createClass({
 
     this.setState({errors});
     return control;
+  },
+
+  onSave: function (e) {
+    this.goToTaskForm = false;
+    this.onFormSubmit(e);
+  },
+
+  onSaveAndAdd: function (e) {
+    this.goToTaskForm = true;
+    this.onFormSubmit(e);
   },
 
   onFormSubmit: function (e) {
@@ -160,7 +172,11 @@ This action is permanent, and all associated tasks will be deleted as well.`;
     let {processing, data: newRequest} = nextProps.requestForm;
     // Result came back.
     if (prevProcessing && !processing && newRequest._id) {
-      hashHistory.push(`/requests/${newRequest._id}`);
+      if (this.goToTaskForm) {
+        hashHistory.push(`/requests/${newRequest._id}/tasks/edit`);
+      } else {
+        hashHistory.push(`/requests/${newRequest._id}`);
+      }
     }
   },
 
@@ -246,7 +262,9 @@ This action is permanent, and all associated tasks will be deleted as well.`;
                 value={this.state.data.notes} onChange={this.onFieldChange.bind(null, 'notes')} ></textarea>
           </div>
           <div className='form__actions'>
-            <button type='submit' className={'button button--primary'} onClick={this.onFormSubmit}><span>{editing ? 'Edit request' : 'Create request'}</span></button>
+            <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save request' : 'Create request'}</span></button>
+            <button type='submit' className={'button button--secondary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add task' : 'Create & add task'}</span></button>
+            <Link to={editing ? `requests/${this.props.params.reqid}` : '/'} className={'button button--base'}><span>Cancel</span></Link>
           </div>
         </form>
       </div>
@@ -290,7 +308,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
         <div className='section__body'>
           <div className='inner'>
             {this.props.requestForm.processing ? <p>Submitting data...</p> : null}
-            {editing && fetching ? <p>Loading</p> : null}
+            {editing && fetching ? <p className='loading-indicator'>Loading...</p> : null}
             {editing && error ? <p>Error</p> : null}
             {!editing || (editing && !fetching) ? this.renderFrom() : null}
           </div>

@@ -76,7 +76,7 @@ var Home = React.createClass({
     }
 
     if (fetching) {
-      return <p>Loading</p>;
+      return <p className='loading-indicator'>Loading...</p>;
     }
 
     if (error) {
@@ -184,7 +184,7 @@ var Home = React.createClass({
             {this.renderStats()}
             {allowedUser ? (
             <div className='section__actions'>
-              <Link to={`/requests/edit`} className='button button--primary'><span>Add request</span></Link>
+              <Link to={`/requests/edit`} className='button-add-request'><span>Add request</span></Link>
             </div>
             ) : null}
           </div>

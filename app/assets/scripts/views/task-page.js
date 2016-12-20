@@ -44,7 +44,7 @@ var TaskPage = React.createClass({
     return (
       <li className='task-updates__item' key={o._id}>
         <small className='update-date'>{moment(o.created).format('YYYY/MM/DD')}</small>
-        <p className='update-status'><strong>{_.capitalize(o.status)}</strong></p>
+        <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
         <p className='update-author'>Updated by {userUtils.getNameFromId(o.authorId)}</p>
         <p className='update-comment'>{o.comment}</p>
       </li>
@@ -80,12 +80,24 @@ var TaskPage = React.createClass({
       return null;
     }
 
-    if (fetching) {
-      return <p>Loading</p>;
-    }
-
-    if (error) {
-      return <p>Error</p>;
+    if (error || fetching) {
+      return (
+        <section className='section section--page'>
+          <header className='section__header'>
+            <div className='inner'>
+              <div className='section__headline'>
+                <h1 className='section__title'>Task</h1>
+              </div>
+            </div>
+          </header>
+          <div className='section__body'>
+            <div className='inner'>
+              {error ? <p>Error: {error}</p> : null}
+              {fetching ? <p className='loading-indicator'>Loading...</p> : null}
+            </div>
+          </div>
+        </section>
+      );
     }
 
     let timePeriodProvidedFrom = data.timePeriodProvided.from
@@ -123,7 +135,7 @@ var TaskPage = React.createClass({
             </div>
             {allowedUser ? (
             <div className='section__actions'>
-              <Link to={`/requests/${data.requestId}/tasks/${data._id}/edit`} className='button button--primary'><span>Edit task</span></Link>
+              <Link to={`/requests/${data.requestId}/tasks/${data._id}/edit`} className='button-edit'><span>Edit task</span></Link>
             </div>
             ) : null}
             <div className='section__stats'>
@@ -147,14 +159,12 @@ var TaskPage = React.createClass({
               selectedLayer={this.props.mapState.baseLayer} />
 
             <div className='details'>
-              <div className='details__col--medium'>
-                <dl>
-                  <dt>Deliver by</dt>
-                  <dd>{data.deliveryTime ? moment(data.deliveryTime).format('YYYY/MM/DD') : 'n/a'}</dd>
-                  <dt>Time period Provided</dt>
-                  <dd>{timePeriodProvidedFrom} - {timePeriodProvidedTo}</dd>
-                </dl>
-              </div>
+              <dl>
+                <dt>Deliver by</dt>
+                <dd>{data.deliveryTime ? moment(data.deliveryTime).format('YYYY/MM/DD') : 'n/a'}</dd>
+                <dt>Time period Provided</dt>
+                <dd>{timePeriodProvidedFrom} - {timePeriodProvidedTo}</dd>
+              </dl>
             </div>
 
             <hr/>
