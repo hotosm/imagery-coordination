@@ -14,6 +14,7 @@ import generalStats from './general-stats';
 import requestForm from './request-form';
 import taskForm from './task-form';
 import map from './map';
+import imagerySearch from './imagery-search';
 
 export const reducers = {
   user,
@@ -27,7 +28,8 @@ export const reducers = {
   generalStats,
   requestForm,
   taskForm,
-  map
+  map,
+  imagerySearch
 };
 
 export default combineReducers(Object.assign({}, reducers, {

@@ -95,7 +95,7 @@
   }
 }
 
-.button--delete {
+.button-delete {
   @extend .button;
   @include button-variation("filled", "dark", $danger-color);
 

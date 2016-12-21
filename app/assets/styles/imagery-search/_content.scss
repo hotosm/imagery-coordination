@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Imagery Search: Content
+   ========================================================================== */
+
+.button-skip {
+  @extend .button, .button--base-unbounded;
+
+  &::before {
+    @extend %oam-ds-icon-arrow-right;
+  }
+}
+
+.map-container--search {
+  height: 35rem;
+  margin-bottom: 1rem;
+}
+
+.map-prime-nav {
+  margin-bottom: 1rem;
+
+  > * {
+    margin-right: 1rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .button-add {
+    float: right;
+
+    &::before {
+      @extend %oam-ds-icon-plus;
+    }
+  }
+
+  .button-nav {
+    width: 6.5rem;
+  }
+}
+
+.map-secnav {
+  .layer-list {
+    @extend .clearfix;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+
+    &__item {
+      list-style: none;
+      display: inline-block;
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      button {
+        width: 0.75rem;
+        height: 0.75rem;
+        border: none;
+        outline: none;
+        background: tint($base-color, 80%);
+        border-radius: $full-border-radius;
+        cursor: pointer;
+        display: block;
+
+        &.active {
+          background: tint($base-color, 48%);
+        }
+      }
+
+      span {
+        @extend .visually-hidden;
+      }
+    }
+  }
+
+  .active-layer {
+    text-align: center;
+  }
+}
