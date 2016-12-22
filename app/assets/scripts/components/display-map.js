@@ -63,10 +63,12 @@ const DisplayMap = React.createClass({
     });
 
     this.map.on('zoom', () => {
-      if (this.map.getZoom() < 8) {
-        this.showPoints();
-      } else {
-        this.hidePoints();
+      if (this.map.getSource('task') && this.map.getSource('points')) {
+        if (this.map.getZoom() < 8) {
+          this.showPoints();
+        } else {
+          this.hidePoints();
+        }
       }
     });
   },
@@ -76,7 +78,8 @@ const DisplayMap = React.createClass({
   },
 
   setupFeature: function (feat) {
-    if (this.map.loaded() && feat) {
+    // need go check private map._loaded variable; loaded function is unreliable
+    if (this.map._loaded && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
         this.addFeature(feat);
         this.addPoints(feat);
@@ -86,9 +89,19 @@ const DisplayMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const nextFeat = nextProps.results;
-    if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
-      this.updateFeature(nextFeat);
+    const currentFeat = geojsonNormalize(this.props.results);
+    const nextFeat = geojsonNormalize(nextProps.results);
+
+    if ((currentFeat && currentFeat.features.length) && (!nextFeat || !nextFeat.features.length)) {
+      this.refreshMap();
+    } else {
+      if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
+        this.updateFeatures(nextFeat);
+      }
+    }
+
+    if ((!currentFeat || !currentFeat.features.length) && (nextFeat && nextFeat.features.length)) {
+      this.setupFeature(nextFeat);
     }
 
     if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
@@ -161,16 +174,28 @@ const DisplayMap = React.createClass({
     });
   },
 
-  updateFeature: function (feat) {
+  updateFeatures: function (feat) {
     if (this.map.getSource('task') && this.map.getSource('points')) {
-      this.map.removeLayer('task');
-      this.map.removeLayer('points');
-      this.map.removeSource('task');
-      this.map.removeSource('points');
+      this.removeFeatures();
       this.addFeature(feat);
       this.addPoints(feat);
       this.zoomToFeature(feat);
     }
+  },
+
+  removeFeatures: function () {
+    this.map.removeLayer('task');
+    this.map.removeLayer('points');
+    this.map.removeSource('task');
+    this.map.removeSource('points');
+  },
+
+  refreshMap: function () {
+    this.removeFeatures();
+    this.map.flyTo({
+      center: [0, 20],
+      zoom: 1
+    });
   },
 
   render: function () {
