@@ -184,7 +184,7 @@ var Home = React.createClass({
             {this.renderStats()}
             {allowedUser ? (
             <div className='section__actions'>
-              <Link to={`/requests/edit`} className='button-add-request'><span>Add request</span></Link>
+              <Link to={`/imagery-search`} className='button-add-request'><span>Add request</span></Link>
             </div>
             ) : null}
           </div>
