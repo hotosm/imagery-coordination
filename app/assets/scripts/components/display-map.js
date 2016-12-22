@@ -59,7 +59,7 @@ const DisplayMap = React.createClass({
     controls.querySelector('.mapboxgl-ctrl-compass').remove();
 
     this.map.on('load', () => {
-      this.setupFeature(this.props.results);
+      this.setupFeatures(this.props.results);
     });
 
     this.map.on('zoom', () => {
@@ -77,13 +77,13 @@ const DisplayMap = React.createClass({
     this.map.remove();
   },
 
-  setupFeature: function (feat) {
+  setupFeatures: function (feat) {
     // need go check private map._loaded variable; loaded function is unreliable
     if (this.map._loaded && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
-        this.addFeature(feat);
+        this.addFeatures(feat);
         this.addPoints(feat);
-        this.zoomToFeature(feat);
+        this.zoomToFeatures(feat);
       }
     }
   },
@@ -101,7 +101,7 @@ const DisplayMap = React.createClass({
     }
 
     if ((!currentFeat || !currentFeat.features.length) && (nextFeat && nextFeat.features.length)) {
-      this.setupFeature(nextFeat);
+      this.setupFeatures(nextFeat);
     }
 
     if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
@@ -115,7 +115,7 @@ const DisplayMap = React.createClass({
     }
   },
 
-  addFeature: function (feat) {
+  addFeatures: function (feat) {
     this.map.addSource('task', {
       type: 'geojson',
       data: feat
@@ -166,7 +166,7 @@ const DisplayMap = React.createClass({
     this.map.setLayoutProperty('task', 'visibility', 'visible');
   },
 
-  zoomToFeature: function (feat) {
+  zoomToFeatures: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
       // ease-in-out quint
@@ -177,9 +177,9 @@ const DisplayMap = React.createClass({
   updateFeatures: function (feat) {
     if (this.map.getSource('task') && this.map.getSource('points')) {
       this.removeFeatures();
-      this.addFeature(feat);
+      this.addFeatures(feat);
       this.addPoints(feat);
-      this.zoomToFeature(feat);
+      this.zoomToFeatures(feat);
     }
   },
 
