@@ -145,7 +145,7 @@ var ImagerySearch = React.createClass({
           <div className='inner'>
             <ul>
               <li>Before adding a request you need, make sure there is no imagery for the area you're looking for</li>
-              <li>Use the map to go through the different evailable imagery sources</li>
+              <li>Use the map to go through the different available imagery sources</li>
             </ul>
 
             {this.renderNavigation()}
