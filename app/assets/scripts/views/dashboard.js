@@ -29,7 +29,7 @@ var Dashboard = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: this.props.dashboard.activeTab});
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: this.props.dashboard.activeTab, includeStats: true});
   },
 
   componentWillUnmount: function () {
@@ -37,7 +37,7 @@ var Dashboard = React.createClass({
   },
 
   getFilters: function () {
-    let f = {};
+    let f = {includeStats: true};
     if (this.refs['filter-status'].value !== '--') {
       f.status = this.refs['filter-status'].value;
     }
@@ -140,16 +140,35 @@ var Dashboard = React.createClass({
     );
   },
 
+  renderStats: function () {
+    let { fetched, data } = this.props.userTasks;
+
+    if (!fetched) {
+      return null;
+    }
+
+    return (
+      <div className='tasks-stats'>
+        <h2 className='tasks-stats__title'>Tasks</h2>
+        <ul className='stats-list'>
+          <li className='stats-list__item'><strong>{data.stats.activeTasks}</strong>active</li>
+          <li className='stats-list__item'><strong>{data.stats.completedTasks}</strong>completed</li>
+        </ul>
+      </div>
+    );
+  },
+
   render: function () {
     let activeTab = this.props.dashboard.activeTab;
     const geometry = geometryToFeature(this.props.userTasks.data.results);
 
     return (
-      <section className='section section--page'>
+      <section className='section section--page section--tasks'>
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
               <h1 className='section__title'>{userUtils.getNameFromId(this.props.user.profile.user_id)}</h1>
+              {this.renderStats()}
             </div>
           </div>
         </header>

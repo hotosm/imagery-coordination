@@ -1,7 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { Link } from 'react-router';
-import _ from 'lodash';
 import moment from 'moment';
 import mapboxgl from 'mapbox-gl';
 import extent from '@turf/bbox';
@@ -10,6 +9,8 @@ import c from 'classnames';
 import * as userUtils from '../utils/users';
 import mapLayers from '../utils/map-layers';
 import { geometryToFeature } from '../utils/features';
+
+import { taskStatusMatrix } from '../utils/constants';
 
 var TaskCard = React.createClass({
   displayName: 'TaskCard',
@@ -93,7 +94,7 @@ var TaskCard = React.createClass({
             </h1>
           </header>
           <div className='task__body'>
-            <p className={`status-indicator status-indicator--${this.props.status}`}>{_.capitalize(this.props.status)}</p>
+            <p className={`status-indicator status-indicator--${this.props.status}`}>{taskStatusMatrix[this.props.status]}</p>
 
             <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(this.props.authorId)}</strong></p>
 

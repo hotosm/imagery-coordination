@@ -9,6 +9,7 @@ import { invalidateTask, fetchTask, addTaskStatusUpdate, setMapBaseLayer } from 
 import * as userUtils from '../utils/users';
 import { isLoggedIn } from '../utils/auth-service';
 import { geometryToFeature } from '../utils/features';
+import { taskStatusMatrix } from '../utils/constants';
 
 import TaskUpdateForm from '../components/task-update-form';
 import DisplayMap from '../components/display-map';
@@ -139,7 +140,7 @@ var TaskPage = React.createClass({
             </div>
             ) : null}
             <div className='section__stats'>
-              <p className={`status-indicator status-indicator--${data.status}`}>{_.capitalize(data.status)}</p>
+              <p className={`status-indicator status-indicator--${data.status}`}>{taskStatusMatrix[data.status]}</p>
               <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')}</p>
               <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
               {data.assigneeId
