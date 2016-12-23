@@ -1,6 +1,8 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
+import geojsonNormalize from '@mapbox/geojson-normalize';
+import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
@@ -57,7 +59,17 @@ const DisplayMap = React.createClass({
     controls.querySelector('.mapboxgl-ctrl-compass').remove();
 
     this.map.on('load', () => {
-      this.setupFeature();
+      this.setupFeatures(this.props.results);
+    });
+
+    this.map.on('zoom', () => {
+      if (this.map.getSource('task') && this.map.getSource('points')) {
+        if (this.map.getZoom() < 8) {
+          this.showPoints();
+        } else {
+          this.hidePoints();
+        }
+      }
     });
   },
 
@@ -65,20 +77,31 @@ const DisplayMap = React.createClass({
     this.map.remove();
   },
 
-  setupFeature: function () {
-    const feat = this.props.results;
-    if (this.map.loaded() && feat) {
+  setupFeatures: function (feat) {
+    // need go check private map._loaded variable; loaded function is unreliable
+    if (this.map._loaded && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
-        this.addFeature(feat);
-        this.zoomToFeature(feat);
+        this.addFeatures(feat);
+        this.addPoints(feat);
+        this.zoomToFeatures(feat);
       }
     }
   },
 
   componentWillReceiveProps: function (nextProps) {
-    let nextFeat = nextProps.results;
-    if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
-      this.setupFeature();
+    const currentFeat = geojsonNormalize(this.props.results);
+    const nextFeat = geojsonNormalize(nextProps.results);
+
+    if ((currentFeat && currentFeat.features.length) && (!nextFeat || !nextFeat.features.length)) {
+      this.refreshMap();
+    } else {
+      if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
+        this.updateFeatures(nextFeat);
+      }
+    }
+
+    if ((!currentFeat || !currentFeat.features.length) && (nextFeat && nextFeat.features.length)) {
+      this.setupFeatures(nextFeat);
     }
 
     if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
@@ -92,7 +115,7 @@ const DisplayMap = React.createClass({
     }
   },
 
-  addFeature: function (feat) {
+  addFeatures: function (feat) {
     this.map.addSource('task', {
       type: 'geojson',
       data: feat
@@ -108,11 +131,70 @@ const DisplayMap = React.createClass({
     });
   },
 
-  zoomToFeature: function (feat) {
+  addPoints: function (feat) {
+    const fc = geojsonNormalize(feat);
+    if (fc.features) {
+      this.map.addSource('points', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: fc.features.map((feat) => center(feat))
+        }
+      });
+      this.map.addLayer({
+        'id': 'points',
+        'type': 'circle',
+        'source': 'points',
+        'paint': {
+          'circle-color': '#088',
+          'circle-radius': 10
+        },
+        'layout': {
+          'visibility': 'none'
+        }
+      });
+    }
+  },
+
+  showPoints: function () {
+    this.map.setLayoutProperty('points', 'visibility', 'visible');
+    this.map.setLayoutProperty('task', 'visibility', 'none');
+  },
+
+  hidePoints: function () {
+    this.map.setLayoutProperty('points', 'visibility', 'none');
+    this.map.setLayoutProperty('task', 'visibility', 'visible');
+  },
+
+  zoomToFeatures: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
       // ease-in-out quint
       easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+    });
+  },
+
+  updateFeatures: function (feat) {
+    if (this.map.getSource('task') && this.map.getSource('points')) {
+      this.removeFeatures();
+      this.addFeatures(feat);
+      this.addPoints(feat);
+      this.zoomToFeatures(feat);
+    }
+  },
+
+  removeFeatures: function () {
+    this.map.removeLayer('task');
+    this.map.removeLayer('points');
+    this.map.removeSource('task');
+    this.map.removeSource('points');
+  },
+
+  refreshMap: function () {
+    this.removeFeatures();
+    this.map.flyTo({
+      center: [0, 20],
+      zoom: 1
     });
   },
 

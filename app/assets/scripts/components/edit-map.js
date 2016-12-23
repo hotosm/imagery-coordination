@@ -66,6 +66,17 @@ const EditMap = React.createClass({
     this.addDraw();
 
     this.map.on('load', () => {
+      const trashIcon = document.querySelector('.mapbox-gl-draw_trash');
+      let trashIconClasses = trashIcon.classList;
+      trashIconClasses.add('disabled');
+      trashIconClasses.remove('active');
+
+      trashIcon.addEventListener('click', () => {
+        if (this.drawPlugin.getMode() === 'direct_select') {
+          this.drawPlugin.deleteAll();
+        }
+      });
+
       const prevAOI = this.props.geometry;
       prevAOI && prevAOI.geometry.coordinates
         ? this.loadExistingSource(prevAOI)
@@ -115,6 +126,18 @@ const EditMap = React.createClass({
     this.map.on('draw.create', () => this.handleDraw());
     this.map.on('draw.delete', () => this.handleDraw());
     this.map.on('draw.update', () => this.handleDraw());
+    this.map.on('draw.selectionchange', () => {
+      const selected = this.drawPlugin.getSelectedIds();
+      let trashIconClasses = document.querySelector('.mapbox-gl-draw_trash').classList;
+      if (selected.length) {
+        this.drawPlugin.changeMode('direct_select', {featureId: selected[0]});
+        trashIconClasses.add('active');
+        trashIconClasses.remove('disabled');
+      } else {
+        trashIconClasses.add('disabled');
+        trashIconClasses.remove('active');
+      }
+    });
     this.startDrawing();
   },
 
@@ -162,7 +185,7 @@ const EditMap = React.createClass({
   },
 
   startDrawing: function () {
-    const drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
+    let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
     drawIconClasses.remove('disabled');
     drawIconClasses.add('active');
   },
