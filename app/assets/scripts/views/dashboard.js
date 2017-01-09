@@ -30,7 +30,14 @@ var Dashboard = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: this.props.dashboard.activeTab, includeStats: true});
+    let roles = _.get(this.props.user, 'profile.roles', []);
+    let defaultTab = 'assigned';
+    if (roles.indexOf('coordinator') !== -1) {
+      defaultTab = 'created';
+    }
+
+    this.props._selectDashboardTab(defaultTab);
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: defaultTab, includeStats: true});
   },
 
   componentWillUnmount: function () {
