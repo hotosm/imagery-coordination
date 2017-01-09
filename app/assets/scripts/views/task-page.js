@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
+import Linkify from 'react-linkify';
 
 import { invalidateTask, fetchTask, addTaskStatusUpdate, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
@@ -47,7 +48,7 @@ var TaskPage = React.createClass({
         <small className='update-date'>{moment(o.created).format('YYYY/MM/DD')}</small>
         <p className={`status-indicator status-indicator--${o.status}`}>{_.capitalize(o.status)}</p>
         <p className='update-author'>Updated by {userUtils.getNameFromId(o.authorId)}</p>
-        <p className='update-comment'>{o.comment}</p>
+        <p className='update-comment'><Linkify>{o.comment}</Linkify></p>
       </li>
     );
   },
