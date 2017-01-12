@@ -3,11 +3,9 @@ import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import { Link } from 'react-router';
-import _ from 'lodash';
-import c from 'classnames';
 import syncMaps from '../utils/sync-maps';
 
-import { resetSearchMap, setSearchMapBaseLayer, setSearchMapBaseCenter, setSearchMapBaseZoom } from '../actions';
+import { resetSearchMap, setSearchMapBaseLayer } from '../actions';
 import mapLayers from '../utils/map-layers';
 
 var ImagerySearch = React.createClass({
