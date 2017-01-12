@@ -73,6 +73,19 @@ var ImagerySearch = React.createClass({
         zoom: this.props.mapData.zoom
       });
 
+    mainMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    // disable map rotation using right click + drag
+    mainMap.dragRotate.disable();
+    // disable map rotation using touch rotation gesture
+    mainMap.touchZoomRotate.disableRotation();
+
+    // Hack the controls to match the style.
+    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
+    controls.classList.add('button-group', 'button-group--vertical');
+    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
+    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
+    controls.querySelector('.mapboxgl-ctrl-compass').remove();
+
     this.maps = [
       mainMap,
       this.loadMap('map--search-thumb0', 0),
@@ -126,8 +139,8 @@ var ImagerySearch = React.createClass({
             <div className='map-container map-container--search-large' ref='map--search-main'></div>
             <div className='map--search-thumbs'>
               <div className='map--search-thumb' ref='map--search-thumb0' onClick={() => this.focusMap(0)}></div>
-              <div className='map--search-thumb' ref='map--search-thumb1' onClick={() => this.focusMap(1)}></div>
-              <div className='map--search-thumb' ref='map--search-thumb2' onClick={() => this.focusMap(2)}></div>
+              <div className='map--search-thumb' ref='map--search-thumb1' onClick={() => this.focusMap(2)}></div>
+              <div className='map--search-thumb' ref='map--search-thumb2' onClick={() => this.focusMap(1)}></div>
             </div>
 
           </div>
