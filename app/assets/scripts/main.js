@@ -47,6 +47,7 @@ import Task from './views/task-page';
 import About from './views/about';
 import ImagerySearch from './views/imagery-search';
 import ImagerySearch3 from './views/imagery-search-3';
+import ImagerySearchSwipe from './views/imagery-search-swipe';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
@@ -66,6 +67,7 @@ render((
         <Route path='/about' component={About}/>
         <Route path='/imagery-search' component={ImagerySearch} onEnter={requireRole('coordinator')} />
         <Route path='/imagery-search3' component={ImagerySearch3} onEnter={requireRole('coordinator')} />
+        <Route path='/imagery-search-swipe' component={ImagerySearchSwipe} onEnter={requireRole('coordinator')} />
         <Route path='/requests/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
         <Route path='/requests/:reqid/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
 

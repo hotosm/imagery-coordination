@@ -6,3 +6,18 @@
     height: 20rem;
   }
 }
+
+.maps-swipe {
+  margin-bottom: 2rem;
+  height: 30rem;
+  background-color: tint($base-color, 96%);
+  position: relative;
+
+  &__container {
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+}
