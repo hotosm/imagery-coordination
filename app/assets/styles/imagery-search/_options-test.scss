@@ -21,3 +21,26 @@
     width: 100%;
   }
 }
+
+
+.map-container--search-large {
+  height: 27rem;
+  width: 71rem;
+  margin-bottom: 1rem;
+}
+
+.map--search-thumbs {
+  height: 8rem;
+  margin-bottom: 1rem;
+}
+
+.map--search-thumb {
+  float:left;
+  margin-right: 1.3rem;
+  height: 7.6rem;
+  width: 22.8rem;
+  margin-bottom: 1rem;
+  &:last-child {
+    margin: 0;
+  }
+}
