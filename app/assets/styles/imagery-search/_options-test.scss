@@ -1,0 +1,8 @@
+
+.maps {
+
+  .map-wrapper {
+    @include col(4/12);
+    height: 20rem;
+  }
+}
