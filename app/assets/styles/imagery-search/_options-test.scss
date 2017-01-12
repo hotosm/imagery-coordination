@@ -1,6 +1,5 @@
 
 .maps {
-
   .map-wrapper {
     @include col(4/12);
     height: 20rem;
@@ -20,12 +19,30 @@
     bottom: 0;
     width: 100%;
   }
+  .map-container--search-large {
+    @include col(1)
+    margin-bottom: 1rem;
+  }
+
+  .map--search-thumbs {
+    height: 8rem;
+    margin-bottom: 1rem;
+  }
+
+  .map--search-thumb {
+    @include col(4/12)
+    float:left;
+    height: 7rem;
+    margin-bottom: 1rem;
+    &:last-child {
+      margin: 0;
+    }
+  }
+
 }
 
-
 .map-container--search-large {
-  height: 27rem;
-  width: 71rem;
+  @include col(1)
   margin-bottom: 1rem;
 }
 
@@ -35,12 +52,19 @@
 }
 
 .map--search-thumb {
+  @include col(4/12)
   float:left;
-  margin-right: 1.3rem;
-  height: 7.6rem;
-  width: 22.8rem;
+  height: 9rem;
   margin-bottom: 1rem;
+  opacity: 1;
+  transition: opacity 0.2s;
   &:last-child {
     margin: 0;
+  }
+  &:hover {
+    opacity: 0.7;
+  }
+  &:active {
+    opacity: 0.5;
   }
 }

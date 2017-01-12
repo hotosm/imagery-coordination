@@ -78,8 +78,8 @@ var ImagerySearch = React.createClass({
     this.maps = [
       mainMap,
       this.loadMap('map--search-thumb0', 0),
-      this.loadMap('map--search-thumb1', 1),
-      this.loadMap('map--search-thumb2', 2)
+      this.loadMap('map--search-thumb1', 2),
+      this.loadMap('map--search-thumb2', 1)
     ];
 
     syncMaps(this.maps);
@@ -94,7 +94,7 @@ var ImagerySearch = React.createClass({
   },
 
   focusMap: function (mapIndex) {
-    this.maps[mapIndex]
+    this.maps[0]
       .removeSource('main-map')
       .addSource('main-map', {
         'type': 'raster',
