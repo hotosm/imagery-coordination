@@ -9,11 +9,11 @@ import numeral from 'numeral';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
-import { combineFeatureResults } from '../utils/features';
+import { combineFeatureResults, geometryToFeature } from '../utils/features';
 import { isLoggedIn } from '../utils/auth-service';
 
 import TaskCard from '../components/task-card';
-import DisplayMap from '../components/display-map';
+import RequestMap from '../components/request-map';
 
 var RequestPage = React.createClass({
   displayName: 'RequestPage',
@@ -117,6 +117,36 @@ var RequestPage = React.createClass({
     );
   },
 
+  renderRequestMap: function () {
+    let { fetched, fetching, error, data } = this.props.tasks;
+
+    if (!fetched && !fetching) {
+      return null;
+    }
+
+    if (fetching) {
+      return <p className='loading-indicator'>Loading...</p>;
+    }
+
+    if (error) {
+      return <p>Error</p>;
+    }
+
+    console.log('datat', data);
+    let feat = geometryToFeature(data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
+
+    return (
+      <RequestMap
+        mapId='map-request-page'
+        className='map-container map-container--display bleed-full'
+        results={feat}
+        onBaseLayerChange={this.props._setMapBaseLayer}
+        selectedLayer={this.props.mapState.baseLayer} />
+    );
+  },
+
   render: function () {
     let { fetched, fetching, error, data } = this.props.request;
 
@@ -192,12 +222,7 @@ var RequestPage = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap
-              mapId='map-request-page'
-              className='map-container map-container--display bleed-full'
-              results={geometry}
-              onBaseLayerChange={this.props._setMapBaseLayer}
-              selectedLayer={this.props.mapState.baseLayer} />
+            {this.renderRequestMap()}
 
             <div className='details'>
               <div className='details__col--sec'>
