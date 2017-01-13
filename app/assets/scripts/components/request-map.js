@@ -72,35 +72,23 @@ const RequestMap = React.createClass({
       this.setupFeatures(this.props.results);
     });
 
-    this.map.on('zoom', () => {
-      if (this.map.getSource('task') && this.map.getSource('points')) {
-        if (this.map.getZoom() < 8) {
-          this.showPoints();
-        } else {
-          this.hidePoints();
-        }
-      }
-    });
-
     this.map.on('mousemove', (e) => {
       var features = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-      if (this.map.getZoom() >= 8) {
-        var f = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
-        if (f.length) {
-          this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
-          let status = _.find(taskStatusStyles, {'name': f[0].properties.status});
-          this.map.setPaintProperty('task-highlight', 'fill-color', status.color);
-          taskStatusStyles.forEach(s => {
-            this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.1);
-          });
-        } else {
-          this.map.setFilter('task-highlight', ['==', '_id', '']);
-          taskStatusStyles.forEach(s => {
-            this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.32);
-          });
-        }
+      var f = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
+      if (f.length) {
+        this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
+        let status = _.find(taskStatusStyles, {'name': f[0].properties.status});
+        this.map.setPaintProperty('task-highlight', 'fill-color', status.color);
+        taskStatusStyles.forEach(s => {
+          this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.1);
+        });
+      } else {
+        this.map.setFilter('task-highlight', ['==', '_id', '']);
+        taskStatusStyles.forEach(s => {
+          this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.32);
+        });
       }
     });
 
@@ -117,7 +105,6 @@ const RequestMap = React.createClass({
       let popoverContent = document.createElement('div');
       render(<Popup data={feature.properties} />, popoverContent);
 
-      
       new mapboxgl.Popup()
         .setLngLat(center(feature).geometry.coordinates)
         .setDOMContent(popoverContent)
@@ -126,11 +113,7 @@ const RequestMap = React.createClass({
   },
 
   getActiveLayers: function () {
-    if (this.map.getZoom() < 8) {
-      return taskStatusStyles.map(status => `points-${status.name}`);
-    } else {
-      return taskStatusStyles.map(status => `task-${status.name}`);
-    }
+    return taskStatusStyles.map(status => `task-${status.name}`);
   },
 
   componentWillUnmount: function () {
@@ -142,7 +125,6 @@ const RequestMap = React.createClass({
     if (this.map._loaded && feat) {
       if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
         this.addFeatures(feat);
-        this.addPoints(feat);
         this.zoomToFeatures(feat);
       }
     }
@@ -205,52 +187,6 @@ const RequestMap = React.createClass({
     });
   },
 
-  addPoints: function (fc) {
-    fc = _.cloneDeep(fc);
-    fc.features.forEach((feat) => {
-      feat.geometry = center(feat).geometry;
-    });
-
-    if (fc.features) {
-      this.map.addSource('points', {
-        type: 'geojson',
-        data: fc
-      });
-
-      taskStatusStyles.forEach(status => {
-        this.map.addLayer({
-          'id': `points-${status.name}`,
-          'type': 'circle',
-          'source': 'points',
-          'paint': {
-            'circle-color': status.color,
-            'circle-radius': 10
-          },
-          'layout': {
-            'visibility': 'none'
-          },
-          filter: ['==', 'status', status.name]
-        });
-      });
-    }
-  },
-
-  showPoints: function () {
-    this.map.setLayoutProperty('task-highlight', 'visibility', 'none');
-    taskStatusStyles.forEach(status => {
-      this.map.setLayoutProperty(`points-${status.name}`, 'visibility', 'visible');
-      this.map.setLayoutProperty(`task-${status.name}`, 'visibility', 'none');
-    });
-  },
-
-  hidePoints: function () {
-    this.map.setLayoutProperty('task-highlight', 'visibility', 'visible');
-    taskStatusStyles.forEach(status => {
-      this.map.setLayoutProperty(`points-${status.name}`, 'visibility', 'none');
-      this.map.setLayoutProperty(`task-${status.name}`, 'visibility', 'visible');
-    });
-  },
-
   zoomToFeatures: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
@@ -259,10 +195,9 @@ const RequestMap = React.createClass({
   },
 
   updateFeatures: function (feat) {
-    if (this.map.getSource('task-open') && this.map.getSource('points-open')) {
+    if (this.map.getSource('task') && this.map.getSource('points')) {
       this.removeFeatures();
       this.addFeatures(feat);
-      this.addPoints(feat);
       this.zoomToFeatures(feat);
     }
   },
@@ -271,10 +206,8 @@ const RequestMap = React.createClass({
     this.map.removeLayer('task-highlight');
     taskStatusStyles.forEach(status => {
       this.map.removeLayer(`task-${status.name}`);
-      this.map.removeLayer(`points-${status.name}`);
     });
     this.map.removeSource('task');
-    this.map.removeSource('points');
   },
 
   refreshMap: function () {
