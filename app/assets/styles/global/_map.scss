@@ -82,3 +82,43 @@
     border: none;
   }
 }
+
+/* Popover
+   ========================================================================== */
+
+.popover--request {
+
+  .status-indicator {
+    margin: 0;
+  }
+
+  .request-tasks-info {
+    @extend .clearfix;
+    padding: 0;
+    margin-bottom: 1rem;
+
+    li {
+      list-style: none;
+      float: left;
+      margin-right: 1rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .request-progress {
+    @extend .clearfix;
+
+    .progress-bar {
+      @include col(10/12);
+      margin-top: 0.5rem;
+    }
+
+    .progress-value {
+      @include col(2/12);
+      margin: 0;
+    }
+  }
+}

@@ -42,7 +42,7 @@ export function geometryToFeature (results, propMapper = noop) {
   }
 }
 
-export function combineFeatureResults (results) {
+export function combineFeatureResults (results, propMapper = noop) {
   results = results.filter((result) => {
     return result.footprint != null;
   });
@@ -56,7 +56,7 @@ export function combineFeatureResults (results) {
             'type': 'Polygon',
             'coordinates': result.footprint.geometry.coordinates
           },
-          'properties': { }
+          'properties': propMapper(result)
         };
       })
   });

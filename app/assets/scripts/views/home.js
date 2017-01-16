@@ -13,7 +13,7 @@ import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { combineFeatureResults } from '../utils/features';
 
-import DisplayMap from '../components/display-map';
+import HomeMap from '../components/home-map';
 import { isLoggedIn } from '../utils/auth-service';
 
 var Home = React.createClass({
@@ -115,6 +115,7 @@ var Home = React.createClass({
 
   renderRequestCard: function (o) {
     let completedTasks = _.get(o.tasksInfo.status, 'completed', 0);
+    let activeTasks = o.tasksInfo.total - completedTasks;
     let progress = o.tasksInfo.total > 0 ? completedTasks / o.tasksInfo.total * 100 : 0;
     let progressClass = c('progress-bar', {
       'progress-bar--disabled': o.status === 'canceled'
@@ -137,7 +138,7 @@ var Home = React.createClass({
             </div>
 
             <ul className='request-tasks-info'>
-              <li><strong>{_.get(o.tasksInfo.status, 'open', 0)}</strong> Active</li>
+              <li><strong>{activeTasks}</strong> Active</li>
               <li><strong>{completedTasks}</strong> Complete tasks</li>
             </ul>
 
@@ -169,7 +170,9 @@ var Home = React.createClass({
     let roles = _.get(this.props.user, 'profile.roles', []);
     let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
 
-    const geometry = combineFeatureResults(this.props.requests.data.results);
+    const geometry = combineFeatureResults(this.props.requests.data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
 
     return (
       <section className='section section--home'>
@@ -192,7 +195,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap
+            <HomeMap
               mapId='map-home'
               className='map-container map-container--display bleed-full'
               results={geometry}
