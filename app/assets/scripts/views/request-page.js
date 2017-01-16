@@ -9,7 +9,7 @@ import numeral from 'numeral';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
-import { combineFeatureResults, geometryToFeature } from '../utils/features';
+import { geometryToFeature } from '../utils/features';
 import { isLoggedIn } from '../utils/auth-service';
 
 import TaskCard from '../components/task-card';
@@ -132,7 +132,6 @@ var RequestPage = React.createClass({
       return <p>Error</p>;
     }
 
-    console.log('datat', data);
     let feat = geometryToFeature(data.results, result => {
       return _.omit(result, ['geometry', 'updates']);
     });
@@ -173,8 +172,6 @@ var RequestPage = React.createClass({
         </section>
       );
     }
-
-    const geometry = combineFeatureResults([this.props.request.data]);
 
     let completedTasks = _.get(data.tasksInfo.status, 'completed', 0);
     let progress = data.tasksInfo.total > 0 ? completedTasks / data.tasksInfo.total * 100 : 0;

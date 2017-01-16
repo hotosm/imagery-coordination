@@ -1,7 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { render } from 'react-dom';
-import moment from 'moment';
 import mapboxgl from 'mapbox-gl';
 import geojsonNormalize from '@mapbox/geojson-normalize';
 import center from '@turf/center';
@@ -9,14 +8,10 @@ import extent from '@turf/bbox';
 import _ from 'lodash';
 
 import MapLayers from './map-layers';
-import * as userUtils from '../utils/users';
-import { taskStatusMatrix } from '../utils/constants';
+import MapTaskPopover from './map-task-popover';
 
-const taskStatusStyles = [
-  {name: 'open', color: '#00F'},
-  {name: 'completed', color: '#0F0'},
-  {name: 'closed', color: '#F00'}
-];
+import * as mapUtils from '../utils/map';
+import { taskStatusStyles } from '../utils/constants';
 
 const RequestMap = React.createClass({
   displayName: 'RequestMap',
@@ -30,47 +25,12 @@ const RequestMap = React.createClass({
   },
 
   componentDidMount: function () {
-    this.map = new mapboxgl.Map({
-      container: this.refs.map,
-      style: {
-        'version': 8,
-        'sources': {
-          'raster-tiles': {
-            'type': 'raster',
-            'tiles': [this.props.selectedLayer.url],
-            'tileSize': 256
-          }
-        },
-        'layers': [{
-          'id': 'simple-tiles',
-          'type': 'raster',
-          'source': 'raster-tiles',
-          'minzoom': 0,
-          'maxzoom': 22
-        }]
-      },
-      center: [0, 20],
-      zoom: 1
-    });
+    this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
+    this.map.on('load', this.onMapLoaded);
+  },
 
-    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // disable map rotation using right click + drag
-    this.map.dragRotate.disable();
-    // disable map rotation using touch rotation gesture
-    this.map.touchZoomRotate.disableRotation();
-    // Disable scroll zoom
-    this.map.scrollZoom.disable();
-
-    // Hack the controls to match the style.
-    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
-    controls.classList.add('button-group', 'button-group--vertical');
-    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-compass').remove();
-
-    this.map.on('load', () => {
-      this.setupFeatures(this.props.results);
-    });
+  onMapLoaded: function () {
+    this.setupFeatures(this.props.results);
 
     this.map.on('mousemove', (e) => {
       var features = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
@@ -103,7 +63,7 @@ const RequestMap = React.createClass({
       // Populate the popup and set its coordinates
       // based on the feature found.
       let popoverContent = document.createElement('div');
-      render(<Popup data={feature.properties} />, popoverContent);
+      render(<MapTaskPopover data={feature.properties} />, popoverContent);
 
       new mapboxgl.Popup()
         .setLngLat(center(feature).geometry.coordinates)
@@ -231,35 +191,3 @@ const RequestMap = React.createClass({
 });
 
 module.exports = RequestMap;
-
-const Popup = React.createClass({
-  displayName: 'Popup',
-
-  propTypes: {
-    data: T.object
-  },
-
-  render: function () {
-    let data = this.props.data;
-    return (
-      <article className='popover'>
-        <header className='popover__header'>
-          <h1 className='popover__title'>
-            <a href={`#/requests/${data.requestId}/tasks/${data._id}`}>{data.name}</a>
-          </h1>
-        </header>
-        <div className='popover__body'>
-          <p className={`status-indicator status-indicator--${data.status}`}>{taskStatusMatrix[data.status]}</p>
-
-          <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
-
-          {data.assigneeId
-            ? <p className='task-assignee'>Assigned to: <strong>{userUtils.getNameFromId(data.assigneeId)}</strong></p>
-            : <p className='task-assignee'>Assigned to: <strong>Not assigned</strong></p>}
-
-          <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')} by {userUtils.getNameFromId(data.authorId)}</p>
-        </div>
-      </article>
-    );
-  }
-});
