@@ -2,7 +2,6 @@
 import React, { PropTypes as T } from 'react';
 import { render } from 'react-dom';
 import mapboxgl from 'mapbox-gl';
-import geojsonNormalize from '@mapbox/geojson-normalize';
 import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
@@ -76,8 +75,8 @@ const TaskMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const currentFeat = geojsonNormalize(this.props.results);
-    const nextFeat = geojsonNormalize(nextProps.results);
+    const currentFeat = this.props.results;
+    const nextFeat = nextProps.results;
 
     if ((currentFeat && currentFeat.features.length) && (!nextFeat || !nextFeat.features.length)) {
       this.refreshMap();
@@ -124,7 +123,7 @@ const TaskMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-color': '#F00',
+        'fill-color': '#0F0',
         'fill-opacity': 0.32
       },
       filter: ['==', '_id', this.props.selectedId]

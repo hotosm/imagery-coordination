@@ -36,19 +36,15 @@ const DashboardMap = React.createClass({
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
       if (this.map.getZoom() >= 8) {
-        var f = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
+        var f = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
         if (f.length) {
           this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
           let status = _.find(taskStatusStyles, {'name': f[0].properties.status});
           this.map.setPaintProperty('task-highlight', 'fill-color', status.color);
-          taskStatusStyles.forEach(s => {
-            this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.1);
-          });
+          this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.1);
         } else {
           this.map.setFilter('task-highlight', ['==', '_id', '']);
-          taskStatusStyles.forEach(s => {
-            this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.32);
-          });
+          this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.32);
         }
       }
     });
@@ -85,9 +81,9 @@ const DashboardMap = React.createClass({
 
   getActiveLayers: function () {
     if (this.map.getZoom() < 8) {
-      return taskStatusStyles.map(status => `points-${status.name}`);
+      return ['task-points'];
     } else {
-      return taskStatusStyles.map(status => `task-${status.name}`);
+      return ['task-polygon'];
     }
   },
 
@@ -133,18 +129,14 @@ const DashboardMap = React.createClass({
   },
 
   showPoints: function () {
-    taskStatusStyles.forEach(status => {
-      this.map.setLayoutProperty(`points-${status.name}`, 'visibility', 'visible');
-      this.map.setLayoutProperty(`task-${status.name}`, 'visibility', 'none');
-    });
+    this.map.setLayoutProperty('task-points', 'visibility', 'visible');
+    this.map.setLayoutProperty('task-polygon', 'visibility', 'none');
     this.map.setLayoutProperty('task-highlight', 'visibility', 'none');
   },
 
   hidePoints: function () {
-    taskStatusStyles.forEach(status => {
-      this.map.setLayoutProperty(`points-${status.name}`, 'visibility', 'none');
-      this.map.setLayoutProperty(`task-${status.name}`, 'visibility', 'visible');
-    });
+    this.map.setLayoutProperty('task-points', 'visibility', 'none');
+    this.map.setLayoutProperty('task-polygon', 'visibility', 'visible');
     this.map.setLayoutProperty('task-highlight', 'visibility', 'visible');
   },
 
@@ -167,20 +159,21 @@ const DashboardMap = React.createClass({
       filter: ['==', '_id', '']
     });
 
-    taskStatusStyles.forEach(status => {
-      this.map.addLayer({
-        'id': `task-${status.name}`,
-        'type': 'fill',
-        'source': 'task',
-        'paint': {
-          'fill-color': status.color,
-          'fill-opacity': 0.32
+    this.map.addLayer({
+      'id': 'task-polygon',
+      'type': 'fill',
+      'source': 'task',
+      'paint': {
+        'fill-color': {
+          property: 'status',
+          type: 'categorical',
+          stops: taskStatusStyles.map(s => [s.name, s.color])
         },
-        'layout': {
-          'visibility': 'none'
-        },
-        filter: ['==', 'status', status.name]
-      });
+        'fill-opacity': 0.32
+      },
+      'layout': {
+        'visibility': 'none'
+      }
     });
 
     let pointFeats = _.cloneDeep(feat);
@@ -194,17 +187,18 @@ const DashboardMap = React.createClass({
       data: pointFeats
     });
 
-    taskStatusStyles.forEach(status => {
-      this.map.addLayer({
-        'id': `points-${status.name}`,
-        'type': 'circle',
-        'source': 'points',
-        'paint': {
-          'circle-color': status.color,
-          'circle-radius': 10
+    this.map.addLayer({
+      'id': 'task-points',
+      'type': 'circle',
+      'source': 'points',
+      'paint': {
+        'circle-color': {
+          property: 'status',
+          type: 'categorical',
+          stops: taskStatusStyles.map(s => [s.name, s.color])
         },
-        filter: ['==', 'status', status.name]
-      });
+        'circle-radius': 10
+      }
     });
   },
 
@@ -225,10 +219,8 @@ const DashboardMap = React.createClass({
 
   removeFeatures: function () {
     this.map.removeLayer('task-highlight');
-    taskStatusStyles.forEach(status => {
-      this.map.removeLayer(`task-${status.name}`);
-      this.map.removeLayer(`points-${status.name}`);
-    });
+    this.map.removeLayer('task-polygon');
+    this.map.removeLayer('task-points');
     this.map.removeSource('task');
     this.map.removeSource('points');
   },

@@ -2,7 +2,6 @@
 import React, { PropTypes as T } from 'react';
 import { render } from 'react-dom';
 import mapboxgl from 'mapbox-gl';
-import geojsonNormalize from '@mapbox/geojson-normalize';
 import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
@@ -33,27 +32,23 @@ const RequestMap = React.createClass({
     this.setupFeatures(this.props.results);
 
     this.map.on('mousemove', (e) => {
-      var features = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
+      var features = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-      var f = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
+      var f = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
       if (f.length) {
         this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
         let status = _.find(taskStatusStyles, {'name': f[0].properties.status});
         this.map.setPaintProperty('task-highlight', 'fill-color', status.color);
-        taskStatusStyles.forEach(s => {
-          this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.1);
-        });
+        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.1);
       } else {
         this.map.setFilter('task-highlight', ['==', '_id', '']);
-        taskStatusStyles.forEach(s => {
-          this.map.setPaintProperty(`task-${s.name}`, 'fill-opacity', 0.32);
-        });
+        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.32);
       }
     });
 
     this.map.on('click', (e) => {
-      var features = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
+      var features = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
       if (!features.length) {
         return;
       }
@@ -72,10 +67,6 @@ const RequestMap = React.createClass({
     });
   },
 
-  getActiveLayers: function () {
-    return taskStatusStyles.map(status => `task-${status.name}`);
-  },
-
   componentWillUnmount: function () {
     this.map.remove();
   },
@@ -91,8 +82,8 @@ const RequestMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const currentFeat = geojsonNormalize(this.props.results);
-    const nextFeat = geojsonNormalize(nextProps.results);
+    const currentFeat = this.props.results;
+    const nextFeat = nextProps.results;
 
     if ((currentFeat && currentFeat.features.length) && (!nextFeat || !nextFeat.features.length)) {
       this.refreshMap();
@@ -133,17 +124,18 @@ const RequestMap = React.createClass({
       filter: ['==', '_id', '']
     });
 
-    taskStatusStyles.forEach(status => {
-      this.map.addLayer({
-        'id': `task-${status.name}`,
-        'type': 'fill',
-        'source': 'task',
-        'paint': {
-          'fill-color': status.color,
-          'fill-opacity': 0.32
+    this.map.addLayer({
+      'id': 'task-polygon',
+      'type': 'fill',
+      'source': 'task',
+      'paint': {
+        'fill-color': {
+          property: 'status',
+          type: 'categorical',
+          stops: taskStatusStyles.map(s => [s.name, s.color])
         },
-        filter: ['==', 'status', status.name]
-      });
+        'fill-opacity': 0.32
+      }
     });
   },
 
@@ -164,9 +156,7 @@ const RequestMap = React.createClass({
 
   removeFeatures: function () {
     this.map.removeLayer('task-highlight');
-    taskStatusStyles.forEach(status => {
-      this.map.removeLayer(`task-${status.name}`);
-    });
+    this.map.removeLayer('task-polygon');
     this.map.removeSource('task');
   },
 

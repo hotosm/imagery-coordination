@@ -11,3 +11,9 @@ export const taskStatusStyles = [
   {name: 'completed', color: '#0F0'},
   {name: 'inprogress', color: '#00F'}
 ];
+
+export const requestStatusStyles = [
+  {name: 'open', color: '#FF0'},
+  {name: 'closed', color: '#0F0'},
+  {name: 'canceled', color: '#F00'}
+];

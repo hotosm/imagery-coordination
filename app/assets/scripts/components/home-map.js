@@ -11,6 +11,7 @@ import * as mapUtils from '../utils/map';
 
 import MapLayers from './map-layers';
 import MapRequestPopover from './map-request-popover';
+import { requestStatusStyles } from '../utils/constants';
 
 const HomeMap = React.createClass({
   displayName: 'HomeMap',
@@ -119,11 +120,7 @@ const HomeMap = React.createClass({
         'circle-color': {
           property: 'status',
           type: 'categorical',
-          stops: [
-            ['open', 'green'],
-            ['closed', 'blue'],
-            ['canceled', 'red']
-          ]
+          stops: requestStatusStyles.map(s => [s.name, s.color])
         },
         'circle-radius': 10
       }
