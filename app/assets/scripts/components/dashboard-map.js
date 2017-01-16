@@ -12,8 +12,8 @@ import MapTaskPopover from './map-task-popover';
 import * as mapUtils from '../utils/map';
 import { taskStatusStyles } from '../utils/constants';
 
-const RequestMap = React.createClass({
-  displayName: 'RequestMap',
+const DashboardMap = React.createClass({
+  displayName: 'DashboardMap',
 
   propTypes: {
     onBaseLayerChange: T.func,
@@ -253,4 +253,4 @@ const RequestMap = React.createClass({
   }
 });
 
-module.exports = RequestMap;
+module.exports = DashboardMap;

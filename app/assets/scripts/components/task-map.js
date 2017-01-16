@@ -12,8 +12,8 @@ import * as mapUtils from '../utils/map';
 import MapLayers from './map-layers';
 import MapTaskPopover from './map-task-popover';
 
-const RequestMap = React.createClass({
-  displayName: 'RequestMap',
+const TaskMap = React.createClass({
+  displayName: 'TaskMap',
 
   propTypes: {
     onBaseLayerChange: T.func,
@@ -139,7 +139,7 @@ const RequestMap = React.createClass({
   },
 
   updateFeatures: function (feat) {
-    if (this.map.getSource('task-open') && this.map.getSource('points-open')) {
+    if (this.map.getSource('task')) {
       this.removeFeatures();
       this.addFeatures(feat);
       this.zoomToFeatures(feat);
@@ -172,4 +172,4 @@ const RequestMap = React.createClass({
   }
 });
 
-module.exports = RequestMap;
+module.exports = TaskMap;
