@@ -8,7 +8,7 @@ import numeral from 'numeral';
 import moment from 'moment';
 import c from 'classnames';
 
-import { fetchRequests, fetchGeneralStats, invalidateRequests, setMapBaseLayer } from '../actions';
+import { fetchRequests, fetchGeneralStats, invalidateRequests, setMapBaseLayer, fetchAllRequests } from '../actions';
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { combineFeatureResults } from '../utils/features';
@@ -21,11 +21,13 @@ var Home = React.createClass({
 
   propTypes: {
     _fetchRequests: T.func,
+    _fetchAllRequests: T.func,
     _fetchGeneralStats: T.func,
     _invalidateRequests: T.func,
     _setMapBaseLayer: T.func,
 
     requests: T.object,
+    requestsAll: T.object,
     generalStats: T.object,
     user: T.object,
     mapState: T.object
@@ -34,6 +36,7 @@ var Home = React.createClass({
   componentDidMount: function () {
     this.props._fetchRequests({footprint: true});
     this.props._fetchGeneralStats();
+    this.props._fetchAllRequests();
   },
 
   componentWillUnmount: function () {
@@ -164,15 +167,40 @@ var Home = React.createClass({
     );
   },
 
+  renderMap: function () {
+    let { fetched, fetching, error, data } = this.props.requestsAll;
+
+    if (!fetched && !fetching) {
+      return null;
+    }
+
+    if (fetching) {
+      return <p className='loading-indicator'>Loading...</p>;
+    }
+
+    if (error) {
+      return <p>Error</p>;
+    }
+
+    let geometry = combineFeatureResults(data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
+
+    return (
+      <HomeMap
+        mapId='map-home'
+        className='map-container map-container--display bleed-full'
+        results={geometry}
+        onBaseLayerChange={this.props._setMapBaseLayer}
+        selectedLayer={this.props.mapState.baseLayer} />
+    );
+  },
+
   render: function () {
     let reqCount = this.props.requests.data.meta.found;
     let token = this.props.user.token;
     let roles = _.get(this.props.user, 'profile.roles', []);
     let allowedUser = isLoggedIn(token) && roles.indexOf('coordinator') !== -1;
-
-    const geometry = combineFeatureResults(this.props.requests.data.results, result => {
-      return _.omit(result, ['geometry', 'updates']);
-    });
 
     return (
       <section className='section section--home'>
@@ -195,12 +223,7 @@ var Home = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <HomeMap
-              mapId='map-home'
-              className='map-container map-container--display bleed-full'
-              results={geometry}
-              onBaseLayerChange={this.props._setMapBaseLayer}
-              selectedLayer={this.props.mapState.baseLayer} />
+            {this.renderMap()}
 
             <h2>Requests {reqCount > 0 ? `(${reqCount})` : ''}</h2>
 
@@ -250,6 +273,7 @@ var Home = React.createClass({
 function selector (state) {
   return {
     requests: state.requests,
+    requestsAll: state.requestsAll,
     generalStats: state.generalStats,
     user: state.user,
     mapState: state.map
@@ -259,6 +283,7 @@ function selector (state) {
 function dispatcher (dispatch) {
   return {
     _fetchRequests: (...args) => dispatch(fetchRequests(...args)),
+    _fetchAllRequests: (...args) => dispatch(fetchAllRequests(...args)),
     _fetchGeneralStats: (...args) => dispatch(fetchGeneralStats(...args)),
     _invalidateRequests: (...args) => dispatch(invalidateRequests(...args)),
     _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))

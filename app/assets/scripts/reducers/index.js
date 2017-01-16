@@ -6,6 +6,7 @@ import user from './user';
 import users from './users';
 import request from './request';
 import requests from './requests';
+import requestsAll from './requests-all';
 import tasks from './tasks';
 import task from './task';
 import userTasks from './user-tasks';
@@ -21,6 +22,7 @@ export const reducers = {
   users,
   request,
   requests,
+  requestsAll,
   task,
   tasks,
   userTasks,
