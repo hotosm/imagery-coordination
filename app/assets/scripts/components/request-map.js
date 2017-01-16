@@ -155,7 +155,7 @@ const RequestMap = React.createClass({
   },
 
   updateFeatures: function (feat) {
-    if (this.map.getSource('task') && this.map.getSource('points')) {
+    if (this.map.getSource('task')) {
       this.removeFeatures();
       this.addFeatures(feat);
       this.zoomToFeatures(feat);
