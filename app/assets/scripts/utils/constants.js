@@ -7,7 +7,7 @@ export const taskStatusMatrix = {
 };
 
 export const taskStatusStyles = [
-  {name: 'open', color: '#00F'},
+  {name: 'open', color: '#FF0'},
   {name: 'completed', color: '#0F0'},
-  {name: 'closed', color: '#F00'}
+  {name: 'inprogress', color: '#00F'}
 ];
