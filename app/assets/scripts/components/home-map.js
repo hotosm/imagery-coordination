@@ -137,6 +137,10 @@ const HomeMap = React.createClass({
         'circle-radius': 10
       }
     });
+
+    // Open the tolltip for the most recent feature.
+    let recentSorted = _.sortBy(this.props.results.features, o => o.properties.created);
+    this.openPopup(_.last(recentSorted).properties._id);
   },
 
   zoomToFeatures: function (feat) {
