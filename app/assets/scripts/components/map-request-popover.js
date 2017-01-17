@@ -14,6 +14,17 @@ export default React.createClass({
     data: T.object
   },
 
+  renderNextDue: function () {
+    let nextDue = this.props.data.tasksInfo.nextDue;
+    if (nextDue === null) {
+      return null;
+    }
+
+    return (
+      <p className='meta-info'>Task <a href={`#/${nextDue.requestId}/tasks/${nextDue._id}`}>{nextDue.name}</a> is the next due on {moment(nextDue.deliveryTime).format('YYYY/MM/DD')}</p>
+    );
+  },
+
   render: function () {
     let data = this.props.data;
     let completedTasks = _.get(data.tasksInfo.status, 'completed', 0);
@@ -46,6 +57,7 @@ export default React.createClass({
           </ul>
 
           <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')} by {userUtils.getNameFromId(data.authorId)}</p>
+          {this.renderNextDue()}
         </div>
       </article>
     );

@@ -6,6 +6,7 @@ import geojsonNormalize from '@mapbox/geojson-normalize';
 import center from '@turf/center';
 import extent from '@turf/bbox';
 import _ from 'lodash';
+import { Dropdown } from 'oam-design-system';
 
 import * as mapUtils from '../utils/map';
 
@@ -25,53 +26,12 @@ const HomeMap = React.createClass({
     selectedId: T.string
   },
 
+  map: null,
+  popup: null,
+
   componentDidMount: function () {
     this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
     this.map.on('load', this.onMapLoaded);
-  },
-
-  onMapLoaded: function () {
-    this.setupFeatures(this.props.results);
-
-    this.map.on('mousemove', (e) => {
-      var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
-      this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
-    });
-
-    this.map.on('click', (e) => {
-      var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
-      if (!features.length) {
-        return;
-      }
-
-      var feature = features[0];
-      // Sub objects get stringified. Use the id to search in the actual data.
-      var featureData = _.find(this.props.results.features, o => o.properties._id === feature.properties._id);
-
-      // Populate the popup and set its coordinates
-      // based on the feature found.
-      let popoverContent = document.createElement('div');
-      render(<MapRequestPopover data={featureData.properties} />, popoverContent);
-
-      new mapboxgl.Popup()
-        .setLngLat(center(feature).geometry.coordinates)
-        .setDOMContent(popoverContent)
-        .addTo(this.map);
-    });
-  },
-
-  componentWillUnmount: function () {
-    this.map.remove();
-  },
-
-  setupFeatures: function (feat) {
-    // need go check private map._loaded variable; loaded function is unreliable
-    if (this.map._loaded && feat) {
-      if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
-        this.addFeatures(feat);
-        this.zoomToFeatures(feat);
-      }
-    }
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -98,6 +58,58 @@ const HomeMap = React.createClass({
           'tiles': [nextProps.selectedLayer.url],
           'tileSize': 256
         });
+    }
+  },
+
+  componentWillUnmount: function () {
+    this.map.remove();
+  },
+
+  onMapLoaded: function () {
+    this.setupFeatures(this.props.results);
+
+    this.map.on('mousemove', (e) => {
+      var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
+      this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+    });
+
+    this.map.on('click', (e) => {
+      var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
+      if (!features.length) {
+        return;
+      }
+
+      var feature = features[0];
+      this.openPopup(feature.properties._id);
+    });
+  },
+
+  openPopup: function (featId) {
+    if (this.popup !== null) {
+      this.popup.remove();
+    }
+
+    // Sub objects get stringified. Use the id to search in the actual data.
+    var featureData = _.find(this.props.results.features, o => o.properties._id === featId);
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    let popoverContent = document.createElement('div');
+    render(<MapRequestPopover data={featureData.properties} />, popoverContent);
+
+    this.popup = new mapboxgl.Popup()
+      .setLngLat(center(featureData).geometry.coordinates)
+      .setDOMContent(popoverContent)
+      .addTo(this.map);
+  },
+
+  setupFeatures: function (feat) {
+    // need go check private map._loaded variable; loaded function is unreliable
+    if (this.map._loaded && feat) {
+      if ((feat.features && feat.features.length) || (feat.geometry && feat.geometry.coordinates.length)) {
+        this.addFeatures(feat);
+        this.zoomToFeatures(feat);
+      }
     }
   },
 
@@ -155,6 +167,37 @@ const HomeMap = React.createClass({
     });
   },
 
+  onJumpToSelect: function (what, e) {
+    e.preventDefault();
+
+    if (!this.props.results.features.length) {
+      return;
+    }
+
+    var feature;
+    switch (what) {
+      case 'most-recent':
+        let recentSorted = _.sortBy(this.props.results.features, o => o.properties.created);
+        feature = _.last(recentSorted);
+        break;
+      case 'next-due':
+        let nextDue = this.props.results.features.filter(f => f.properties.tasksInfo.nextDue !== null);
+        if (!nextDue.length) {
+          // There aren't any requests with next due information.
+          return;
+        }
+        let nextSorted = _.sortBy(nextDue, o => o.properties.tasksInfo.nextDue.deliveryTime);
+        feature = nextSorted[0];
+        break;
+    }
+
+    this.map.flyTo({
+      center: center(feature).geometry.coordinates,
+      zoom: 5
+    });
+    this.openPopup(feature.properties._id);
+  },
+
   render: function () {
     return (
       <div className={this.props.className}>
@@ -162,6 +205,25 @@ const HomeMap = React.createClass({
           <MapLayers selectedLayer={this.props.selectedLayer} onBaseLayerSelect={this.props.onBaseLayerChange} />
         </div>
         <div id={this.props.mapId} ref='map'></div>
+
+        <div className='map-jump'>
+          <Dropdown
+            triggerElement='a'
+            triggerClassName='button button--achromic drop__toggle--caret'
+            triggerActiveClassName='button--active'
+            triggerTitle='Jump to'
+            triggerText='Jump to'
+            direction='up'
+            className='drop__content'
+            alignment='right'>
+
+              <ul className='drop__menu drop__menu--select'>
+                <li><a href='#' className='drop__menu-item' onClick={this.onJumpToSelect.bind(null, 'next-due')} data-hook='dropdown:close'>Next due</a></li>
+                <li><a href='#' className='drop__menu-item' onClick={this.onJumpToSelect.bind(null, 'most-recent')} data-hook='dropdown:close'>Most recent</a></li>
+              </ul>
+
+          </Dropdown>
+        </div>
       </div>
     );
   }
