@@ -169,8 +169,7 @@ const DisplayMap = React.createClass({
   zoomToFeatures: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
-      // ease-in-out quint
-      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+      duration: 0
     });
   },
 

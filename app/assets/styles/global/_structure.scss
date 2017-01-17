@@ -161,6 +161,21 @@
   &--active {
     background: rgba($base-color, 0.08);
   }
+
+  span {
+    vertical-align: middle;
+  }
+
+  &.global-add-request {
+    span {
+      margin-left: 0.5rem;
+    }
+
+    &::before {
+      @extend %oam-ds-icon-plus;
+      vertical-align: middle;
+    }
+  }
 }
 
 /* Body

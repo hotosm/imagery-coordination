@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import c from 'classnames';
 
-import { resetSearchMap, setSearchMapBaseLayer, setSearchMapBaseCenter, setSearchMapBaseZoom } from '../actions';
+import { resetSearchMap, setSearchMapBaseLayer } from '../actions';
 import mapLayers from '../utils/map-layers';
 
 var ImagerySearch = React.createClass({
@@ -15,31 +15,39 @@ var ImagerySearch = React.createClass({
   propTypes: {
     _resetSearchMap: T.func,
     _setSearchMapBaseLayer: T.func,
-    _setSearchMapBaseCenter: T.func,
-    _setSearchMapBaseZoom: T.func,
 
     mapData: T.object
   },
 
   componentDidMount: function () {
+    let layers = [];
+    let sources = {};
+
+    mapLayers.forEach((layer, index) => {
+      sources[`source-${layer.id}`] = {
+        'type': 'raster',
+        'tiles': [layer.url],
+        'tileSize': 256
+      };
+
+      layers.push({
+        'id': `layer-${layer.id}`,
+        'type': 'raster',
+        'source': `source-${layer.id}`,
+        'paint': {
+          'raster-opacity': index === 0 ? 1 : 0
+        },
+        'minzoom': 0,
+        'maxzoom': 22
+      });
+    });
+
     this.map = new mapboxgl.Map({
       container: this.refs.map,
       style: {
         'version': 8,
-        'sources': {
-          'raster-tiles': {
-            'type': 'raster',
-            'tiles': [this.props.mapData.baseLayer.url],
-            'tileSize': 256
-          }
-        },
-        'layers': [{
-          'id': 'simple-tiles',
-          'type': 'raster',
-          'source': 'raster-tiles',
-          'minzoom': 0,
-          'maxzoom': 22
-        }]
+        sources,
+        layers
       },
       center: this.props.mapData.center,
       zoom: this.props.mapData.zoom
@@ -57,15 +65,6 @@ var ImagerySearch = React.createClass({
     controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
     controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
     controls.querySelector('.mapboxgl-ctrl-compass').remove();
-
-    this.map
-      .on('dragend', () => {
-        let center = this.map.getCenter();
-        this.props._setSearchMapBaseCenter([center.lng, center.lat]);
-      })
-      .on('zoomend', () => {
-        this.props._setSearchMapBaseZoom(this.map.getZoom());
-      });
   },
 
   componentWillUnmount: function () {
@@ -74,23 +73,12 @@ var ImagerySearch = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const {center, zoom, baseLayer} = nextProps.mapData;
-    if (center[0] !== this.props.mapData.center[0] && center[1] !== this.props.mapData.center[1]) {
-      this.map.setCenter(center);
-    }
-
-    if (zoom !== this.props.mapData.zoom) {
-      this.map.setZoom(zoom);
-    }
+    const {baseLayer} = nextProps.mapData;
 
     if (baseLayer.id !== this.props.mapData.baseLayer.id) {
-      this.map
-        .removeSource('raster-tiles')
-        .addSource('raster-tiles', {
-          'type': 'raster',
-          'tiles': [baseLayer.url],
-          'tileSize': 256
-        });
+      mapLayers.forEach(layer => {
+        this.map.setPaintProperty(`layer-${layer.id}`, 'raster-opacity', baseLayer.id === layer.id ? 1 : 0);
+      });
     }
   },
 
@@ -123,7 +111,6 @@ var ImagerySearch = React.createClass({
             );
           })}
         </ul>
-        <p className='active-layer'>{this.props.mapData.baseLayer.name}</p>
       </div>
     );
   },
@@ -149,6 +136,7 @@ var ImagerySearch = React.createClass({
             </ul>
 
             {this.renderNavigation()}
+            <h2 className='map-active-layer'>{this.props.mapData.baseLayer.name}</h2>
             <div className='map-container map-container--search' ref='map'></div>
             {this.renderMapLayerList()}
 
@@ -171,9 +159,7 @@ function selector (state) {
 function dispatcher (dispatch) {
   return {
     _resetSearchMap: (...args) => dispatch(resetSearchMap(...args)),
-    _setSearchMapBaseLayer: (...args) => dispatch(setSearchMapBaseLayer(...args)),
-    _setSearchMapBaseCenter: (...args) => dispatch(setSearchMapBaseCenter(...args)),
-    _setSearchMapBaseZoom: (...args) => dispatch(setSearchMapBaseZoom(...args))
+    _setSearchMapBaseLayer: (...args) => dispatch(setSearchMapBaseLayer(...args))
   };
 }
 

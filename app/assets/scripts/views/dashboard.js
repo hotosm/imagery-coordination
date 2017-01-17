@@ -9,6 +9,7 @@ import { selectDashboardTab, invalidateUserTasks, fetchRequestUserTasks, setMapB
 import * as userUtils from '../utils/users';
 import { dateFromRelative } from '../utils/utils';
 import { geometryToFeature } from '../utils/features';
+import { isLoggedIn } from '../utils/auth-service';
 
 import TaskCard from '../components/task-card';
 import DisplayMap from '../components/display-map';
@@ -29,7 +30,14 @@ var Dashboard = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: this.props.dashboard.activeTab, includeStats: true});
+    let roles = _.get(this.props.user, 'profile.roles', []);
+    let defaultTab = 'assigned';
+    if (roles.indexOf('coordinator') !== -1) {
+      defaultTab = 'created';
+    }
+
+    this.props._selectDashboardTab(defaultTab);
+    this.props._fetchRequestUserTasks(this.props.user.profile.user_id, {scope: defaultTab, includeStats: true});
   },
 
   componentWillUnmount: function () {
@@ -94,12 +102,13 @@ var Dashboard = React.createClass({
           {data.results.map(o => {
             // Conditionals for the edit button.
             let editType = 'none';
+            let token = _.get(this.props.user, 'token');
             let roles = _.get(this.props.user, 'profile.roles', []);
-            let userId = _.get(this.props.user, 'profile.user_id', null);
-            if (roles.indexOf('coordinator') !== -1) {
+            if (isLoggedIn(token) && roles.indexOf('coordinator') !== -1) {
               editType = 'enabled';
-            } else if (roles.indexOf('surveyor') !== -1) {
+            } else if (isLoggedIn(token) && roles.indexOf('surveyor') !== -1) {
               // Only assigned.
+              let userId = _.get(this.props.user, 'profile.user_id', null);
               editType = o.assigneeId === userId ? 'enabled' : 'disabled';
             }
             return (
