@@ -117,7 +117,7 @@ export function fetchAllRequests () {
       let now = Date.now();
       const ONE_HOUR_MILLI = 3600 * 1000;
       if (now - allRequests.receivedAt < ONE_HOUR_MILLI) {
-        return receiveAllRequests(allRequests.data, allRequests.receivedAt);
+        return dispatch(receiveAllRequests(allRequests.data, allRequests.receivedAt));
       }
     }
 

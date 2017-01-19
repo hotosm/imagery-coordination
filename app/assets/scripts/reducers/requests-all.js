@@ -17,7 +17,7 @@ const initialState = {
 export default function reducer (state = initialState, action) {
   switch (action.type) {
     case REQUEST_ALL_REQUESTS:
-      return Object.assign({}, state, { error: null, fetching: true });
+      return Object.assign({}, state, { error: null, fetching: true, fetched: false });
     case RECEIVE_ALL_REQUESTS:
       state = Object.assign({}, state, { fetching: false, fetched: true });
       if (action.error) {

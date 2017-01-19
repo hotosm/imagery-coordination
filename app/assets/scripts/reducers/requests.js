@@ -18,7 +18,7 @@ export default function reducer (state = initialState, action) {
     case INVALIDATE_REQUESTS:
       return Object.assign({}, state, initialState);
     case REQUEST_REQUESTS:
-      return Object.assign({}, state, { error: null, fetching: true });
+      return Object.assign({}, state, { error: null, fetching: true, fetched: false });
     case RECEIVE_REQUESTS:
       state = Object.assign({}, state, { fetching: false, fetched: true });
       if (action.error) {
