@@ -1,63 +1,82 @@
 'use strict';
-import React, { PropTypes as T } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import { Link } from 'react-router';
-import _ from 'lodash';
-import c from 'classnames';
+import syncMaps from 'mapbox-gl-sync-move';
 
-import { resetSearchMap, setSearchMapBaseLayer } from '../actions';
 import mapLayers from '../utils/map-layers';
+import * as mapUtils from '../utils/map';
 
 var ImagerySearch = React.createClass({
   displayName: 'ImagerySearch',
 
   propTypes: {
-    _resetSearchMap: T.func,
-    _setSearchMapBaseLayer: T.func,
+  },
 
-    mapData: T.object
+  mainMap: null,
+  maps: [],
+
+  setupMap: function (container, layer) {
+    let map = new mapboxgl.Map({
+      container: container,
+      style: {
+        'version': 8,
+        'sources': {
+          'thumb-map': {
+            'type': 'raster',
+            'tiles': [layer.url],
+            'tileSize': 256
+          }
+        },
+        'layers': [{
+          'id': 'tiles',
+          'type': 'raster',
+          'source': 'thumb-map',
+          'minzoom': 0,
+          'maxzoom': 22
+        }]
+      },
+      center: [0, 0],
+      zoom: 1
+    });
+
+    map.on('click', e => {
+      this.selectLayer(layer);
+    });
+
+    return map;
   },
 
   componentDidMount: function () {
-    let layers = [];
-    let sources = {};
-
-    mapLayers.forEach((layer, index) => {
-      sources[`source-${layer.id}`] = {
-        'type': 'raster',
-        'tiles': [layer.url],
-        'tileSize': 256
-      };
-
-      layers.push({
-        'id': `layer-${layer.id}`,
-        'type': 'raster',
-        'source': `source-${layer.id}`,
-        'paint': {
-          'raster-opacity': index === 0 ? 1 : 0
-        },
-        'minzoom': 0,
-        'maxzoom': 22
-      });
-    });
-
-    this.map = new mapboxgl.Map({
-      container: this.refs.map,
+    this.mainMap = new mapboxgl.Map({
+      container: this.refs.mapMaster,
       style: {
         'version': 8,
-        sources,
-        layers
+        'sources': {
+          'raster-tiles': {
+            'type': 'raster',
+            'tiles': [mapLayers[0].url],
+            'tileSize': 256
+          }
+        },
+        'layers': [{
+          'id': 'tiles',
+          'type': 'raster',
+          'source': 'raster-tiles',
+          'minzoom': 0,
+          'maxzoom': 22
+        }]
       },
-      center: this.props.mapData.center,
-      zoom: this.props.mapData.zoom
+      center: [0, 20],
+      zoom: 1
     });
 
-    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    this.mainMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
     // disable map rotation using right click + drag
-    this.map.dragRotate.disable();
+    this.mainMap.dragRotate.disable();
     // disable map rotation using touch rotation gesture
-    this.map.touchZoomRotate.disableRotation();
+    this.mainMap.touchZoomRotate.disableRotation();
 
     // Hack the controls to match the style.
     let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
@@ -65,54 +84,27 @@ var ImagerySearch = React.createClass({
     controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
     controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
     controls.querySelector('.mapboxgl-ctrl-compass').remove();
+
+    this.maps = [
+      this.mainMap,
+      ...mapLayers.map((o, i) => this.setupMap(this.refs[`mapThumb${i}`], o))
+    ];
+
+    syncMaps(this.maps);
   },
 
   componentWillUnmount: function () {
-    this.map.remove();
-    this.props._resetSearchMap();
+    this.maps.forEach(m => { m.remove(); });
   },
 
-  componentWillReceiveProps: function (nextProps) {
-    const {baseLayer} = nextProps.mapData;
-
-    if (baseLayer.id !== this.props.mapData.baseLayer.id) {
-      mapLayers.forEach(layer => {
-        this.map.setPaintProperty(`layer-${layer.id}`, 'raster-opacity', baseLayer.id === layer.id ? 1 : 0);
+  selectLayer: function (mapLayer) {
+    this.mainMap
+      .removeSource('raster-tiles')
+      .addSource('raster-tiles', {
+        'type': 'raster',
+        'tiles': [mapLayer.url],
+        'tileSize': 256
       });
-    }
-  },
-
-  onBaseLayerSelect: function (index, e) {
-    this.props._setSearchMapBaseLayer(mapLayers[index]);
-  },
-
-  renderNavigation: function () {
-    const currIndex = _.findIndex(mapLayers, o => o.id === this.props.mapData.baseLayer.id);
-    const total = mapLayers.length;
-
-    return (
-      <div className='map-prime-nav'>
-        <button className={c('button button--primary button-nav', {disabled: currIndex === 0})} onClick={this.onBaseLayerSelect.bind(null, currIndex - 1)}>Previous</button>
-        <button className={c('button button--primary button-nav', {disabled: currIndex === total - 1})} onClick={this.onBaseLayerSelect.bind(null, currIndex + 1)}>Next</button>
-        <Link className={c('button button--secondary button-add', {disabled: currIndex !== total - 1})} to='/requests/edit'>Add request</Link>
-      </div>
-    );
-  },
-
-  renderMapLayerList: function () {
-    return (
-      <div className='map-secnav'>
-        <ul className='layer-list'>
-          {mapLayers.map((o, i) => {
-            return (
-              <li key={o.id} className='layer-list__item'>
-                <button className={c({'active': this.props.mapData.baseLayer.id === o.id})} onClick={this.onBaseLayerSelect.bind(null, i)} title={`Switch to ${o.name}`}><span>{o.name}</span></button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
   },
 
   render: function () {
@@ -135,10 +127,10 @@ var ImagerySearch = React.createClass({
               <li>Use the map to go through the different available imagery sources</li>
             </ul>
 
-            {this.renderNavigation()}
-            <h2 className='map-active-layer'>{this.props.mapData.baseLayer.name}</h2>
-            <div className='map-container map-container--search' ref='map'></div>
-            {this.renderMapLayerList()}
+            <div className='map-container map-container--search-large' ref='mapMaster'></div>
+            <ul className='map-thumbs'>
+              {mapLayers.map((o, i) => <li key={o.id} ref={`mapThumb${i}`} className='map-thumbs__item'></li>)}
+            </ul>
 
           </div>
         </div>
@@ -152,14 +144,13 @@ var ImagerySearch = React.createClass({
 
 function selector (state) {
   return {
-    mapData: state.imagerySearch
+
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _resetSearchMap: (...args) => dispatch(resetSearchMap(...args)),
-    _setSearchMapBaseLayer: (...args) => dispatch(setSearchMapBaseLayer(...args))
+
   };
 }
 
