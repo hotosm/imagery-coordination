@@ -10,9 +10,25 @@
   }
 }
 
-.map-container--search-large {
-  height: 30rem;
+.map-master {
   margin-bottom: 1.5rem;
+  position: relative;
+
+  &__map {
+    height: 30rem;
+  }
+
+  &__source {
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    font-size: 1rem;
+    line-height: 1rem;
+    color: #fff;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: rgba(#000, 0.32);
+  }
 }
 
 .map-thumbs {
@@ -22,8 +38,6 @@
   &__item {
     margin-top: 1rem;
     list-style: none;
-    height: 10rem;
-    background-color: tint($base-color, 96%);
 
     @include media(small-up) {
       @include col(6/12, $cycle: 2);
@@ -41,5 +55,15 @@
         margin-top: 0;
       }
     }
+  }
+
+  &__map {
+    height: 10rem;
+    background-color: tint($base-color, 96%);
+  }
+
+  &__source {
+    text-align: center;
+    font-size: 1rem;
   }
 }

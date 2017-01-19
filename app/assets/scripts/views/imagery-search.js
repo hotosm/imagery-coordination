@@ -1,17 +1,20 @@
 'use strict';
-import React from 'react';
+import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import { Link } from 'react-router';
 import syncMaps from 'mapbox-gl-sync-move';
 
 import mapLayers from '../utils/map-layers';
-import * as mapUtils from '../utils/map';
+import { setSearchMapBaseLayer } from '../actions';
 
 var ImagerySearch = React.createClass({
   displayName: 'ImagerySearch',
 
   propTypes: {
+    _setSearchMapBaseLayer: T.func,
+
+    mapData: T.object
   },
 
   mainMap: null,
@@ -56,7 +59,7 @@ var ImagerySearch = React.createClass({
         'sources': {
           'raster-tiles': {
             'type': 'raster',
-            'tiles': [mapLayers[0].url],
+            'tiles': [this.props.mapData.baseLayer.url],
             'tileSize': 256
           }
         },
@@ -93,18 +96,26 @@ var ImagerySearch = React.createClass({
     syncMaps(this.maps);
   },
 
+  componentWillReceiveProps: function (nextProps) {
+    const {baseLayer} = nextProps.mapData;
+
+    if (baseLayer.id !== this.props.mapData.baseLayer.id) {
+      this.mainMap
+        .removeSource('raster-tiles')
+        .addSource('raster-tiles', {
+          'type': 'raster',
+          'tiles': [baseLayer.url],
+          'tileSize': 256
+        });
+    }
+  },
+
   componentWillUnmount: function () {
     this.maps.forEach(m => { m.remove(); });
   },
 
   selectLayer: function (mapLayer) {
-    this.mainMap
-      .removeSource('raster-tiles')
-      .addSource('raster-tiles', {
-        'type': 'raster',
-        'tiles': [mapLayer.url],
-        'tileSize': 256
-      });
+    this.props._setSearchMapBaseLayer(mapLayer);
   },
 
   render: function () {
@@ -127,9 +138,16 @@ var ImagerySearch = React.createClass({
               <li>Use the map to go through the different available imagery sources</li>
             </ul>
 
-            <div className='map-container map-container--search-large' ref='mapMaster'></div>
+            <div className='map-master'>
+              <div className='map-master__map' ref='mapMaster'></div>
+              <h2 className='map-master__source'>Source: {this.props.mapData.baseLayer.name}</h2>
+            </div>
+
             <ul className='map-thumbs'>
-              {mapLayers.map((o, i) => <li key={o.id} ref={`mapThumb${i}`} className='map-thumbs__item'></li>)}
+              {mapLayers.map((o, i) => <li key={o.id} className='map-thumbs__item'>
+                <div ref={`mapThumb${i}`} className='map-thumbs__map'></div>
+                <h3 className='map-thumbs__source'>{o.name}</h3>
+              </li>)}
             </ul>
 
           </div>
@@ -144,13 +162,13 @@ var ImagerySearch = React.createClass({
 
 function selector (state) {
   return {
-
+    mapData: state.imagerySearch
   };
 }
 
 function dispatcher (dispatch) {
   return {
-
+    _setSearchMapBaseLayer: (...args) => dispatch(setSearchMapBaseLayer(...args))
   };
 }
 
