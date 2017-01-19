@@ -4,9 +4,11 @@ import { connect } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import { Link } from 'react-router';
 import syncMaps from 'mapbox-gl-sync-move';
+import _ from 'lodash';
 
 import mapLayers from '../utils/map-layers';
 import { setSearchMapBaseLayer } from '../actions';
+import { isLoggedIn } from '../utils/auth-service';
 
 var ImagerySearch = React.createClass({
   displayName: 'ImagerySearch',
@@ -14,6 +16,7 @@ var ImagerySearch = React.createClass({
   propTypes: {
     _setSearchMapBaseLayer: T.func,
 
+    user: T.object,
     mapData: T.object
   },
 
@@ -118,6 +121,15 @@ var ImagerySearch = React.createClass({
     this.props._setSearchMapBaseLayer(mapLayer);
   },
 
+  renderAddRequestLink: function () {
+    let token = this.props.user.token;
+    let roles = _.get(this.props.user, 'profile.roles', []);
+
+    if (isLoggedIn(token) && roles.indexOf('coordinator') !== -1) {
+      return <Link to='/requests/edit' className='button-skip'>Skip this step</Link>;
+    }
+  },
+
   render: function () {
     return (
       <section className='section section--page'>
@@ -127,7 +139,7 @@ var ImagerySearch = React.createClass({
               <h1 className='section__title'>Imagery Search</h1>
             </div>
             <div className='section__actions'>
-              <Link to='/requests/edit' className='button-skip'>Skip this step</Link>
+            {this.renderAddRequestLink()}
             </div>
           </div>
         </header>
@@ -162,6 +174,7 @@ var ImagerySearch = React.createClass({
 
 function selector (state) {
   return {
+    user: state.user,
     mapData: state.imagerySearch
   };
 }
