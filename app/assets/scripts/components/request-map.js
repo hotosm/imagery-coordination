@@ -32,6 +32,10 @@ const RequestMap = React.createClass({
     this.setupFeatures(this.props.results);
 
     this.map.on('mousemove', (e) => {
+      if (!this.map.getLayer('task-polygon')) {
+        return;
+      }
+
       var features = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
