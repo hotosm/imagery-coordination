@@ -12,7 +12,7 @@ import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
 momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
-  fetchRequest, invalidateRequest, deleteTask, setMapBaseLayer } from '../actions';
+  fetchRequest, invalidateRequest, deleteTask, setMapBaseLayer, fetchRequestTasks } from '../actions';
 
 import EditMap from '../components/edit-map';
 
@@ -29,9 +29,11 @@ var TaskForm = React.createClass({
     _invalidateRequest: T.func,
     _deleteTask: T.func,
     _setMapBaseLayer: T.func,
+    _fetchRequestTasks: T.func,
 
     params: T.object,
     task: T.object,
+    requestTasks: T.object,
     request: T.object,
     taskForm: T.object,
     users: T.object,
@@ -195,6 +197,8 @@ This action is permanent.`;
     } else {
       this.props._fetchRequest(this.props.params.reqid);
     }
+
+    this.props._fetchRequestTasks(this.props.params.reqid);
   },
 
   componentWillUnmount: function () {
@@ -253,8 +257,36 @@ This action is permanent.`;
     }
   },
 
-  renderFrom: function (data = {}) {
+  renderMap: function () {
     const geometry = geometryToFeature(this.state.data.geometry);
+
+    // Shadow of the request tasks.
+    let otherTasks = null;
+    if (this.props.requestTasks.fetched && !this.props.requestTasks.fetching && this.props.requestTasks.data.results.length) {
+      // If we're editing a task, remove it from the shadow.
+      let tasks = this.props.params.taskid
+        ? this.props.requestTasks.data.results.filter(o => o._id !== this.props.params.taskid)
+        : this.props.requestTasks.data.results;
+
+      otherTasks = geometryToFeature(tasks, result => {
+        return _.omit(result, ['geometry', 'updates']);
+      });
+    }
+
+    return (
+      <EditMap
+        mapId='map-task-edit'
+        className='map-container map-container--edit bleed-full'
+        geometry={geometry}
+        otherTasks={otherTasks}
+        onFeatureDraw={this.onFeatureDraw}
+        onFeatureRemove={this.onFeatureRemove}
+        onBaseLayerSelect={this.props._setMapBaseLayer}
+        selectedLayer={this.props.mapState.baseLayer} />
+    );
+  },
+
+  renderFrom: function (data = {}) {
     let editing = !!this.props.params.taskid;
     return (
       <div className='task-form'>
@@ -268,19 +300,12 @@ This action is permanent.`;
             }
           </div>
 
-          <EditMap
-            mapId='map-task-edit'
-            className='map-container map-container--edit bleed-full'
-            geometry={geometry}
-            onFeatureDraw={this.onFeatureDraw}
-            onFeatureRemove={this.onFeatureRemove}
-            onBaseLayerSelect={this.props._setMapBaseLayer}
-            selectedLayer={this.props.mapState.baseLayer} />
+          {this.renderMap()}
 
-            {this.state.errors.geometry
-              ? <p className='message message--alert'>A task polygon is needed. Draw one or provide a file.</p>
-              : null
-            }
+          {this.state.errors.geometry
+            ? <p className='message message--alert'>A task polygon is needed. Draw one or provide a file.</p>
+            : null
+          }
 
           <div className='form__group'>
             <label className='form__label' htmlFor='task-name'>Task name <small>(required)</small></label>
@@ -415,6 +440,7 @@ This action is permanent.`;
 function selector (state) {
   return {
     task: state.task,
+    requestTasks: state.tasks,
     request: state.request,
     taskForm: state.taskForm,
     users: state.users,
@@ -431,6 +457,7 @@ function dispatcher (dispatch) {
     _patchTask: (...args) => dispatch(patchTask(...args)),
     _resetTaskFrom: (...args) => dispatch(resetTaskFrom(...args)),
     _fetchRequest: (...args) => dispatch(fetchRequest(...args)),
+    _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
     _deleteTask: (...args) => dispatch(deleteTask(...args)),
     _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
