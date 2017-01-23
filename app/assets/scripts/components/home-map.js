@@ -69,11 +69,17 @@ const HomeMap = React.createClass({
     this.setupFeatures(this.props.results);
 
     this.map.on('mousemove', (e) => {
+      if (!this.map.getLayer('requests')) {
+        return;
+      }
       var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     });
 
     this.map.on('click', (e) => {
+      if (!this.map.getLayer('requests')) {
+        return;
+      }
       var features = this.map.queryRenderedFeatures(e.point, { layers: ['requests'] });
       if (!features.length) {
         return;
