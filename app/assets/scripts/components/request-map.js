@@ -44,10 +44,10 @@ const RequestMap = React.createClass({
         this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
         let status = _.find(taskStatusStyles, {'name': f[0].properties.status});
         this.map.setPaintProperty('task-highlight', 'fill-color', status.color);
-        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.1);
+        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.16);
       } else {
         this.map.setFilter('task-highlight', ['==', '_id', '']);
-        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.32);
+        this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.64);
       }
     });
 
@@ -123,7 +123,7 @@ const RequestMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-opacity': 0.32
+        'fill-opacity': 0.64
       },
       filter: ['==', '_id', '']
     });
@@ -138,7 +138,7 @@ const RequestMap = React.createClass({
           type: 'categorical',
           stops: taskStatusStyles.map(s => [s.name, s.color])
         },
-        'fill-opacity': 0.32
+        'fill-opacity': 0.64
       }
     });
   },

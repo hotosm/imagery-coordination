@@ -7,6 +7,7 @@ import extent from '@turf/bbox';
 import _ from 'lodash';
 
 import * as mapUtils from '../utils/map';
+import { taskStatusStyles } from '../utils/constants';
 
 import MapLayers from './map-layers';
 import MapTaskPopover from './map-task-popover';
@@ -112,7 +113,7 @@ const TaskMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-color': '#000',
+        'fill-color': '#FFF',
         'fill-opacity': 0.32
       },
       filter: ['!=', '_id', this.props.selectedId]
@@ -123,8 +124,12 @@ const TaskMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-color': '#0F0',
-        'fill-opacity': 0.32
+        'fill-color': {
+          property: 'status',
+          type: 'categorical',
+          stops: taskStatusStyles.map(s => [s.name, s.color])
+        },
+        'fill-opacity': 0.80
       },
       filter: ['==', '_id', this.props.selectedId]
     });

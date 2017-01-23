@@ -1,0 +1,13 @@
+// Colors for the different statuses.
+// The same colors for JS are in utils/constants.js
+
+// Common for tasks and requests.
+$status-open: #5ABDCB;
+
+// Task specific
+$status-inprogress: #D0EC77;
+$status-completed: #72C97D;
+
+// Request specific.
+$status-closed: #A5B1B5;
+$status-canceled: #EA4F54;

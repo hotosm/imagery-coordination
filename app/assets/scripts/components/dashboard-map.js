@@ -44,7 +44,7 @@ const DashboardMap = React.createClass({
           this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.1);
         } else {
           this.map.setFilter('task-highlight', ['==', '_id', '']);
-          this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.32);
+          this.map.setPaintProperty('task-polygon', 'fill-opacity', 0.64);
         }
       }
     });
@@ -151,7 +151,7 @@ const DashboardMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-opacity': 0.32
+        'fill-opacity': 0.64
       },
       'layout': {
         'visibility': 'none'
@@ -169,7 +169,7 @@ const DashboardMap = React.createClass({
           type: 'categorical',
           stops: taskStatusStyles.map(s => [s.name, s.color])
         },
-        'fill-opacity': 0.32
+        'fill-opacity': 0.64
       },
       'layout': {
         'visibility': 'none'

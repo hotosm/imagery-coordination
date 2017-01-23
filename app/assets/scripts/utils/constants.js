@@ -7,13 +7,13 @@ export const taskStatusMatrix = {
 };
 
 export const taskStatusStyles = [
-  {name: 'open', color: '#FF0'},
-  {name: 'completed', color: '#0F0'},
-  {name: 'inprogress', color: '#00F'}
+  {name: 'open', color: '#5ABDCB'},
+  {name: 'inprogress', color: '#D0EC77'},
+  {name: 'completed', color: '#72C97D'}
 ];
 
 export const requestStatusStyles = [
-  {name: 'open', color: '#FF0'},
-  {name: 'closed', color: '#0F0'},
-  {name: 'canceled', color: '#F00'}
+  {name: 'open', color: '#5ABDCB'},
+  {name: 'closed', color: '#A5B1B5'},
+  {name: 'canceled', color: '#EA4F54'}
 ];

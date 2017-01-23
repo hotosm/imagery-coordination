@@ -16,16 +16,23 @@
   }
 
   &--open::before {
-    background: $secondary-color
+    background: $status-open;
   }
 
-  &--completed::before,
+  &--completed::before {
+    background: $status-completed;
+  }
+
+  &--inprogress::before {
+    background: $status-inprogress;
+  }
+
   &--close::before {
-    background: tint($base-color, 60%);
+    background: $status-closed;
   }
 
   &--canceled::before {
-    background: #ea4f54;
+    background: $status-canceled;
   }
 }
 
@@ -53,7 +60,7 @@
   color: transparent;
 
   background-color: tint($base-color, 96%);
-  background-image: linear-gradient(to right, $secondary-color 0%, $secondary-color 100%);
+  background-image: linear-gradient(to right, $status-open 0%, $status-open 100%);
   background-repeat: repeat-y;
   background-position: top left;
 
