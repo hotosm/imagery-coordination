@@ -27,7 +27,22 @@ Compile the sass files, javascript... Use this instead of ```npm run serve``` if
 $ npm run build
 ```
 
-## User management
-Users are managed using [Auth0](https://auth0.com/). For now there's a dummy app being used.
-The following users are available:
+# Auth0 setup
+
+To setup authentication with [Auth0](https://auth0.com/) follow the steps listed in the [imagery-requests-api](https://github.com/hotosm/imagery-requests-api/) repo.
+
+### Config
+
+Copy the `Client ID` and `Domain` to the appropriate config file.
+
+```
+  auth0Client: '',
+  auth0Domain: '',
+```
+
+---
+
+## Development data
+During development a dummy app exists (only internally) and the following users are available:
 - u: coordinator@example.org | p: coordinator
+- u: surveyor@example.org | p: surveyor
