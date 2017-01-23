@@ -24,6 +24,8 @@ const EditMap = React.createClass({
 
   map: null,
   drawPlugin: null,
+  // Flag to control when an interaction is the result of drawing.
+  wasDraw: null,
 
   componentDidMount: function () {
     this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
@@ -140,7 +142,8 @@ const EditMap = React.createClass({
     aoi = Object.assign({}, aoi);
     aoi.id = 'edit-layer';
     this.limitDrawing();
-    this.zoomToFeature(aoi);
+    !this.wasDraw && this.zoomToFeature(aoi);
+    this.wasDraw = false;
     this.drawPlugin.set({
       'type': 'FeatureCollection',
       'features': [aoi]
@@ -174,8 +177,7 @@ const EditMap = React.createClass({
   zoomToFeature: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
-      // ease-in-out quint
-      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+      duration: 0
     });
   },
 
@@ -200,6 +202,8 @@ const EditMap = React.createClass({
       this.props.onFeatureRemove();
     } else if (editCount === 1) {
       this.limitDrawing();
+      // Prevent zoom to feature when is the result of edition.
+      this.wasDraw = true;
       this.props.onFeatureDraw(edits);
     }
   },
