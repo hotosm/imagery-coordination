@@ -243,8 +243,11 @@ This action is permanent, and all associated tasks will be deleted as well.`;
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-prod-type'>Product type</label>
-            <input ref='productType' type='text' className='form__control form__control--medium' id='request-prod-type' name='request-prod-type' placeholder='Product type'
-                value={this.state.data.productType} onChange={this.onFieldChange.bind(null, 'productType')} />
+            <select className='form__control form__control--medium' id='request-prod-type' ref='productType' name='request-prod-type' value={this.state.data.productType} onChange={this.onFieldChange.bind(null, 'productType')}>
+              <option value=''>Select one</option>
+              <option value='Satellite imagery'>Satellite imagery</option>
+              <option value='UAV or other aerial imagery'>UAV or other aerial imagery</option>
+            </select>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-purpose'>Purpose</label>
