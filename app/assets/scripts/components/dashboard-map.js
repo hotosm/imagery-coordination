@@ -23,6 +23,9 @@ const DashboardMap = React.createClass({
     className: T.string
   },
 
+  // Level at which the points disappear and the polygons appear.
+  zoomThreshold: 11,
+
   componentDidMount: function () {
     this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
     this.map.on('load', this.onMapLoaded);
@@ -35,7 +38,7 @@ const DashboardMap = React.createClass({
       var features = this.map.queryRenderedFeatures(e.point, { layers: this.getActiveLayers() });
       this.map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-      if (this.map.getZoom() >= 8) {
+      if (this.map.getZoom() >= this.zoomThreshold) {
         var f = this.map.queryRenderedFeatures(e.point, { layers: ['task-polygon'] });
         if (f.length) {
           this.map.setFilter('task-highlight', ['==', '_id', f[0].properties._id]);
@@ -70,7 +73,7 @@ const DashboardMap = React.createClass({
 
     this.map.on('zoom', () => {
       if (this.map.getSource('task') && this.map.getSource('points')) {
-        if (this.map.getZoom() < 8) {
+        if (this.map.getZoom() < this.zoomThreshold) {
           this.showPoints();
         } else {
           this.hidePoints();
@@ -80,7 +83,7 @@ const DashboardMap = React.createClass({
   },
 
   getActiveLayers: function () {
-    if (this.map.getZoom() < 8) {
+    if (this.map.getZoom() < this.zoomThreshold) {
       return ['task-points'];
     } else {
       return ['task-polygon'];
