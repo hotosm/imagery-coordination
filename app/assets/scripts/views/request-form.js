@@ -265,7 +265,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
                 value={this.state.data.notes} onChange={this.onFieldChange.bind(null, 'notes')} ></textarea>
           </div>
           <div className='form__actions'>
-            {/* <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save request' : 'Create request'}</span></button> */}
+            { editing ? <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>Save request</span></button> : null }
             <button type='submit' className={'button button--secondary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add task' : 'Create & add task'}</span></button>
             <Link to={editing ? `requests/${this.props.params.reqid}` : '/'} className={'button button--base'}><span>Cancel</span></Link>
           </div>
