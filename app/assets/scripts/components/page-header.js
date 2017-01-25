@@ -2,7 +2,6 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import c from 'classnames';
-import _ from 'lodash';
 
 import AuthService, { isLoggedIn, logout } from '../utils/auth-service';
 
@@ -30,15 +29,6 @@ var PageHeader = React.createClass({
     this.setState({menu: !this.state.menu});
   },
 
-  renderAddRequestLink: function () {
-    let token = this.props.user.token;
-    let roles = _.get(this.props.user, 'profile.roles', []);
-
-    if (isLoggedIn(token) && roles.indexOf('coordinator') !== -1) {
-      return <li><Link to='/imagery-search' className='global-menu-item global-add-request'><span>Add request</span></Link></li>;
-    }
-  },
-
   renderUserProfileLink: function () {
     // The user profile is fetched asynchronously from the token.
     // Ensure we have the data before rendering.
@@ -64,7 +54,7 @@ var PageHeader = React.createClass({
             <h2 className='toggle-menu'><a href='#global-menu' className={c({'button--active': this.state.menu})} title='Show/hide menu' onClick={this.onMenuClick}><span>Browse</span></a></h2>
             <div className={c('menu-wrapper', {'menu-wrapper--open': this.state.menu})} ref='menu'>
               <ul className='global-menu' id='global-menu'>
-                {this.renderAddRequestLink()}
+                <li><Link to='/imagery-search' className='global-menu-item'><span>Imagery search</span></Link></li>
                 {loggedIn ? this.renderUserProfileLink() : null }
                 <li><Link to='/about' className='global-menu-item' title='About this website'><span>About</span></Link></li>
                 <li>

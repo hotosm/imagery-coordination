@@ -12,6 +12,9 @@ export const REQUEST_REQUESTS = 'REQUEST_REQUESTS';
 export const RECEIVE_REQUESTS = 'RECEIVE_REQUESTS';
 export const INVALIDATE_REQUESTS = 'INVALIDATE_REQUESTS';
 
+export const REQUEST_ALL_REQUESTS = 'REQUEST_All_REQUESTS';
+export const RECEIVE_ALL_REQUESTS = 'RECEIVE_All_REQUESTS';
+
 export const REQUEST_USERS = 'REQUEST_USERS';
 export const RECEIVE_USERS = 'RECEIVE_USERS';
 
@@ -93,6 +96,45 @@ export function fetchRequests (filters = {}) {
   filters.limit = 20;
   let f = buildAPIQS(filters);
   return fetcher(`${config.api}/requests?${f}`, requestRequests, receiveRequests);
+}
+
+// All Requests
+
+export function requestAllRequests () {
+  return { type: REQUEST_ALL_REQUESTS };
+}
+
+export function receiveAllRequests (requests, receivedAt, error = null) {
+  return { type: RECEIVE_ALL_REQUESTS, data: requests, error, receivedAt };
+}
+
+export function fetchAllRequests () {
+  return function (dispatch, getState) {
+    dispatch(requestAllRequests());
+    var allRequests = getState().requestsAll;
+
+    if (allRequests.receivedAt !== null) {
+      let now = Date.now();
+      const ONE_HOUR_MILLI = 3600 * 1000;
+      if (now - allRequests.receivedAt < ONE_HOUR_MILLI) {
+        return dispatch(receiveAllRequests(allRequests.data, allRequests.receivedAt));
+      }
+    }
+
+    fetch(`${config.api}/requests?footprint=true&limit=9999`)
+      .then(response => {
+        if (response.status >= 400) {
+          throw new Error('Bad response');
+        }
+        return response.json();
+      })
+      .then(json => {
+        dispatch(receiveAllRequests(json, Date.now()));
+      }, e => {
+        console.log('e', e);
+        return dispatch(receiveAllRequests(null, null, 'Data not available'));
+      });
+  };
 }
 
 // Request

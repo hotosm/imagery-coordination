@@ -1,6 +1,10 @@
 import GJV from 'geojson-validation';
 
-export function geometryToFeature (results) {
+function noop () {
+  return {};
+}
+
+export function geometryToFeature (results, propMapper = noop) {
   if (results.length > 1) {
     if (results[0].geometry) {
       return {
@@ -13,7 +17,7 @@ export function geometryToFeature (results) {
                 'type': 'Polygon',
                 'coordinates': [result.geometry]
               },
-              'properties': { }
+              'properties': propMapper(result)
             };
           })
       };
@@ -33,12 +37,12 @@ export function geometryToFeature (results) {
         'type': 'Polygon',
         'coordinates': [results[0].geometry]
       },
-      'properties': { }
+      'properties': propMapper(results[0])
     };
   }
 }
 
-export function combineFeatureResults (results) {
+export function combineFeatureResults (results, propMapper = noop) {
   results = results.filter((result) => {
     return result.footprint != null;
   });
@@ -52,7 +56,7 @@ export function combineFeatureResults (results) {
             'type': 'Polygon',
             'coordinates': result.footprint.geometry.coordinates
           },
-          'properties': { }
+          'properties': propMapper(result)
         };
       })
   });

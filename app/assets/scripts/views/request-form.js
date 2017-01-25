@@ -240,21 +240,27 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             <label className='form__label' htmlFor='request-gsd'>GSD</label>
             <input ref='gsd' type='text' className='form__control form__control--medium' id='request-gsd' name='request-gsd' placeholder='Desired GSD'
                 value={this.state.data.gsd} onChange={this.onFieldChange.bind(null, 'gsd')} />
+            <p className='form__help'>Ground Sample Distance in meters.</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-prod-type'>Product type</label>
-            <input ref='productType' type='text' className='form__control form__control--medium' id='request-prod-type' name='request-prod-type' placeholder='Product type'
-                value={this.state.data.productType} onChange={this.onFieldChange.bind(null, 'productType')} />
+            <select className='form__control form__control--medium' id='request-prod-type' ref='productType' name='request-prod-type' value={this.state.data.productType} onChange={this.onFieldChange.bind(null, 'productType')}>
+              <option value=''>Select one</option>
+              <option value='Satellite imagery'>Satellite imagery</option>
+              <option value='UAV or other aerial imagery'>UAV or other aerial imagery</option>
+            </select>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-purpose'>Purpose</label>
             <textarea ref='purpose' className='form__control' id='request-purpose' rows='4' placeholder='Purpose of this request'
                 value={this.state.data.purpose} onChange={this.onFieldChange.bind(null, 'purpose')} ></textarea>
+            <p className='form__help'>The reason why these images are needed.</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-use'>Use</label>
             <textarea ref='use' className='form__control' id='request-use' rows='4' placeholder='Intended use for the imagery'
                 value={this.state.data.use} onChange={this.onFieldChange.bind(null, 'use')} ></textarea>
+            <p className='form__help'>How/what these images are going to be used for.</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-notes'>Notes</label>
@@ -262,7 +268,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
                 value={this.state.data.notes} onChange={this.onFieldChange.bind(null, 'notes')} ></textarea>
           </div>
           <div className='form__actions'>
-            <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save request' : 'Create request'}</span></button>
+            { editing ? <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>Save request</span></button> : null }
             <button type='submit' className={'button button--secondary'} onClick={this.onSaveAndAdd}><span>{editing ? 'Save & add task' : 'Create & add task'}</span></button>
             <Link to={editing ? `requests/${this.props.params.reqid}` : '/'} className={'button button--base'}><span>Cancel</span></Link>
           </div>

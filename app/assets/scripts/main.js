@@ -63,7 +63,7 @@ render((
       <Route path='/' component={App} auth={auth}>
         <Route path='/dashboard' component={Dashboard} onEnter={requireAuth} />
         <Route path='/about' component={About}/>
-        <Route path='/imagery-search' component={ImagerySearch} onEnter={requireRole('coordinator')} />
+        <Route path='/imagery-search' component={ImagerySearch} />
         <Route path='/requests/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
         <Route path='/requests/:reqid/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
 

@@ -1,12 +1,12 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import mapboxgl from 'mapbox-gl';
 import GLDraw from 'mapbox-gl-draw';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 
 import MapLayers from './map-layers';
 import { mbStyles } from '../utils/mapbox-styles';
+import * as mapUtils from '../utils/map';
 
 const EditMap = React.createClass({
   displayName: 'EditMap',
@@ -18,70 +18,20 @@ const EditMap = React.createClass({
     onFeatureDraw: T.func,
     onFeatureRemove: T.func,
     onBaseLayerSelect: T.func,
-    geometry: T.object
+    geometry: T.object,
+    otherTasks: T.object
   },
 
   map: null,
   drawPlugin: null,
+  // Flag to control when an interaction is the result of drawing.
+  wasDraw: null,
 
   componentDidMount: function () {
-    this.map = new mapboxgl.Map({
-      container: this.props.mapId,
-      style: {
-        'version': 8,
-        'sources': {
-          'raster-tiles': {
-            'type': 'raster',
-            'tiles': [this.props.selectedLayer.url],
-            'tileSize': 256
-          }
-        },
-        'layers': [{
-          'id': 'simple-tiles',
-          'type': 'raster',
-          'source': 'raster-tiles',
-          'minzoom': 0,
-          'maxzoom': 22
-        }]
-      },
-      center: [0, 20],
-      zoom: 1
-    });
-
-    this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // disable map rotation using right click + drag
-    this.map.dragRotate.disable();
-    // disable map rotation using touch rotation gesture
-    this.map.touchZoomRotate.disableRotation();
-    // Disable scroll zoom
-    this.map.scrollZoom.disable();
-
-    // Hack the controls to match the style.
-    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
-    controls.classList.add('button-group', 'button-group--vertical');
-    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-compass').remove();
-
+    this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
     this.addDraw();
 
-    this.map.on('load', () => {
-      const trashIcon = document.querySelector('.mapbox-gl-draw_trash');
-      let trashIconClasses = trashIcon.classList;
-      trashIconClasses.add('disabled');
-      trashIconClasses.remove('active');
-
-      trashIcon.addEventListener('click', () => {
-        if (this.drawPlugin.getMode() === 'direct_select') {
-          this.drawPlugin.deleteAll();
-        }
-      });
-
-      const prevAOI = this.props.geometry;
-      prevAOI && prevAOI.geometry.coordinates
-        ? this.loadExistingSource(prevAOI)
-        : this.addNewSource();
-    });
+    this.map.on('load', this.onMapLoaded);
   },
 
   componentWillUnmount: function () {
@@ -110,6 +60,53 @@ const EditMap = React.createClass({
           'tiles': [nextProps.selectedLayer.url],
           'tileSize': 256
         });
+    }
+  },
+
+  onMapLoaded: function () {
+    const trashIcon = document.querySelector('.mapbox-gl-draw_trash');
+    let trashIconClasses = trashIcon.classList;
+    trashIconClasses.add('disabled');
+    trashIconClasses.remove('active');
+
+    trashIcon.addEventListener('click', () => {
+      if (this.drawPlugin.getMode() === 'direct_select') {
+        this.drawPlugin.deleteAll();
+      }
+    });
+
+    const prevAOI = this.props.geometry;
+    prevAOI && prevAOI.geometry.coordinates
+      ? this.loadExistingSource(prevAOI)
+      : this.addNewSource();
+
+    this.addShadowFeatures();
+  },
+
+  addShadowFeatures: function () {
+    if (this.props.otherTasks !== null && !this.map.getSource('shadow-features')) {
+      this.map.addSource('shadow-features', {
+        type: 'geojson',
+        data: this.props.otherTasks
+      });
+
+      this.map.addLayer({
+        'id': 'shadow-features',
+        'type': 'fill',
+        'source': 'shadow-features',
+        'paint': {
+          'fill-color': '#fff',
+          'fill-opacity': 0.32
+        }
+      });
+
+      // If there's nothing drawn, zoom to the shadow features.
+      if (!this.props.geometry) {
+        this.map.fitBounds(extent(this.props.otherTasks), {
+          padding: 30,
+          duration: 0
+        });
+      }
     }
   },
 
@@ -145,7 +142,8 @@ const EditMap = React.createClass({
     aoi = Object.assign({}, aoi);
     aoi.id = 'edit-layer';
     this.limitDrawing();
-    this.zoomToFeature(aoi);
+    !this.wasDraw && this.zoomToFeature(aoi);
+    this.wasDraw = false;
     this.drawPlugin.set({
       'type': 'FeatureCollection',
       'features': [aoi]
@@ -179,8 +177,7 @@ const EditMap = React.createClass({
   zoomToFeature: function (feat) {
     this.map.fitBounds(extent(feat), {
       padding: 15,
-      // ease-in-out quint
-      easing: (t) => t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
+      duration: 0
     });
   },
 
@@ -205,6 +202,8 @@ const EditMap = React.createClass({
       this.props.onFeatureRemove();
     } else if (editCount === 1) {
       this.limitDrawing();
+      // Prevent zoom to feature when is the result of edition.
+      this.wasDraw = true;
       this.props.onFeatureDraw(edits);
     }
   },

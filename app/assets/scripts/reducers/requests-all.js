@@ -1,4 +1,4 @@
-import { REQUEST_REQUESTS, RECEIVE_REQUESTS, INVALIDATE_REQUESTS } from '../actions';
+import { REQUEST_ALL_REQUESTS, RECEIVE_ALL_REQUESTS } from '../actions';
 
 const initialState = {
   fetching: false,
@@ -10,21 +10,22 @@ const initialState = {
       found: null
     },
     results: []
-  }
+  },
+  receivedAt: null
 };
 
 export default function reducer (state = initialState, action) {
   switch (action.type) {
-    case INVALIDATE_REQUESTS:
-      return Object.assign({}, state, initialState);
-    case REQUEST_REQUESTS:
+    case REQUEST_ALL_REQUESTS:
       return Object.assign({}, state, { error: null, fetching: true, fetched: false });
-    case RECEIVE_REQUESTS:
+    case RECEIVE_ALL_REQUESTS:
       state = Object.assign({}, state, { fetching: false, fetched: true });
       if (action.error) {
         state.error = action.error;
+        state.receivedAt = 0;
       } else {
         state.data = action.data;
+        state.receivedAt = action.receivedAt;
       }
       break;
   }

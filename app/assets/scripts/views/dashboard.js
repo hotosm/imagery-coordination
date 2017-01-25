@@ -12,7 +12,7 @@ import { geometryToFeature } from '../utils/features';
 import { isLoggedIn } from '../utils/auth-service';
 
 import TaskCard from '../components/task-card';
-import DisplayMap from '../components/display-map';
+import DashboardMap from '../components/dashboard-map';
 
 var Dashboard = React.createClass({
   displayName: 'Dashboard',
@@ -169,7 +169,9 @@ var Dashboard = React.createClass({
 
   render: function () {
     let activeTab = this.props.dashboard.activeTab;
-    const geometry = geometryToFeature(this.props.userTasks.data.results);
+    const geometry = geometryToFeature(this.props.userTasks.data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
 
     return (
       <section className='section section--page section--tasks'>
@@ -221,7 +223,7 @@ var Dashboard = React.createClass({
               </div>
 
               <div className='dashboard__col--sec'>
-                <DisplayMap
+                <DashboardMap
                   mapId='map-dashboard'
                   className='map-container map-container--dashboard'
                   results={geometry}

@@ -17,7 +17,7 @@ export default function reducer (state = initialState, action) {
     case INVALIDATE_TASK:
       return Object.assign({}, state, initialState);
     case REQUEST_TASK:
-      return Object.assign({}, state, { error: null, fetching: true });
+      return Object.assign({}, state, { error: null, fetching: true, fetched: false });
     case RECEIVE_TASK:
       state = Object.assign({}, state, { fetching: false, fetched: true });
       if (action.error) {

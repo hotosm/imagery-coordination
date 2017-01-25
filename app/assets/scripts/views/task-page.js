@@ -6,36 +6,51 @@ import _ from 'lodash';
 import moment from 'moment';
 import Linkify from 'react-linkify';
 
-import { invalidateTask, fetchTask, addTaskStatusUpdate, setMapBaseLayer } from '../actions';
+import { invalidateTask, fetchTask, fetchRequestTasks, invalidateTasks, addTaskStatusUpdate, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
 import { isLoggedIn } from '../utils/auth-service';
 import { geometryToFeature } from '../utils/features';
 import { taskStatusMatrix } from '../utils/constants';
 
 import TaskUpdateForm from '../components/task-update-form';
-import DisplayMap from '../components/display-map';
+import TaskMap from '../components/task-map';
 
 var TaskPage = React.createClass({
   displayName: 'TaskPage',
 
   propTypes: {
     _invalidateTask: T.func,
+    _invalidateTasks: T.func,
     _fetchTask: T.func,
+    _fetchRequestTasks: T.func,
     _addTaskStatusUpdate: T.func,
     _setMapBaseLayer: T.func,
 
     params: T.object,
     task: T.object,
+    requestTasks: T.object,
     user: T.object,
     mapState: T.object
   },
 
   componentDidMount: function () {
     this.props._fetchTask(this.props.params.reqid, this.props.params.taskid);
+    this.props._fetchRequestTasks(this.props.params.reqid);
   },
 
   componentWillUnmount: function () {
     this.props._invalidateTask();
+    this.props._invalidateTasks();
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (nextProps.params.taskid !== this.props.params.taskid) {
+      this.props._fetchTask(nextProps.params.reqid, nextProps.params.taskid);
+    }
+
+    if (nextProps.params.reqid !== this.props.params.reqid) {
+      this.props._fetchRequestTasks(nextProps.params.reqid);
+    }
   },
 
   onTaskUpdateSubmit: function (status, comment) {
@@ -72,6 +87,36 @@ var TaskPage = React.createClass({
           </ul>
         </section>
       </div>
+    );
+  },
+
+  renderTaskMap: function () {
+    let { fetched, fetching, error, data } = this.props.requestTasks;
+
+    if (!fetched && !fetching) {
+      return null;
+    }
+
+    if (fetching) {
+      return <p className='loading-indicator'>Loading...</p>;
+    }
+
+    if (error) {
+      return <p>Error</p>;
+    }
+
+    let feat = geometryToFeature(data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
+
+    return (
+      <TaskMap
+        mapId='map-task-page'
+        className='map-container map-container--display bleed-full'
+        results={feat}
+        selectedId={this.props.task.data._id}
+        onBaseLayerChange={this.props._setMapBaseLayer}
+        selectedLayer={this.props.mapState.baseLayer} />
     );
   },
 
@@ -125,8 +170,6 @@ var TaskPage = React.createClass({
       }
     }
 
-    const geometry = geometryToFeature([this.props.task.data]);
-
     return (
       <section className='section section--page'>
         <header className='section__header'>
@@ -153,12 +196,7 @@ var TaskPage = React.createClass({
         <div className='section__body'>
           <div className='inner'>
 
-            <DisplayMap
-              mapId='map-task-page'
-              className='map-container map-container--display bleed-full'
-              results={geometry}
-              onBaseLayerChange={this.props._setMapBaseLayer}
-              selectedLayer={this.props.mapState.baseLayer} />
+            {this.renderTaskMap()}
 
             <div className='details'>
               <dl>
@@ -186,6 +224,7 @@ var TaskPage = React.createClass({
 function selector (state) {
   return {
     task: state.task,
+    requestTasks: state.tasks,
     user: state.user,
     mapState: state.map
   };
@@ -196,7 +235,9 @@ function dispatcher (dispatch) {
     _invalidateTask: (...args) => dispatch(invalidateTask(...args)),
     _fetchTask: (...args) => dispatch(fetchTask(...args)),
     _addTaskStatusUpdate: (...args) => dispatch(addTaskStatusUpdate(...args)),
-    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
+    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args)),
+    _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
+    _invalidateTasks: (...args) => dispatch(invalidateTasks(...args))
   };
 }
 
