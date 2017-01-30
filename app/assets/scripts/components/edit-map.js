@@ -104,8 +104,8 @@ const EditMap = React.createClass({
           'type': 'fill',
           'source': 'shadow-features',
           'paint': {
-            'fill-color': '#fff',
-            'fill-opacity': 0.32
+            'fill-color': '#000',
+            'fill-opacity': 0.16
           }
         });
       }
