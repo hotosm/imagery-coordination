@@ -242,6 +242,7 @@ This action is permanent.`;
     // Result came back.
     if (prevProcessing && !processing && newTask._id) {
       if (this.goToTaskForm) {
+        this.props._fetchRequestTasks(this.props.params.reqid);
         if (this.props.params.taskid) {
           // If we were editing a task the url is different.
           hashHistory.push(`/requests/${newTask.requestId}/tasks/edit`);
