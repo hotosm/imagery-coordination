@@ -55,6 +55,7 @@ var TaskPage = React.createClass({
 
   onTaskUpdateSubmit: function (status, comment) {
     this.props._addTaskStatusUpdate(this.props.params.reqid, this.props.params.taskid, {status, comment});
+    this.props._fetchRequestTasks(this.props.params.reqid);
   },
 
   renderTaskUpdate: function (o) {

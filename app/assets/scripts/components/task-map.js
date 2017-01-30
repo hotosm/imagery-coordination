@@ -113,8 +113,8 @@ const TaskMap = React.createClass({
       'type': 'fill',
       'source': 'task',
       'paint': {
-        'fill-color': '#FFF',
-        'fill-opacity': 0.32
+        'fill-color': '#000',
+        'fill-opacity': 0.16
       },
       filter: ['!=', '_id', this.props.selectedId]
     });

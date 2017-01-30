@@ -1,8 +1,8 @@
 import { SET_SEARCH_MAP_BASELAYER, SET_SEARCH_MAP_CENTER, SET_SEARCH_MAP_ZOOM, RESET_SEARCH_MAP } from '../actions';
-import baseLayers from '../utils/map-layers';
+import { getImagerySearchLayers } from '../utils/map-layers';
 
 const initialState = {
-  baseLayer: baseLayers[0],
+  baseLayer: getImagerySearchLayers()[0],
   center: [0, 0],
   zoom: 2
 };

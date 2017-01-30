@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import syncMaps from 'mapbox-gl-sync-move';
 import _ from 'lodash';
 
-import mapLayers from '../utils/map-layers';
+import { getImagerySearchLayers } from '../utils/map-layers';
 import { setSearchMapBaseLayer } from '../actions';
 import { isLoggedIn } from '../utils/auth-service';
 
@@ -93,7 +93,7 @@ var ImagerySearch = React.createClass({
 
     this.maps = [
       this.mainMap,
-      ...mapLayers.map((o, i) => this.setupMap(this.refs[`mapThumb${i}`], o))
+      ...getImagerySearchLayers().map((o, i) => this.setupMap(this.refs[`mapThumb${i}`], o))
     ];
 
     syncMaps(this.maps);
@@ -156,7 +156,7 @@ var ImagerySearch = React.createClass({
             </div>
 
             <ul className='map-thumbs'>
-              {mapLayers.map((o, i) => <li key={o.id} className='map-thumbs__item'>
+              {getImagerySearchLayers().map((o, i) => <li key={o.id} className='map-thumbs__item'>
                 <div ref={`mapThumb${i}`} className='map-thumbs__map'></div>
                 <h3 className='map-thumbs__source'>{o.name}</h3>
               </li>)}

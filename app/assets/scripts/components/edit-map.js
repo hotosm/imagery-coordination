@@ -52,6 +52,10 @@ const EditMap = React.createClass({
       this.loadExistingSource(nextAOI);
     }
 
+    if (this.map._loaded && !_.isEqual(this.props.otherTasks, nextProps.otherTasks)) {
+      this.addShadowFeatures(nextProps.otherTasks);
+    }
+
     if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
       this.map
         .removeSource('raster-tiles')
@@ -80,29 +84,35 @@ const EditMap = React.createClass({
       ? this.loadExistingSource(prevAOI)
       : this.addNewSource();
 
-    this.addShadowFeatures();
+    this.addShadowFeatures(this.props.otherTasks);
   },
 
-  addShadowFeatures: function () {
-    if (this.props.otherTasks !== null && !this.map.getSource('shadow-features')) {
+  addShadowFeatures: function (otherTasks) {
+    if (otherTasks !== null) {
+      if (this.map.getSource('shadow-features')) {
+        this.map.removeSource('shadow-features');
+      }
+
       this.map.addSource('shadow-features', {
         type: 'geojson',
-        data: this.props.otherTasks
+        data: otherTasks
       });
 
-      this.map.addLayer({
-        'id': 'shadow-features',
-        'type': 'fill',
-        'source': 'shadow-features',
-        'paint': {
-          'fill-color': '#fff',
-          'fill-opacity': 0.32
-        }
-      });
+      if (!this.map.getLayer('shadow-features')) {
+        this.map.addLayer({
+          'id': 'shadow-features',
+          'type': 'fill',
+          'source': 'shadow-features',
+          'paint': {
+            'fill-color': '#000',
+            'fill-opacity': 0.16
+          }
+        });
+      }
 
       // If there's nothing drawn, zoom to the shadow features.
       if (!this.props.geometry) {
-        this.map.fitBounds(extent(this.props.otherTasks), {
+        this.map.fitBounds(extent(otherTasks), {
           padding: 30,
           duration: 0
         });
