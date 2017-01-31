@@ -25,7 +25,6 @@ const requireAuth = (nextState, replace) => {
 const requireRole = (allowedRoles) => (nextState, replace) => {
   allowedRoles = _.castArray(allowedRoles);
   let user = store.getState().user;
-  console.log('user', user);
   let userRoles = _.get(user, 'profile.roles', []);
   let hasRole = allowedRoles.some(o => userRoles.indexOf(o) !== -1);
   if (!isLoggedIn(user.token) || !hasRole) {

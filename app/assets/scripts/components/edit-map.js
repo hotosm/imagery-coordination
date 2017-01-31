@@ -76,6 +76,9 @@ const EditMap = React.createClass({
     trashIcon.addEventListener('click', () => {
       if (this.drawPlugin.getMode() === 'direct_select') {
         this.drawPlugin.deleteAll();
+        this.startDrawing();
+        trashIconClasses.add('disabled');
+        trashIconClasses.remove('active');
       }
     });
 
