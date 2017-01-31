@@ -207,9 +207,9 @@ var Home = React.createClass({
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
-              <h1 className='section__title'>Imagery Coordination App</h1>
+              <h1 className='section__title'>Imagery Coordination</h1>
               <div className='section__introduction'>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio sit eveniet magnam dignissimos itaque sequi ullam praesentium voluptas esse sunt repudiandae impedit, rerum maxime unde debitis saepe aut molestiae dolorem.</p>
+                <p>Timely access to aerial imagery is critical for disaster response. The Imagery Coordination tool allows people to coordinate and track progress on the collection of satellite and UAV imagery around the globe.</p>
               </div>
             </div>
             {this.renderStats()}
