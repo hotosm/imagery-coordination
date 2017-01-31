@@ -47,7 +47,7 @@ var PageHeader = React.createClass({
         <div className='inner'>
           <div className='page__headline'>
             <h1 className='page__title'>
-              <Link to='/' title='Visit homepage'>Imagery Requests</Link>
+              <Link to='/' title='Visit homepage'>Imagery Coordination</Link>
             </h1>
           </div>
           <nav className='page__prime-nav' role='navigation'>
