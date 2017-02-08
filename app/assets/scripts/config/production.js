@@ -4,9 +4,9 @@
  */
 module.exports = {
   environment: 'production',
-  auth0Client: 'qTQW5L362p0DWpuNAcx5SHggOY1p65bG',
-  auth0Domain: 'danielfdsilva.eu.auth0.com',
-  mbToken: 'pk.eyJ1IjoiZGV2c2VlZCIsImEiOiJnUi1mbkVvIn0.018aLhX0Mb0tdtaT2QNe2Q',
+  auth0Client: 'xD5HP0K0aHMZdZjFCpC01XtIocAMYyel',
+  auth0Domain: 'smit1678.auth0.com',
+  mbToken: 'pk.eyJ1Ijoib3BlbmFlcmlhbG1hcCIsImEiOiJjaXl4MXkyZDMwMDB0MnhwN3c5b2I5MmtqIn0.-NsKzzY8CAFdKVAXqtC9Tg',
 
-  api: 'https://imagery-requests-staging.herokuapp.com'
+  api: 'https://imagery-coordination.herokuapp.com'
 };
