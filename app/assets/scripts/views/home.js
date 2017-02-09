@@ -207,9 +207,9 @@ var Home = React.createClass({
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
-              <h1 className='section__title'>Imagery Coordination</h1>
+              <h1 className='section__title'>Imagery Coordination Service</h1>
               <div className='section__introduction'>
-                <p>Timely access to aerial imagery is critical for disaster response. The Imagery Coordination tool allows people to coordinate and track progress on the collection of satellite and UAV imagery around the globe.</p>
+                <p>Tracking and coordinating satellite and aerial imagery needs around the globe. View open requests below. Explore the search to determine needs.</p>
               </div>
             </div>
             {this.renderStats()}
