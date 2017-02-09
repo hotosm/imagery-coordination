@@ -16,7 +16,7 @@ export default class AuthService {
         params: {scope: 'openid roles user_id user_metadata'}
       },
       theme: {
-        logo: '/assets/graphics/layout/hot-logo.png',
+        logo: 'assets/graphics/layout/hot-logo.png',
         primaryColor: '#D73F3F'
       }
       // auth: {
