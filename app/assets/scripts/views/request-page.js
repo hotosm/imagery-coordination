@@ -6,6 +6,7 @@ import _ from 'lodash';
 import c from 'classnames';
 import moment from 'moment';
 import numeral from 'numeral';
+import Linkify from 'react-linkify';
 
 import { fetchRequest, fetchRequestTasks, invalidateRequest, invalidateTasks, setMapBaseLayer } from '../actions';
 import * as userUtils from '../utils/users';
@@ -237,11 +238,11 @@ var RequestPage = React.createClass({
               <div className='details__col--main'>
                 <dl>
                   <dt>Purpose</dt>
-                  <dd>{data.purpose ? data.purpose : 'Purpose not provided'}</dd>
+                  <dd><Linkify>{data.purpose ? data.purpose : 'Purpose not provided'}</Linkify></dd>
                   <dt>Use</dt>
-                  <dd>{data.use ? data.use : 'Use not provided'}</dd>
+                  <dd><Linkify>{data.use ? data.use : 'Use not provided'}</Linkify></dd>
                   <dt>Notes</dt>
-                  <dd>{data.notes ? data.notes : 'Notes not provided'}</dd>
+                  <dd><Linkify>{data.notes ? data.notes : 'Notes not provided'}</Linkify></dd>
                 </dl>
               </div>
             </div>
