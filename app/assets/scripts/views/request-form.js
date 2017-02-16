@@ -322,10 +322,10 @@ This action is permanent, and all associated tasks will be deleted as well.`;
         </header>
         <div className='section__body'>
           <div className='inner'>
-            {this.props.requestForm.processing ? <p>Submitting data...</p> : null}
             {editing && fetching ? <p className='loading-indicator'>Loading...</p> : null}
             {editing && error ? <p>Error</p> : null}
             {!editing || (editing && !fetching) ? this.renderFrom() : null}
+            {this.props.requestForm.processing ? <p>Submitting data...</p> : null}
           </div>
         </div>
       </section>
