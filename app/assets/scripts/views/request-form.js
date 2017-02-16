@@ -57,6 +57,11 @@ var RequestForm = React.createClass({
       control = false;
     }
 
+    if (this.state.data.gsd !== '' && isNaN(+this.state.data.gsd)) {
+      errors.gsd = true;
+      control = false;
+    }
+
     this.setState({errors});
     return control;
   },
@@ -241,6 +246,10 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             <input ref='gsd' type='text' className='form__control form__control--medium' id='request-gsd' name='request-gsd' placeholder='Desired GSD'
                 value={this.state.data.gsd} onChange={this.onFieldChange.bind(null, 'gsd')} />
             <p className='form__help'>Ground Sample Distance in meters.</p>
+            {this.state.errors.gsd
+              ? <p className='message message--alert'>The GSD must be a number</p>
+              : null
+            }
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-prod-type'>Product type</label>
