@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { INVALIDATE_TASK, REQUEST_TASK, RECEIVE_TASK,
   START_ADD_TASK_STATUS_UPDATE, FINISH_ADD_TASK_STATUS_UPDATE } from '../actions';
 
@@ -27,11 +29,11 @@ export default function reducer (state = initialState, action) {
       }
       break;
     case START_ADD_TASK_STATUS_UPDATE:
-      state = Object.assign({}, state);
+      state = _.cloneDeep(state);
       state.statusUpdate.processing = true;
       return state;
     case FINISH_ADD_TASK_STATUS_UPDATE:
-      state = Object.assign({}, state);
+      state = _.cloneDeep(state);
       state.statusUpdate.processing = false;
       if (action.error) {
         state.statusUpdate.error = action.error;

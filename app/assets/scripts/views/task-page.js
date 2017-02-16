@@ -51,11 +51,15 @@ var TaskPage = React.createClass({
     if (nextProps.params.reqid !== this.props.params.reqid) {
       this.props._fetchRequestTasks(nextProps.params.reqid);
     }
+
+    // When the status update has finished, get the tasks.
+    if (this.props.task.statusUpdate.processing && !nextProps.task.statusUpdate.processing) {
+      this.props._fetchRequestTasks(this.props.params.reqid);
+    }
   },
 
   onTaskUpdateSubmit: function (status, comment) {
     this.props._addTaskStatusUpdate(this.props.params.reqid, this.props.params.taskid, {status, comment});
-    this.props._fetchRequestTasks(this.props.params.reqid);
   },
 
   renderTaskUpdate: function (o) {
