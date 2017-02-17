@@ -199,6 +199,11 @@ const HomeMap = React.createClass({
         let nextSorted = _.sortBy(nextDue, o => o.properties.tasksInfo.nextDue.deliveryTime);
         feature = nextSorted[0];
         break;
+      case 'full-extent':
+        if (this.props.results) {
+          this.map.fitBounds(extent(this.props.results));
+        }
+        return;
     }
 
     this.map.flyTo({
@@ -230,6 +235,7 @@ const HomeMap = React.createClass({
               <ul className='drop__menu drop__menu--select'>
                 <li><a href='#' className='drop__menu-item' onClick={this.onJumpToSelect.bind(null, 'next-due')} data-hook='dropdown:close'>Next due</a></li>
                 <li><a href='#' className='drop__menu-item' onClick={this.onJumpToSelect.bind(null, 'most-recent')} data-hook='dropdown:close'>Most recent</a></li>
+                <li><a href='#' className='drop__menu-item' onClick={this.onJumpToSelect.bind(null, 'full-extent')} data-hook='dropdown:close'>Full extent</a></li>
               </ul>
 
           </Dropdown>

@@ -79,15 +79,15 @@ const TaskMap = React.createClass({
     const currentFeat = this.props.results;
     const nextFeat = nextProps.results;
 
-    if ((currentFeat && currentFeat.features.length) && (!nextFeat || !nextFeat.features.length)) {
+    if (currentFeat && !nextFeat) {
       this.refreshMap();
     } else {
-      if (nextFeat && !_.isEqual(this.props.results, nextFeat)) {
+      if (nextFeat && !_.isEqual(currentFeat, nextFeat)) {
         this.updateFeatures(nextFeat);
       }
     }
 
-    if ((!currentFeat || !currentFeat.features.length) && (nextFeat && nextFeat.features.length)) {
+    if (!currentFeat && nextFeat) {
       this.setupFeatures(nextFeat);
     }
 

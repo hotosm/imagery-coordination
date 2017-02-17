@@ -69,7 +69,6 @@ var TaskUpdateForm = React.createClass({
     let submitClass = c('button button--primary', {disabled: this.state.statusError || this.state.commentError});
     return (
       <div className='task-updates-form'>
-        {this.props.statusUpdate.processing ? <p>Submitting status update</p> : null}
         {blockAccess ? <p>Suveyors can only add updates when assigned</p> : null}
         <form className={c('form', {'disabled': blockAccess})} ref='form'>
           <div className='form__group'>
@@ -97,6 +96,7 @@ var TaskUpdateForm = React.createClass({
           <div className='form__actions'>
             <button type='submit' className={submitClass} onClick={this.onStatusUpdateSubmit}><span>Add update</span></button>
           </div>
+          {this.props.statusUpdate.processing ? <p>Submitting status update</p> : null}
         </form>
       </div>
     );
