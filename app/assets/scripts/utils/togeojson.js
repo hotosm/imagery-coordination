@@ -1,3 +1,4 @@
+/* eslint-disable */
 var toGeoJSON = (function() {
     'use strict';
 
