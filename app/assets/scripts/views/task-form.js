@@ -6,7 +6,9 @@ import moment from 'moment';
 import _ from 'lodash';
 import DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import momentLocalizer from 'react-widgets/lib/localizers/moment';
+import { DOMParser } from 'xmldom';
 
+import toGeoJSON from '../utils/togeojson';
 import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
 
 momentLocalizer(moment);
@@ -141,14 +143,34 @@ var TaskForm = React.createClass({
 
   onFileChange: function (e) {
     let reader = new FileReader();
+    let file = e.target.files[0];
+
+    if (!file.name.match(/(\.geojson|\.json|\.kml)$/i)) {
+      let err = Object.assign({}, this.state.errors);
+      err.geometryFile = 'Invalid file format. Please upload a GeoJSON or KML file.';
+      this.setState({errors: err});
+      return;
+    }
+
+    var isKML = !!file.name.match(/\.kml$/i);
 
     reader.onload = (e) => {
       let errors = Object.assign({}, this.state.errors);
       try {
-        let geojson = JSON.parse(reader.result);
+        let geojson;
+        if (isKML) {
+          var kml = new DOMParser().parseFromString(reader.result);
+          geojson = toGeoJSON.kml(kml);
+        } else {
+          geojson = JSON.parse(reader.result);
+        }
         validateGeoJSONPolygon(geojson, (err, res) => {
           if (err) {
-            errors.geometryFile = err;
+            if (isKML) {
+              errors.geometryFile = 'The KML file is not properly formatted. Please ensure that it only includes one polygon.';
+            } else {
+              errors.geometryFile = err;
+            }
             this.setState({errors: errors});
           } else {
             let data = Object.assign({}, this.state.data, {geometry: res});
@@ -158,11 +180,11 @@ var TaskForm = React.createClass({
           }
         });
       } catch (e) {
-        errors.geometryFile = 'File is not in a valid format. Needs to be a GeoJSON';
+        errors.geometryFile = 'File is not properly formatted. Needs to be a valid GeoJSON or KML.';
         this.setState({errors: errors});
       }
     };
-    reader.readAsText(e.target.files[0]);
+    reader.readAsText(file);
   },
 
   onFeatureDraw: function (fc) {
