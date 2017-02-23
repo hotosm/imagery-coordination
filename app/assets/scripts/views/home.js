@@ -212,12 +212,14 @@ var Home = React.createClass({
                 <p>Tracking and coordinating satellite and aerial imagery needs around the globe. View open requests below. Explore the search to determine needs.</p>
               </div>
             </div>
-            {this.renderStats()}
             {allowedUser ? (
             <div className='section__actions'>
               <Link to='/imagery-search' className='button-add-request'><span>Add request</span></Link>
             </div>
             ) : null}
+            <div className='section__stats'>
+              {this.renderStats()}
+            </div>
           </div>
         </header>
         <div className='section__body'>
