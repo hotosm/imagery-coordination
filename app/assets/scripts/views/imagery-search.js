@@ -136,7 +136,8 @@ var ImagerySearch = React.createClass({
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
-              <h1 className='section__title'>Imagery Search</h1>
+              <h1 className='section__title'>Compare imagery</h1>
+              <p>Explore and compare existing sources of imagery prior to requesting additional imagery.</p>
             </div>
             <div className='section__actions'>
             {this.renderAddRequestLink()}
@@ -145,10 +146,6 @@ var ImagerySearch = React.createClass({
         </header>
         <div className='section__body'>
           <div className='inner'>
-            <ul>
-              <li>Before adding a request you need, make sure there is no imagery for the area you're looking for</li>
-              <li>Use the map to go through the different available imagery sources</li>
-            </ul>
 
             <div className='map-master'>
               <div className='map-master__map' ref='mapMaster'></div>

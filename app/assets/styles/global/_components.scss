@@ -27,7 +27,7 @@
     background: $status-inprogress;
   }
 
-  &--close::before {
+  &--closed::before {
     background: $status-closed;
   }
 

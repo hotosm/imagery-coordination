@@ -8,7 +8,7 @@
   }
 
   .section__headline {
-    @include span(12/12);
+    @include span(10/12);
   }
 
   .section__introduction {
@@ -16,7 +16,8 @@
   }
 
   .section__actions {
-    @include span(12/12);
+    @include span(2/12);
+    text-align: right;
   }
 }
 

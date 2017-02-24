@@ -263,17 +263,17 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             <label className='form__label' htmlFor='request-purpose'>Purpose</label>
             <textarea ref='purpose' className='form__control' id='request-purpose' rows='4' placeholder='Purpose of this request'
                 value={this.state.data.purpose} onChange={this.onFieldChange.bind(null, 'purpose')} ></textarea>
-            <p className='form__help'>The reason why these images are needed.</p>
+            <p className='form__help'>Describe why these images are needed and the context of the work being conducted.</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-use'>Use</label>
             <textarea ref='use' className='form__control' id='request-use' rows='4' placeholder='Intended use for the imagery'
                 value={this.state.data.use} onChange={this.onFieldChange.bind(null, 'use')} ></textarea>
-            <p className='form__help'>How/what these images are going to be used for.</p>
+            <p className='form__help'>How will the imagery be used and what products do you intend to generate?</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-notes'>Notes</label>
-            <textarea ref='notes' className='form__control' id='request-notes' rows='4' placeholder='Additional notes'
+            <textarea ref='notes' className='form__control' id='request-notes' rows='4' placeholder='Additional notes and links for background'
                 value={this.state.data.notes} onChange={this.onFieldChange.bind(null, 'notes')} ></textarea>
           </div>
           <div className='form__actions'>
