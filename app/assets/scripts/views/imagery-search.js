@@ -10,6 +10,9 @@ import { getImagerySearchLayers } from '../utils/map-layers';
 import { setSearchMapBaseLayer } from '../actions';
 import { isLoggedIn } from '../utils/auth-service';
 
+/**
+ * One big map with multiple smaller (but synched) maps below
+ */
 var ImagerySearch = React.createClass({
   displayName: 'ImagerySearch',
 
@@ -17,13 +20,37 @@ var ImagerySearch = React.createClass({
     _setSearchMapBaseLayer: T.func,
 
     user: T.object,
-    mapData: T.object
+    mapData: T.object,
+    params: T.object
+  },
+
+  defaultMapView: {
+    lat: 0,
+    lng: 0,
+    zoom: 1
   },
 
   mainMap: null,
   maps: [],
+  mapMovementThrottle: null,
 
-  setupMap: function (container, layer) {
+  getInitialMapView: function () {
+    let mapView = {};
+    if (this.props.params.mapview) {
+      const parts = this.props.params.mapview.split(',');
+      mapView = {
+        lng: parts[0],
+        lat: parts[1],
+        zoom: parts[2]
+      };
+    } else {
+      mapView = this.defaultMapView;
+    }
+    return mapView;
+  },
+
+  // Setting up the smaller maps
+  setupMap: function (container, layer, initialMapView) {
     let map = new mapboxgl.Map({
       container: container,
       style: {
@@ -43,8 +70,8 @@ var ImagerySearch = React.createClass({
           'maxzoom': 22
         }]
       },
-      center: [0, 0],
-      zoom: 1
+      center: [initialMapView.lng, initialMapView.lat],
+      zoom: initialMapView.zoom
     });
 
     map.on('click', e => {
@@ -55,6 +82,8 @@ var ImagerySearch = React.createClass({
   },
 
   componentDidMount: function () {
+    const initialMapView = this.getInitialMapView();
+
     this.mainMap = new mapboxgl.Map({
       container: this.refs.mapMaster,
       style: {
@@ -74,8 +103,8 @@ var ImagerySearch = React.createClass({
           'maxzoom': 22
         }]
       },
-      center: [0, 20],
-      zoom: 1
+      center: [initialMapView.lng, initialMapView.lat],
+      zoom: initialMapView.zoom
     });
 
     this.mainMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
@@ -93,8 +122,12 @@ var ImagerySearch = React.createClass({
 
     this.maps = [
       this.mainMap,
-      ...getImagerySearchLayers().map((o, i) => this.setupMap(this.refs[`mapThumb${i}`], o))
+      ...getImagerySearchLayers().map(
+        (o, i) => this.setupMap(this.refs[`mapThumb${i}`], o, initialMapView)
+      )
     ];
+
+    this.mainMap.on('moveend', this.onMapChange);
 
     syncMaps(this.maps);
   },
@@ -130,6 +163,25 @@ var ImagerySearch = React.createClass({
     }
   },
 
+  onMapChange: function () {
+    if (this.mapMovementThrottle) return;
+    // Using Browser History just to update the hash URL. React's hashHistory causes
+    // a scroll back to the top of the page. hashHistory is still a dependency because
+    // of the expectation that the host does not support SPA routing to index.html.
+    const path = `#/imagery-search/${this.mapViewToString()}`;
+    window.history.replaceState(null, null, path);
+    // The Mapbox map sync plugin triggers `moveend` continuously, so we need to stop this
+    // whole function being called continuously in order to prevent jitter when panning or
+    // zomming the map.
+    this.mapMovementThrottle = setTimeout(() => { this.mapMovementThrottle = null; }, 500);
+  },
+
+  mapViewToString: function () {
+    const center = this.mainMap.getCenter();
+    const zoom = Math.round(this.mainMap.getZoom());
+    return [center.lng, center.lat, zoom].join(',');
+  },
+
   render: function () {
     return (
       <section className='section section--page'>
@@ -140,7 +192,7 @@ var ImagerySearch = React.createClass({
               <p>Explore and compare existing sources of imagery prior to requesting additional imagery.</p>
             </div>
             <div className='section__actions'>
-            {this.renderAddRequestLink()}
+              {this.renderAddRequestLink()}
             </div>
           </div>
         </header>
