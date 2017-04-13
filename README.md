@@ -1,4 +1,4 @@
-<h1 align="center">Imagery Requests</h1>
+<h1 align="center">Imagery Coordination</h1>
 
 ## Installation and Usage
 
