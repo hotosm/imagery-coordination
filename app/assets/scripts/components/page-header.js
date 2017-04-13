@@ -60,7 +60,7 @@ var PageHeader = React.createClass({
             <h2 className='toggle-menu'><a href='#global-menu' className={c({'button--active': this.state.menu})} title='Show/hide menu' onClick={this.onMenuClick}><span>Browse</span></a></h2>
             <div className={c('menu-wrapper', {'menu-wrapper--open': this.state.menu})} ref='menu'>
               <ul className='global-menu' id='global-menu'>
-                <li><Link to='/imagery-search' className='global-menu-item'><span>Imagery search</span></Link></li>
+                <li><Link to='/imagery-search' className='global-menu-item'><span>Imagery Search</span></Link></li>
                 {loggedIn ? this.renderUserProfileLink() : null }
                 <li><Link to='/about' className='global-menu-item' title='About this website'><span>About</span></Link></li>
                 <li>
