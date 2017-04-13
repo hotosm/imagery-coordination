@@ -9,7 +9,7 @@ import store from './store';
 export default class AuthService {
   constructor (clientId, domain) {
     const options = {
-      allowSignUp: false,
+      allowSignUp: true,
       autoclose: true,
       auth: {
         redirect: false,
