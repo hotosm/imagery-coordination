@@ -47,7 +47,13 @@ var PageHeader = React.createClass({
         <div className='inner'>
           <div className='page__headline'>
             <h1 className='page__title'>
-              <Link to='/' title='Visit homepage'>HOTOSM Imagery Coord</Link>
+              <Link to='/' title='Visit homepage'>
+                <span className='mast-logo mast-logo--h'>
+                  <img className='mast-logo__image' src='assets/graphics/layout/oam-logo-h-pos.svg' width='832' height='160' alt='OpenAerialMap logo' />
+                  <strong className='mast-logo__text'>OAM</strong>
+                  <small className='mast-logo__label'>Imagery Coordination</small>
+                </span>
+              </Link>
             </h1>
           </div>
           <nav className='page__prime-nav' role='navigation'>
