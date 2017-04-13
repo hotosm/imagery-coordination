@@ -1,10 +1,10 @@
 {
-  "name": "pacdid-imagery-request",
+  "name": "imagery-coordination",
   "version": "0.1.0",
-  "description": "Imagery Request",
+  "description": "Imagery Coordination",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hotosm/imagery-requests"
+    "url": "https://github.com/hotosm/imagery-coordination"
   },
   "author": {
     "name": "Development Seed",
@@ -12,7 +12,7 @@
   },
   "license": "",
   "bugs": {
-    "url": "https://github.com/hotosm/imagery-requests/issues"
+    "url": "https://github.com/hotosm/imagery-coordination/issues"
   },
   "homepage": "",
   "scripts": {
