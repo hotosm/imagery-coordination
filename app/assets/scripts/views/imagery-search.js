@@ -188,7 +188,7 @@ var ImagerySearch = React.createClass({
         <header className='section__header'>
           <div className='inner'>
             <div className='section__headline'>
-              <h1 className='section__title'>Compare imagery</h1>
+              <h1 className='section__title'>Search and Compare Imagery</h1>
               <p>Explore and compare existing sources of imagery prior to requesting additional imagery.</p>
             </div>
             <div className='section__actions'>

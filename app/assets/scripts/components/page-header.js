@@ -47,14 +47,20 @@ var PageHeader = React.createClass({
         <div className='inner'>
           <div className='page__headline'>
             <h1 className='page__title'>
-              <Link to='/' title='Visit homepage'>HOTOSM Imagery Coord</Link>
+              <Link to='/' title='Visit homepage'>
+                <span className='mast-logo mast-logo--h'>
+                  <img className='mast-logo__image' src='assets/graphics/layout/oam-logo-h-pos.svg' width='832' height='160' alt='OpenAerialMap logo' />
+                  <strong className='mast-logo__text'>OAM</strong>
+                  <small className='mast-logo__label'>Imagery Coordination</small>
+                </span>
+              </Link>
             </h1>
           </div>
           <nav className='page__prime-nav' role='navigation'>
             <h2 className='toggle-menu'><a href='#global-menu' className={c({'button--active': this.state.menu})} title='Show/hide menu' onClick={this.onMenuClick}><span>Browse</span></a></h2>
             <div className={c('menu-wrapper', {'menu-wrapper--open': this.state.menu})} ref='menu'>
               <ul className='global-menu' id='global-menu'>
-                <li><Link to='/imagery-search' className='global-menu-item'><span>Imagery search</span></Link></li>
+                <li><Link to='/imagery-search' className='global-menu-item'><span>Imagery Search</span></Link></li>
                 {loggedIn ? this.renderUserProfileLink() : null }
                 <li><Link to='/about' className='global-menu-item' title='About this website'><span>About</span></Link></li>
                 <li>
