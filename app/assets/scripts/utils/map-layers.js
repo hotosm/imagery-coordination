@@ -27,7 +27,7 @@ const mapLayers = [
     type: 'raster',
     imagerySearch: true,
     name: 'Bing Satellite',
-    url: 'http://t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1398'
+    url: 'https://t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1398'
   }
 ];
 
