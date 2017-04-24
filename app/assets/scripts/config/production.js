@@ -8,5 +8,5 @@ module.exports = {
   auth0Domain: 'hotosm.auth0.com',
   mbToken: 'pk.eyJ1Ijoib3BlbmFlcmlhbG1hcCIsImEiOiJjaXl4MXkyZDMwMDB0MnhwN3c5b2I5MmtqIn0.-NsKzzY8CAFdKVAXqtC9Tg',
 
-  api: 'https://imagery-coordination.herokuapp.com'
+  api: 'http://coordination-api.hotosm.org'
 };

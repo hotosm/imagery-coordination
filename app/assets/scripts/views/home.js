@@ -209,7 +209,7 @@ var Home = React.createClass({
             <div className='section__headline'>
               <h1 className='section__title'>Imagery Coordination Service</h1>
               <div className='section__introduction'>
-                <p>Tracking and coordinating satellite and aerial imagery needs around the globe. View open requests below. Explore the search to determine needs.</p>
+                <p>Tracking and coordinating satellite and aerial imagery needs around the globe. Currently in beta. View open requests below or <Link to='/imagery-search'>explore the search</Link> to compare imagery.</p>
               </div>
             </div>
             {allowedUser ? (
