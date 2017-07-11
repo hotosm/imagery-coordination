@@ -1,5 +1,13 @@
 <h1 align="center">Imagery Coordination</h1>
 
+This repo is a new application for the coordination of imagery requests for HOT activations and other general non-activation imagery needs for humanitarian OSM mapping. The repo contains code for the application as well as an issue queue for discussions and addressing other needs related to the application.
+
+For any urgent request and to participate in or to speak with the imagery coordination group, join the live chat here [![join the chat at https://gitter.im/hotosm/imagery-requests](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hotosm/imagery-requests?) or email imagery-coord[AT]hotosm.org
+
+Go to https://coordination.openaerialmap.org to view open requests. 
+
+Please use the provided [template](https://github.com/hotosm/imagery-requests/blob/master/ISSUE_TEMPLATE.md) to submit a request in the [issue section](https://github.com/hotosm/imagery-requests/issues?q=is%3Aissue+is%3Aopen+label%3A%22Imagery+Request%22) of this repo.
+
 ## Installation and Usage
 
 The steps below will walk you through setting up your own instance of the imagery-request.
