@@ -59,9 +59,9 @@ export const FINISH_DELETE_TASK = 'FINISH_DELETE_TASK';
 export const SET_MAP_LAYER = 'SET_MAP_LAYER';
 export const RESET_MAP_LAYER = 'SET_MAP_LAYER';
 
-export const SET_SEARCH_MAP_BASELAYER = 'SET_SEARCH_MAP_BASELAYER';
 export const SET_SEARCH_MAP_CENTER = 'SET_SEARCH_MAP_CENTER';
 export const SET_SEARCH_MAP_ZOOM = 'SET_SEARCH_MAP_ZOOM';
+export const SET_SEARCH_MAP_BASELAYER = 'SET_SEARCH_MAP_BASELAYER';
 export const RESET_SEARCH_MAP = 'RESET_SEARCH_MAP';
 
 // User
@@ -339,21 +339,8 @@ export function resetMapBaseLayer () {
 }
 
 // Search Map
-
 export function resetSearchMap () {
   return { type: RESET_SEARCH_MAP };
-}
-
-export function setSearchMapBaseLayer (layer) {
-  return { type: SET_SEARCH_MAP_BASELAYER, layer };
-}
-
-export function setSearchMapBaseCenter (center) {
-  return { type: SET_SEARCH_MAP_CENTER, center };
-}
-
-export function setSearchMapBaseZoom (zoom) {
-  return { type: SET_SEARCH_MAP_ZOOM, zoom };
 }
 
 // Fetcher function
