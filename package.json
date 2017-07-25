@@ -20,7 +20,7 @@
     "serve": "DS_ENV=development gulp serve",
     "build": "NODE_ENV=production gulp",
     "lint": "eslint app/assets/scripts/ --ext .js",
-    "test": "browserify test/test.js -t babelify -d | smokestack -b chrome"
+    "test": "browserify test/test.js -d | smokestack -b chrome"
   },
   "browserify": {
     "transform": [
@@ -30,7 +30,8 @@
           "presets": [
             "es2015",
             "react"
-          ]
+          ],
+          "plugins": ["rewire"]
         }
       ],
       "require-globify",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "babel": "^6.5.2",
+    "babel-plugin-rewire": "^1.1.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.11.1",
     "babelify": "^7.3.0",

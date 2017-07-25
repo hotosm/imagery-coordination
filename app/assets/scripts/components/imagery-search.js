@@ -1,6 +1,7 @@
 import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { diff } from 'mapbox-gl-style-spec';
+import AddRequestLink from './add-request-link';
 
 const ImagerySearch = React.createClass({
   propTypes: {
@@ -106,6 +107,9 @@ const ImagerySearch = React.createClass({
             <div className='section__headline'>
               <h1 className='section__title'>Search and Compare Imagery</h1>
               <p>Explore and compare existing sources of imagery prior to requesting additional imagery.</p>
+            </div>
+            <div className='section__actions'>
+              <AddRequestLink/>
             </div>
           </div>
         </header>

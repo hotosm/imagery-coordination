@@ -3,6 +3,8 @@
 import test from 'tape';
 import imagerySearchReducerTest from
     './reducers/imagery-search-test';
+import addRequestLinkTest from
+    './components/add-request-link-test';
 
 test('Shutdown', (t) => {
   t.pass('Shutting down');
