@@ -9,6 +9,7 @@ env:
   - secure: "CopIliyM3lwf1eZe2V7CtSLojETwDV7hs0lwZIx4rlJvMPqs+N2LPDC1NDqw8mU9/4lIYzMbAN7v/H9wn0jdr8T0KI06ErZkVOxOyidGxKg5k1cMaXP3AIvo2lsWlSwm67L78WuRzQ0oFJ1cMLM4sJx6s7Z6sAO3/nymcar4nhw="
 
 addons:
+  chrome: stable
   apt:
     sources:
       - ubuntu-toolchain-r-test
