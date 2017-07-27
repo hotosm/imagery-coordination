@@ -1,0 +1,180 @@
+/* ==========================================================================
+   Task: Content
+   ========================================================================== */
+
+.section--tasks {
+  .section__title {
+    @include media(medium-up) {
+      @include col(7/12);
+    }
+  }
+}
+
+
+.section__subtitle {
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.tasks-stats {
+  @include media(medium-up) {
+    @include col(5/12);
+    margin-top: 0.5rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+    @include media(medium-up) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .stats-list {
+    @extend .clearfix;
+    padding: 0;
+    margin: 0;
+
+    &__item {
+      list-style: none;
+      float: left;
+      margin-right: 1rem;
+      font-size: 0.875rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      strong {
+        font-size: 1.5rem;
+        @include media(medium-up) {
+          font-size: 2rem;
+        }
+        display: block;
+        text-align: center;
+      }
+    }
+  }
+}
+
+
+.task-author,
+.task-assignee {
+  margin-bottom: 0;
+}
+
+.task-updates {
+  &__list {
+    padding: 0;
+  }
+
+  &__item {
+    list-style: none;
+    margin-top: 2rem;
+    max-width: 45rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .update-status {
+    margin-bottom: 0;
+  }
+
+  .update-comment {
+    border-radius: $base-border-radius;
+    background: tint($base-color, 96%);
+    padding: $global-spacing;
+  }
+}
+
+
+.tasks-list {
+  @extend .clearfix;
+  padding: 0;
+  margin-bottom: 2rem;
+
+  &__item {
+    list-style: none;
+    margin-top: 1rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+.task {
+  box-shadow: 0 3px 0 0 $base-semi-alpha-color, 0 0 0 1px $base-alpha-color;
+  border-radius: $base-border-radius;
+  display: flex;
+
+  &__media {
+    background: tint($base-color, 96%);
+    width: 30%; 
+  }
+
+  &__content {
+    width: 70%; 
+  }
+
+  &__header {
+    // background: tint($base-color, 96%);
+    padding: $global-spacing $global-spacing 0 $global-spacing;
+  }
+
+  &__body {
+    padding: 0 $global-spacing $global-spacing $global-spacing;
+
+    p {
+      margin-bottom: 0.5rem;
+    }
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    @extend .heading--small;
+    margin: 0;
+  }
+
+  &__subtitle {
+    text-transform: uppercase;
+    margin-bottom: 0;
+    font-size: 0.875rem;
+  }
+
+  &__actions {
+    padding: 0 $global-spacing $global-spacing $global-spacing;
+  }
+
+  .task-author {
+    margin-bottom: 0;
+  }
+
+
+  .meta-info {
+    font-size: 0.875rem;
+  }
+}
+
+.task-updates-form {
+  box-shadow: 0 3px 0 0 $base-semi-alpha-color, 0 0 0 1px $base-alpha-color;
+  padding: $global-spacing;
+  border-radius: $base-border-radius;
+  max-width: 45rem;
+  margin-bottom: 2rem;
+
+  .status-indicator {
+    margin-bottom: 0;
+  }
+}
+
+.task-form {
+  .form__group {
+    max-width: 45rem;
+  }
+}

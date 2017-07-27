@@ -1,0 +1,62 @@
+/* ==========================================================================
+   Request: Content
+   ========================================================================== */
+
+.section--page {
+  .section__header {
+    padding: 2rem 0;
+  }
+}
+
+.button-add-task {
+  margin-left: 1rem;
+}
+
+.tasks-list-container {
+  margin-bottom: 2rem;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .tasks-list__item {
+    @include media(medium-up) {
+      @include col(6/12, $cycle: 2);
+      margin-top: 2rem;
+
+      &:nth-child(2) {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+.request-form {
+  max-width: 45rem;
+}
+
+.date-selector {
+  @extend .clearfix;
+
+  &__picker {
+    @include media(small-up) {
+      @include span(5/11);
+    }
+  }
+
+  &__sep {
+    margin: 0;
+    line-height: 2rem;
+    height: 2rem;
+    text-align: center;
+    font-weight: $base-font-bold;
+    @include media(small-up) {
+      @include span(1/11);
+      text-align: center;
+    }
+  }
+}

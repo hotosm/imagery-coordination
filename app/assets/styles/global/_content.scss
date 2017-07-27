@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Global: content
+   ========================================================================== */
+
+.details {
+  @extend .clearfix;
+  &__col--main {
+    @include col(12/12);
+    @include media(large-up) {
+      @include col(8/12);
+    }
+  }
+
+  &__col--sec {
+    @include col(12/12);
+    @include media(large-up) {
+      @include col(4/12);
+    }
+  }
+
+  dl {
+    margin-bottom: 0;
+    
+    dd {
+      margin-bottom: 1rem;
+    }
+  }
+}

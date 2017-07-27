@@ -1,0 +1,45 @@
+/* ==========================================================================
+   Dashboard: content
+   ========================================================================== */
+
+.dashboard__col--main {
+  @include media(medium-up) {
+    @include col(6/12);
+  }
+}
+
+.dashboard__col--sec {
+  display: none;
+  @include media(medium-up) {
+    display: block;
+    @include col(6/12);
+  }
+}
+
+.tabbed-nav {
+  @extend .clearfix;
+  padding: 0;
+  @include media(medium-up) {
+    display: block;
+    @include col(6/12);
+  }
+
+  &__item {
+    list-style: none;
+    @include span(6/12);
+
+    border-radius: $base-border-radius;
+
+    a {
+      display: block;
+      text-align: center;
+      padding: 0.5rem 0;
+      background: tint($base-color, 96%);
+    }
+
+    &--active a {
+      background: #fff;
+      font-weight: $base-font-bold;
+    }
+  }
+}
