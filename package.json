@@ -31,7 +31,9 @@
             "es2015",
             "react"
           ],
-          "plugins": ["rewire"]
+          "plugins": [
+            "rewire"
+          ]
         }
       ],
       "require-globify",
@@ -83,6 +85,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
+    "@mapbox/geo-viewport": "^0.2.2",
+    "@mapbox/geojson-extent": "^0.3.2",
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/mapbox-gl-draw": "^1.0.0",
     "@turf/bbox": "^3.7.0",
@@ -95,7 +99,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jwt-decode": "^2.1.0",
     "lodash": "^4.17.2",
-    "mapbox-gl": "^0.38.0",
+    "mapbox-gl": "^0.39.1",
     "mapbox-gl-style-spec": "^8.11.0",
     "moment": "^2.17.0",
     "numeral": "^1.5.6",
@@ -105,6 +109,7 @@
     "react-addons-create-fragment": "^15.4.0",
     "react-dom": "^15.4.0",
     "react-linkify": "^0.1.3",
+    "react-measure": "^2.0.2",
     "react-paginate": "^2.2.3",
     "react-redux": "^4.4.6",
     "react-router": "^3.0.0",
@@ -112,8 +117,10 @@
     "react-router-scroll": "^0.4.1",
     "react-widgets": "^3.4.5",
     "redux": "^3.6.0",
+    "redux-devtools-extension": "^2.13.2",
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.1.0",
+    "viewport-mercator-project": "^4.1.1",
     "xmldom": "^0.1.27"
   }
 }

@@ -2,6 +2,7 @@ import React, { PropTypes as T } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { diff } from 'mapbox-gl-style-spec';
 import AddRequestLink from './add-request-link';
+import { addMapControls } from '../utils/map';
 
 const ImagerySearch = React.createClass({
   propTypes: {
@@ -29,19 +30,7 @@ const ImagerySearch = React.createClass({
       container: this.refs.mainMap,
       style: this.props.mainMapStyle
     });
-    this.mainMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // disable map rotation using right click + drag
-    this.mainMap.dragRotate.disable();
-    // disable map rotation using touch rotation gesture
-    this.mainMap.touchZoomRotate.disableRotation();
-
-    // Hack the controls to match the style.
-    let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
-    controls.classList.add('button-group', 'button-group--vertical');
-    controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
-    controls.querySelector('.mapboxgl-ctrl-compass').remove();
-
+    addMapControls(this.mainMap);
     this.maps = this.props.imageryStyles.map((imagerySearchStyle, i) => {
       const map = new mapboxgl.Map({
         container: this.refs[`mapThumb${i}`],

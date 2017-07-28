@@ -24,7 +24,12 @@ export function setupMap (container, layerURL) {
     center: [0, 20],
     zoom: 1
   });
+  addMapControls(map);
 
+  return map;
+}
+
+export function addMapControls (map) {
   map.addControl(new mapboxgl.NavigationControl(), 'top-left');
   // disable map rotation using right click + drag
   map.dragRotate.disable();
@@ -39,6 +44,4 @@ export function setupMap (container, layerURL) {
   controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
   controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
   controls.querySelector('.mapboxgl-ctrl-compass').remove();
-
-  return map;
 }

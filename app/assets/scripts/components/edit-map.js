@@ -1,37 +1,67 @@
+/* eslint no-return-assign: 0 */
 'use strict';
 import React, { PropTypes as T } from 'react';
-import GLDraw from '@mapbox/mapbox-gl-draw';
-import extent from '@turf/bbox';
-import _ from 'lodash';
-
-import MapLayers from './map-layers';
+import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
+import mapboxgl from 'mapbox-gl';
+import Draw from '@mapbox/mapbox-gl-draw';
+import Measure from 'react-measure';
+import { diff } from 'mapbox-gl-style-spec';
+import { addMapControls } from '../utils/map';
 import { mbStyles } from '../utils/mapbox-styles';
-import * as mapUtils from '../utils/map';
+import { setMapLocation, setMapSize, setTaskGeoJSON,
+  setDrawMode, setSelectedFeatureId } from '../actions/map-actions';
+
+const simpleSelect = 'simple_select';
+const directSelect = 'direct_select';
+const featureId = 'task-feature';
 
 const EditMap = React.createClass({
   displayName: 'EditMap',
 
   propTypes: {
-    selectedLayer: T.object,
+    style: T.object.isRequired,
+    taskGeojson: T.object,
+    drawMode: T.string,
+    selectedFeatureId: T.string,
+    setMapLocation: T.func.isRequired,
+    setMapSize: T.func.isRequired,
+    setTaskGeoJSON: T.func.isRequired,
+    setDrawMode: T.func.isRequired,
+    setSelectedFeatureId: T.func.isRequired,
+    //selectedLayer: T.object,
     mapId: T.string,
-    className: T.string,
-    onFeatureDraw: T.func,
-    onFeatureRemove: T.func,
-    onBaseLayerSelect: T.func,
-    geometry: T.object,
-    otherTasks: T.object
+    className: T.string
+    //onFeatureDraw: T.func,
+    //onFeatureRemove: T.func,
+    //onBaseLayerSelect: T.func,
+    //geometry: T.object,
+    //otherTasks: T.object
   },
 
-  map: null,
-  drawPlugin: null,
-  // Flag to control when an interaction is the result of drawing.
-  wasDraw: null,
-
   componentDidMount: function () {
-    this.map = mapUtils.setupMap(this.refs.map, this.props.selectedLayer.url);
+    this.map = new mapboxgl.Map({
+      container: this.mapDiv,
+      style: this.props.style
+    });
+    addMapControls(this.map);
     this.addDraw();
 
-    this.map.on('load', this.onMapLoaded);
+    this.map.on('moveend', (event) => {
+      if (event.originalEvent) {
+        const center = this.map.getCenter();
+        const zoom = this.map.getZoom();
+        const location = { lng: center.lng, lat: center.lat, zoom };
+        //this.props.setMapLocation(location);
+      }
+    });
+    this.map.on('load', (event) => {
+      this.removeFeature(this.props.taskGeojson, this.props.drawMode);
+      if (this.props.taskGeojson) {
+        this.addFeature(this.props.taskGeojson,
+                            this.props.drawMode, this.props.selectedFeatureId);
+      }
+    });
   },
 
   componentWillUnmount: function () {
@@ -39,198 +69,147 @@ const EditMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    const lastAOI = this.props.geometry;
-    const nextAOI = nextProps.geometry;
-
-    if (!nextAOI) {
-      this.drawPlugin.deleteAll();
-      this.startDrawing();
-    }
-
-    if ((lastAOI && nextAOI && nextAOI.geometry.coordinates[0] && !_.isEqual(lastAOI, nextAOI)) ||
-     (!lastAOI && nextAOI && nextAOI.geometry.coordinates)) {
-      this.loadExistingSource(nextAOI);
-    }
-
-    if (this.map._loaded && !_.isEqual(this.props.otherTasks, nextProps.otherTasks)) {
-      this.addShadowFeatures(nextProps.otherTasks);
-    }
-
-    if (nextProps.selectedLayer.id !== this.props.selectedLayer.id) {
-      this.map
-        .removeSource('raster-tiles')
-        .addSource('raster-tiles', {
-          'type': 'raster',
-          'tiles': [nextProps.selectedLayer.url],
-          'tileSize': 256
-        });
-    }
-  },
-
-  onMapLoaded: function () {
-    const trashIcon = document.querySelector('.mapbox-gl-draw_trash');
-    let trashIconClasses = trashIcon.classList;
-    trashIconClasses.add('disabled');
-    trashIconClasses.remove('active');
-
-    trashIcon.addEventListener('click', () => {
-      if (this.drawPlugin.getMode() === 'direct_select') {
-        this.drawPlugin.deleteAll();
-        this.startDrawing();
-        trashIconClasses.add('disabled');
-        trashIconClasses.remove('active');
-      }
+    const changes = diff(this.props.style, nextProps.style);
+    changes.forEach(change => {
+      this.map[change.command].apply(this.map, change.args);
     });
-
-    const prevAOI = this.props.geometry;
-    prevAOI && prevAOI.geometry.coordinates
-      ? this.loadExistingSource(prevAOI)
-      : this.addNewSource();
-
-    this.addShadowFeatures(this.props.otherTasks);
+    this.removeFeature(nextProps.taskGeojson, nextProps.drawMode);
+    if (nextProps.taskGeojson) {
+      this.addFeature(nextProps.taskGeojson, nextProps.drawMode,
+                              nextProps.selectedFeatureId);
+    }
+    this.activateControls(nextProps);
   },
 
-  addShadowFeatures: function (otherTasks) {
-    if (otherTasks !== null) {
-      if (this.map.getSource('shadow-features')) {
-        this.map.removeSource('shadow-features');
+  addFeature: function (feature, mode, selectedFeatureId) {
+    this.draw.add(feature);
+    // Initial changeMode is necessary, needs research.
+    this.draw.changeMode(simpleSelect);
+    if (mode) {
+      if (mode === 'direct_select' && selectedFeatureId) {
+        this.draw.changeMode(mode, { featureId: selectedFeatureId });
       }
-
-      this.map.addSource('shadow-features', {
-        type: 'geojson',
-        data: otherTasks
-      });
-
-      if (!this.map.getLayer('shadow-features')) {
-        this.map.addLayer({
-          'id': 'shadow-features',
-          'type': 'fill',
-          'source': 'shadow-features',
-          'paint': {
-            'fill-color': '#000',
-            'fill-opacity': 0.16
-          }
-        });
+      if (mode === simpleSelect && selectedFeatureId) {
+        this.draw.changeMode(mode, { featureIds: [selectedFeatureId] });
       }
-
-      // If there's nothing drawn, zoom to the shadow features.
-      if (!this.props.geometry) {
-        this.map.fitBounds(extent(otherTasks), {
-          padding: 30,
-          duration: 0
-        });
+      if (mode === simpleSelect && !selectedFeatureId) {
+        this.draw.changeMode(mode);
       }
+    }
+  },
+
+  removeFeature: function (feature, mode) {
+    if (!feature) {
+      this.draw.deleteAll();
+      this.draw.changeMode(mode);
     }
   },
 
   addDraw: function () {
-    this.drawPlugin = new GLDraw({
+    this.draw = new Draw({
       displayControlsDefault: false,
       controls: {
         polygon: true,
         trash: true
       },
-      styles: mbStyles
+      //styles: mbStyles,
+      defaultMode: 'draw_polygon'
     });
-    this.map.addControl(this.drawPlugin);
-    this.map.on('draw.create', () => this.handleDraw());
-    this.map.on('draw.delete', () => this.handleDraw());
-    this.map.on('draw.update', () => this.handleDraw());
-    this.map.on('draw.selectionchange', () => {
-      const selected = this.drawPlugin.getSelectedIds();
-      let trashIconClasses = document.querySelector('.mapbox-gl-draw_trash').classList;
-      if (selected.length) {
-        this.drawPlugin.changeMode('direct_select', {featureId: selected[0]});
-        trashIconClasses.add('active');
-        trashIconClasses.remove('disabled');
-      } else {
-        trashIconClasses.add('disabled');
-        trashIconClasses.remove('active');
+    this.map.addControl(this.draw);
+    this.map.on('draw.update', (event) => {
+      this.props.setTaskGeoJSON(Object.assign({}, event.features[0]));
+    });
+    this.map.on('draw.modechange', (event) => {
+      this.props.setDrawMode(event.mode);
+    });
+    this.map.on('draw.selectionchange', (event) => {
+      if (this.props.drawMode === 'simple_select' && event.features.length === 0 &&
+         this.props.selectedFeatureId) {
+        this.props.setSelectedFeatureId(undefined);
+      }
+      if (this.props.drawMode === 'simple_select' && event.features.length > 0 &&
+          !this.props.selectedFeatureId) {
+        this.props.setSelectedFeatureId(event.features[0].id);
       }
     });
-    this.startDrawing();
-  },
-
-  loadExistingSource: function (aoi) {
-    aoi = Object.assign({}, aoi);
-    aoi.id = 'edit-layer';
-    this.limitDrawing();
-    !this.wasDraw && this.zoomToFeature(aoi);
-    this.wasDraw = false;
-    this.drawPlugin.set({
-      'type': 'FeatureCollection',
-      'features': [aoi]
+    this.map.on('draw.create', (event) => {
+      this.draw.deleteAll();
+      this.props.setTaskGeoJSON(
+        Object.assign({}, event.features[0], { id: featureId })
+      );
     });
-  },
-
-  addNewSource: function () {
-    this.map.addSource('edit-layer', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: []
+    const trashIcon = ReactDOM.findDOMNode(this)
+      .querySelector('.mapbox-gl-draw_trash');
+    trashIcon.addEventListener('click', () => {
+      if (this.props.drawMode === directSelect) {
+        this.props.setTaskGeoJSON(undefined);
       }
     });
-    this.addLayer();
   },
 
-  addLayer: function () {
-    this.map.addLayer({
-      'id': 'edit-layer',
-      'type': 'fill',
-      'source': 'edit-layer',
-      'layout': {},
-      'filter': [
-        'all',
-        ['==', '$type', 'Polygon']
-      ]
-    });
-  },
+  activateControls: function (props) {
+    const disabled = 'disabled';
+    const active = 'active';
+    const trashIconClasses = ReactDOM.findDOMNode(this)
+      .querySelector('.mapbox-gl-draw_trash').classList;
+    if (props.selectedFeatureId) {
+      trashIconClasses.add(active);
+      trashIconClasses.remove(disabled);
+    } else {
+      trashIconClasses.add(disabled);
+      trashIconClasses.remove(active);
+    }
 
-  zoomToFeature: function (feat) {
-    this.map.fitBounds(extent(feat), {
-      padding: 15,
-      duration: 0
-    });
-  },
-
-  startDrawing: function () {
-    let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
-    drawIconClasses.remove('disabled');
-    drawIconClasses.add('active');
-  },
-
-  limitDrawing: function () {
-    let drawIconClasses = document.querySelector('.mapbox-gl-draw_polygon').classList;
-    drawIconClasses.remove('active');
-    drawIconClasses.add('disabled');
-  },
-
-  handleDraw: function () {
-    const edits = this.drawPlugin.getAll();
-    const editCount = edits.features.length;
-
-    if (editCount === 0) {
-      this.startDrawing();
-      this.props.onFeatureRemove();
-    } else if (editCount === 1) {
-      this.limitDrawing();
-      // Prevent zoom to feature when is the result of edition.
-      this.wasDraw = true;
-      this.props.onFeatureDraw(edits);
+    const drawIconClasses = ReactDOM.findDOMNode(this)
+      .querySelector('.mapbox-gl-draw_polygon').classList;
+    if (props.taskGeojson) {
+      drawIconClasses.add(disabled);
+      drawIconClasses.add(active);
+    } else {
+      drawIconClasses.add(active);
+      drawIconClasses.remove(disabled);
     }
   },
 
   render: function () {
     return (
-      <div className={this.props.className}>
-        <div className='map-layers'>
-          <MapLayers selectedLayer={this.props.selectedLayer} onBaseLayerSelect={this.props.onBaseLayerSelect} />
-        </div>
-        <div id={this.props.mapId} ref='map'></div>
-      </div>
+      <Measure onResize={(contentRect) => {
+        this.props.setMapSize(contentRect.entry);
+      }}>
+      {({ measureRef }) =>
+        <div
+          ref={measureRef}
+          className={this.props.className}>
+          <div className='map-layers'>
+          </div>
+          <div
+            id={this.props.mapId}
+            ref={(mapDiv) => {
+              this.mapDiv = mapDiv;
+            }}/>
+          </div>
+      }
+      </Measure>
     );
   }
 });
 
-module.exports = EditMap;
+function mapStateToProps (state) {
+  return {
+    taskGeojson: state.map.taskGeojson,
+    style: state.map.style,
+    drawMode: state.map.drawMode,
+    selectedFeatureId: state.map.selectedFeatureId
+  };
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    setMapLocation: (location) => dispatch(setMapLocation(location)),
+    setMapSize: (size) => dispatch(setMapSize(size)),
+    setTaskGeoJSON: (taskGeojson) => dispatch(setTaskGeoJSON(taskGeojson)),
+    setDrawMode: (drawMode) => dispatch(setDrawMode(drawMode)),
+    setSelectedFeatureId: (id) => dispatch(setSelectedFeatureId(id))
+  };
+}
+module.exports = connect(mapStateToProps, mapDispatchToProps)(EditMap);

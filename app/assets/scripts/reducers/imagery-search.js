@@ -1,5 +1,7 @@
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { getImagerySearchLayers } from '../utils/map-layers';
+import styleManager from '../utils/styleManager';
+
 import { SET_SEARCH_MAP_CENTER, SET_SEARCH_MAP_ZOOM,
   SET_SEARCH_MAP_BASELAYER } from '../actions/actionTypes';
 
@@ -7,35 +9,10 @@ const SET_MAP_LOCATION = 'SET_MAP_LOCATION';
 const baseLayerId = 'satellite';
 const imagerySearchLayers = getImagerySearchLayers();
 const baseLayer = imagerySearchLayers.find(m => m.id === baseLayerId);
-const mainMapStyle = {
-  'version': 8,
-  'name': baseLayer.name,
-  'sources': {
-    'sourceName': {
-      'type': 'raster',
-      'tiles': [baseLayer.url],
-      'tileSize': 256
-    }
-  },
-  'layers': [{
-    'id': 'tiles',
-    'type': 'raster',
-    'source': 'sourceName',
-    'minzoom': 0,
-    'maxzoom': 22
-  }],
-  center: [0, 0],
-  zoom: 2
-};
+const mainMapStyle = styleManager.getInitialStyle(baseLayer.name, baseLayer.url);
 
 const imageryStyles = imagerySearchLayers.map(m => {
-  const style = Object.assign({}, mainMapStyle);
-  style.name = m.name;
-  style.sources = { sourceName: Object.assign(
-    {}, mainMapStyle.sources.sourceName, { tiles: [m.url] }
-  )};
-  style.layers = mainMapStyle.layers.slice(0, mainMapStyle.layers.length + 1);
-  return style;
+  return styleManager.getInitialStyle(m.name, m.url);
 });
 
 const initialState = {
@@ -52,19 +29,16 @@ function freshState (state) {
 }
 
 function newExtentStyle (templateStyle, action) {
-  const newStyle = Object.assign({}, templateStyle);
   if (action.type === SET_SEARCH_MAP_CENTER) {
-    newStyle.center = [action.center.lng, action.center.lat];
+    return styleManager.setCenter(templateStyle, action.center);
   }
   if (action.type === SET_SEARCH_MAP_ZOOM) {
-    newStyle.zoom = action.zoom;
+    return styleManager.setZoom(templateStyle, action.zoom);
   }
   if (action.type === SET_MAP_LOCATION) {
-    newStyle.center = [action.center.lng, action.center.lat];
-    newStyle.zoom = action.zoom;
+    return styleManager.setCenter(styleManager.setZoom(templateStyle, action.zoom),
+                                  action.center);
   }
-
-  return newStyle;
 }
 
 function newExtentState (state, action) {
@@ -81,14 +55,10 @@ function newExtentState (state, action) {
 function newMainMapState (state, index) {
   const newState = freshState(state);
   newState.selectedBase = index;
-  const newMainMapStyle = Object.assign({}, state.mainMapStyle);
   const selectedBase = newState.imageryStyles[index];
-  newMainMapStyle.name = selectedBase.name;
-  newMainMapStyle.sources = { sourceName: Object.assign(
-    {}, state.mainMapStyle.sources.sourceName,
-      { tiles: selectedBase.sources.sourceName.tiles.slice(0, 1) }
-  )};
-  newState.mainMapStyle = newMainMapStyle;
+  const url = selectedBase.sources.rasterSource.tiles[0];
+  newState.mainMapStyle = styleManager.setSource(selectedBase,
+                                                 selectedBase.name, url);
   return newState;
 }
 
