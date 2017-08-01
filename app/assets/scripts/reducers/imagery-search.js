@@ -9,10 +9,11 @@ const SET_MAP_LOCATION = 'SET_MAP_LOCATION';
 const baseLayerId = 'satellite';
 const imagerySearchLayers = getImagerySearchLayers();
 const baseLayer = imagerySearchLayers.find(m => m.id === baseLayerId);
-const mainMapStyle = styleManager.getInitialStyle(baseLayer.name, baseLayer.url);
+const mainMapStyle =
+  styleManager.getInitialStyle(baseLayer.name, baseLayer.url, baseLayer.type);
 
 const imageryStyles = imagerySearchLayers.map(m => {
-  return styleManager.getInitialStyle(m.name, m.url);
+  return styleManager.getInitialStyle(m.name, m.url, m.type);
 });
 
 const initialState = {
@@ -58,7 +59,9 @@ function newMainMapState (state, index) {
   const selectedBase = newState.imageryStyles[index];
   const url = selectedBase.sources.rasterSource.tiles[0];
   newState.mainMapStyle = styleManager.setSource(selectedBase,
-                                                 selectedBase.name, url);
+                                                 selectedBase.name,
+                                                 url,
+                                                 'raster');
   return newState;
 }
 

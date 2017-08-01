@@ -14,7 +14,7 @@ import { validateGeoJSONPolygon } from '../utils/features';
 momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
-  fetchRequest, invalidateRequest, deleteTask, setMapBaseLayer, fetchRequestTasks } from '../actions';
+  fetchRequest, invalidateRequest, deleteTask, fetchRequestTasks } from '../actions';
 
 import EditMap from '../components/edit-map';
 

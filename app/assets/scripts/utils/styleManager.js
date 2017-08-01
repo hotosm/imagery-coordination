@@ -4,9 +4,14 @@ import mapboxgl from 'mapbox-gl';
 import { PerspectiveMercatorViewport } from 'viewport-mercator-project';
 import hotStyle from './hotStyle';
 
+const raster = 'raster';
+const vector = 'vector';
+const rasterLayerId = 'tiles';
+const shadowFeaturesLayerId = 'shadow-features';
+
 const templateStyle = {
   'version': 8,
-  'name': 'name',
+  'name': 'rasterTemplate',
   'sources': {
     'rasterSource': {
       'type': 'raster',
@@ -25,20 +30,23 @@ const templateStyle = {
     }
   },
   'layers': [{
-    'id': 'tiles',
+    'id': rasterLayerId,
     'type': 'raster',
     'source': 'rasterSource',
     'minzoom': 0,
-    'maxzoom': 22
+    'maxzoom': 22,
+    'layout': {
+      'visibility': 'visible'
+    }
   },
   {
-    'id': 'shadow-features',
+    'id': shadowFeaturesLayerId,
     'type': 'fill',
     'source': 'geojsonSource',
     'layout': {},
     'paint': {
-      'fill-color': '#000',
-      'fill-opacity': 0.16
+      'fill-color': '#af92d4',
+      'fill-opacity': 0.4
     }
   }],
   center: [0, 0],
@@ -47,50 +55,59 @@ const templateStyle = {
 
 const styleManager = {};
 
-styleManager.getInitialStyle = (name, url) => {
+styleManager.getInitialStyle = (name, url, type) => {
   if (!name) {
     return hotStyle;
   } else {
-    return styleManager.setSource(templateStyle, name, url);
+    return styleManager.setSource(templateStyle, name, url, type);
   }
 };
 
-styleManager.setSource = (prevStyle, name, url) => {
+styleManager.setSource = (prevStyle, name, url, type) => {
+  const setVisibility = (layer, visibility) => {
+    return Object.assign({}, layer, {
+      layout: Object.assign({}, layer.layout, { visibility })
+    });
+  };
+  const newLayers = prevStyle.layers.map((layer) => {
+    let newLayer;
+    if (type === raster) {
+      if (layer.id === rasterLayerId || layer.id === shadowFeaturesLayerId) {
+        newLayer = setVisibility(layer, 'visible');
+      } else {
+        newLayer = setVisibility(layer, 'none');
+      }
+    }
+    if (type === vector) {
+      if (layer.id === rasterLayerId) {
+        newLayer = setVisibility(layer, 'none');
+      } else {
+        newLayer = setVisibility(layer, 'visible');
+      }
+    }
+    return newLayer;
+  });
+
   const style = Object.assign({}, prevStyle, {
     sources: Object.assign({}, prevStyle.sources, {
       rasterSource: Object.assign({}, prevStyle.sources.rasterSource, {
         tiles: [url]
       })
     }),
-    //layers: prevStyle.layers.slice(0, prevStyle.layers.length + 1),
-    //center: prevStyle.center.slice(0, 2),
+    layers: newLayers,
     name
   });
   return style;
 };
 
-const cloneStyle = (prevStyle) => {
-  //const style = Object.assign({}, prevStyle, {
-    //sources: Object.assign({}, prevStyle.sources, {
-      //rasterSource: Object.assign({}, prevStyle.sources.rasterSource, {
-        //tiles: [prevStyle.sources.rasterSource.tiles[0]]
-      //})
-    //}),
-    //layers: prevStyle.layers.slice(0, prevStyle.layers.length + 1),
-    //center: prevStyle.center.slice(0, 2)
-  //});
-  //return style;
-  return Object.assign({}, prevStyle);
-};
-
 styleManager.setZoom = (prevStyle, zoom) => {
-  const style = cloneStyle(prevStyle);
+  const style = Object.assign({}, prevStyle);
   style.zoom = zoom;
   return style;
 };
 
 styleManager.setCenter = (prevStyle, center) => {
-  const style = cloneStyle(prevStyle);
+  const style = Object.assign({}, prevStyle);
   style.center = [center.lng, center.lat];
   return style;
 };

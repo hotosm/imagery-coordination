@@ -87,6 +87,11 @@ export default {
       url: 'mapbox://mapbox.mapbox-terrain-v2,mapbox.mapbox-streets-v7',
       type: 'vector'
     },
+    rasterSource: {
+      type: 'raster',
+      tiles: ['https://api.mapbox.com/styles/v1/hot/civicyccw00bv2io77zqq401h/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNpdmlkM2lkMDAwYTAydXBnNXFkd2EwemsifQ.KPrUb_mKlPmHCR6LNrSihQ'],
+      tileSize: 256
+    },
     geojsonSource: {
       type: 'geojson',
       data: {
@@ -9821,13 +9826,23 @@ export default {
       'source-layer': 'country_label'
     },
     {
+      'id': 'tiles',
+      'type': 'raster',
+      'source': 'rasterSource',
+      'minzoom': 0,
+      'maxzoom': 22,
+      'layout': {
+        'visibility': 'none'
+      }
+    },
+    {
       'id': 'shadow-features',
       'type': 'fill',
       'source': 'geojsonSource',
       'layout': {},
       'paint': {
-        'fill-color': '#000',
-        'fill-opacity': 0.16
+        'fill-color': '#af92d4',
+        'fill-opacity': 0.4
       }
     }
   ],

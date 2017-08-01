@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl';
 import Draw from '@mapbox/mapbox-gl-draw';
 import Measure from 'react-measure';
 import { diff } from 'mapbox-gl-style-spec';
+import StyleSwitcher from './style-switcher';
 import { addMapControls } from '../utils/map';
 import { mbStyles } from '../utils/mapbox-styles';
 import { setMapLocation, setMapSize, setTaskGeoJSON,
@@ -141,7 +142,8 @@ const EditMap = React.createClass({
     const trashIcon = ReactDOM.findDOMNode(this)
       .querySelector('.mapbox-gl-draw_trash');
     trashIcon.addEventListener('click', () => {
-      if (this.props.drawMode === directSelect) {
+      if (this.props.drawMode === directSelect ||
+          this.props.drawMode === simpleSelect) {
         this.props.setTaskGeoJSON(undefined);
       }
     });
@@ -180,15 +182,17 @@ const EditMap = React.createClass({
         <div
           ref={measureRef}
           className={this.props.className}>
-          <div className='map-layers'>
-          </div>
           <div
             id={this.props.mapId}
             ref={(mapDiv) => {
               this.mapDiv = mapDiv;
             }}/>
+          <div className='map-layers'>
+            <StyleSwitcher/>
+          </div>
           </div>
       }
+
       </Measure>
     );
   }
