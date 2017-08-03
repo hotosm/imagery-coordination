@@ -2,7 +2,6 @@ import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { Dropdown } from 'oam-design-system';
 import classNames from 'classnames';
-import { setMapBaseLayer } from '../actions';
 
 const StyleSwitcher = (props) => {
   return (
@@ -64,17 +63,4 @@ Layer.propTypes = {
   onLayerSelect: T.func.isRequired
 };
 
-function mapStateToProps (state) {
-  return {
-    baseLayer: state.map.baseLayer,
-    baseLayers: state.map.baseLayers
-  };
-}
-
-function mapDispatchToProps (dispatch) {
-  return {
-    setMapBaseLayer: (layer) => dispatch(setMapBaseLayer(layer))
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(StyleSwitcher);
+export default StyleSwitcher;

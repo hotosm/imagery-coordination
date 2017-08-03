@@ -9,15 +9,17 @@ import Measure from 'react-measure';
 import { diff } from 'mapbox-gl-style-spec';
 import StyleSwitcher from './style-switcher';
 import { addMapControls } from '../utils/map';
-import { mbStyles } from '../utils/mapbox-styles';
+// import { mbStyles } from '../utils/mapbox-styles';
 import { setMapLocation, setMapSize, setTaskGeoJSON,
   setDrawMode, setSelectedFeatureId } from '../actions/map-actions';
+import { setMapBaseLayer } from '../actions';
 
-const simpleSelect = 'simple_select';
-const directSelect = 'direct_select';
-const featureId = 'task-feature';
+export const simpleSelect = 'simple_select';
+export const directSelect = 'direct_select';
+export const drawPolygon = 'draw_polygon';
+export const featureId = 'task-feature';
 
-const EditMap = React.createClass({
+export const EditMap = React.createClass({
   displayName: 'EditMap',
 
   propTypes: {
@@ -30,14 +32,14 @@ const EditMap = React.createClass({
     setTaskGeoJSON: T.func.isRequired,
     setDrawMode: T.func.isRequired,
     setSelectedFeatureId: T.func.isRequired,
-    //selectedLayer: T.object,
     mapId: T.string,
-    className: T.string
-    //onFeatureDraw: T.func,
-    //onFeatureRemove: T.func,
-    //onBaseLayerSelect: T.func,
-    //geometry: T.object,
-    //otherTasks: T.object
+    className: T.string,
+    baseLayers: T.array.isRequired,
+    baseLayer: T.shape({
+      id: T.string.isRequired,
+      name: T.string.isRequired
+    }).isRequired,
+    setMapBaseLayer: T.func.isRequired
   },
 
   componentDidMount: function () {
@@ -45,7 +47,7 @@ const EditMap = React.createClass({
       container: this.mapDiv,
       style: this.props.style
     });
-    addMapControls(this.map);
+    addMapControls(this.map, ReactDOM.findDOMNode(this));
     this.addDraw();
 
     this.map.on('moveend', (event) => {
@@ -188,7 +190,11 @@ const EditMap = React.createClass({
               this.mapDiv = mapDiv;
             }}/>
           <div className='map-layers'>
-            <StyleSwitcher/>
+            <StyleSwitcher
+              baseLayer={this.props.baseLayer}
+              baseLayers={this.props.baseLayers}
+              setMapBaseLayer={this.props.setMapBaseLayer}
+            />
           </div>
           </div>
       }
@@ -203,7 +209,9 @@ function mapStateToProps (state) {
     taskGeojson: state.map.taskGeojson,
     style: state.map.style,
     drawMode: state.map.drawMode,
-    selectedFeatureId: state.map.selectedFeatureId
+    selectedFeatureId: state.map.selectedFeatureId,
+    baseLayer: state.map.baseLayer,
+    baseLayers: state.map.baseLayers
   };
 }
 
@@ -213,7 +221,8 @@ function mapDispatchToProps (dispatch) {
     setMapSize: (size) => dispatch(setMapSize(size)),
     setTaskGeoJSON: (taskGeojson) => dispatch(setTaskGeoJSON(taskGeojson)),
     setDrawMode: (drawMode) => dispatch(setDrawMode(drawMode)),
-    setSelectedFeatureId: (id) => dispatch(setSelectedFeatureId(id))
+    setSelectedFeatureId: (id) => dispatch(setSelectedFeatureId(id)),
+    setMapBaseLayer: (layer) => dispatch(setMapBaseLayer(layer))
   };
 }
-module.exports = connect(mapStateToProps, mapDispatchToProps)(EditMap);
+export default connect(mapStateToProps, mapDispatchToProps)(EditMap);

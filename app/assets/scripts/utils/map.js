@@ -29,7 +29,7 @@ export function setupMap (container, layerURL) {
   return map;
 }
 
-export function addMapControls (map) {
+export function addMapControls (map, domNode) {
   map.addControl(new mapboxgl.NavigationControl(), 'top-left');
   // disable map rotation using right click + drag
   map.dragRotate.disable();
@@ -39,7 +39,13 @@ export function addMapControls (map) {
   map.scrollZoom.disable();
 
   // Hack the controls to match the style.
-  let controls = document.querySelector('.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group');
+  let controls;
+  const query = '.mapboxgl-ctrl-top-left .mapboxgl-ctrl-group';
+  if (domNode) {
+    controls = domNode.querySelector(query);
+  } else {
+    controls = document.querySelector(query);
+  }
   controls.classList.add('button-group', 'button-group--vertical');
   controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
   controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');

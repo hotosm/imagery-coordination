@@ -20,7 +20,7 @@
     "serve": "DS_ENV=development gulp serve",
     "build": "NODE_ENV=production gulp",
     "lint": "eslint app/assets/scripts/ --ext .js",
-    "test": "browserify test/test.js -d | smokestack -b chrome"
+    "test": "browserify test/test.js -x 'react/addons' -x 'react/lib/ReactContext' -x 'react/lib/ExecutionEnvironment' -d | smokestack -b chrome"
   },
   "browserify": {
     "transform": [
@@ -50,6 +50,7 @@
     "browserify": "^13.0.1",
     "del": "^2.2.1",
     "envify": "^3.4.1",
+    "enzyme": "^2.8.0",
     "eslint": "^3.0.1",
     "eslint-config-standard": "^6.0.0-beta",
     "eslint-plugin-promise": "^3.3.0",
@@ -76,6 +77,7 @@
     "node-bourbon": "^4.2.8",
     "node-notifier": "^4.6.0",
     "node-sass": "^3.8.0",
+    "react-addons-test-utils": "^15.6.0",
     "require-globify": "^1.4.0",
     "sinon": "^2.4.1",
     "smokestack": "^3.4.1",
