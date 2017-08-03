@@ -10,9 +10,9 @@ import { geometryToFeature } from '../utils/features';
 import baseLayers from '../utils/map-layers';
 
 const style = styleManager.getInitialStyle();
-const directSelect = 'direct_select';
-const featureId = 'task-feature';
-const drawPolygon = 'draw_polygon';
+export const directSelect = 'direct_select';
+export const featureId = 'task-feature';
+export const drawPolygon = 'draw_polygon';
 
 export const initialState = {
   mapHeight: 2,

@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import { stringify as buildAPIQS } from 'qs';
 
 import config from '../config';
-import store from '../utils/store';
 
 export const SET_USER_TOKEN = 'SET_USER_TOKEN';
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -370,42 +369,50 @@ function fetcher (url, requestFn, receiveFn) {
 }
 
 function fetcherAuthenticated (url, requestFn, receiveFn) {
-  let opt = {
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    }
+  return function (dispatch, getState) {
+    let opt = {
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      }
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function postAuthenticated (url, data, requestFn, receiveFn) {
-  let opt = {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    },
-    body: JSON.stringify(data)
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      },
+      body: JSON.stringify(data)
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function patchAuthenticated (url, data, requestFn, receiveFn) {
-  let opt = {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    },
-    body: JSON.stringify(data)
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      },
+      body: JSON.stringify(data)
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function deleteAuthenticated (url, requestFn, receiveFn) {
-  let opt = {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    }
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      }
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }

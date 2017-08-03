@@ -77,6 +77,7 @@
     "node-notifier": "^4.6.0",
     "node-sass": "^3.8.0",
     "require-globify": "^1.4.0",
+    "sinon": "^2.4.1",
     "smokestack": "^3.4.1",
     "tape": "^4.7.0",
     "uglify-es": "^3.0.26",
