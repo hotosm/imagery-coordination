@@ -2,8 +2,8 @@
 import { LOCATION_CHANGE } from 'react-router-redux';
 import _ from 'lodash';
 import styleManager from '../utils/styleManager';
-import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER, RESET_MAP_LAYER }
-  from '../actions';
+import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER, RESET_MAP_LAYER,
+  FINISH_POST_TASK } from '../actions';
 import { SET_MAP_LOCATION, SET_MAP_SIZE, SET_TASK_GEOJSON, SET_DRAW_MODE,
   SET_SELECTED_FEATURE_ID } from '../actions/actionTypes';
 import { geometryToFeature } from '../utils/features';
@@ -140,6 +140,9 @@ export default function reducer (state = initialState, action) {
         return Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
                              { taskId: undefined });
       }
+
+    case FINISH_POST_TASK:
+      return setTaskGeoJSON(state, { geojson: undefined });
 
     case SET_MAP_SIZE:
       return setMapSize(state, action);
