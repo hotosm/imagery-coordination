@@ -46,7 +46,8 @@ test('map SET_MAP_LOCATION', t => {
 });
 
 test('map RECEIVE_TASK', t => {
-  const geometryToFeature = sinon.spy(() => { return {}; });
+  const fakeGeojson = { geometry: { coordinates: [] } };
+  const geometryToFeature = sinon.spy(() => { return fakeGeojson; });
   mapReducer.__Rewire__('geometryToFeature', geometryToFeature);
   const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
     .returns({ zoom: 0 });
@@ -59,9 +60,9 @@ test('map RECEIVE_TASK', t => {
 
   t.plan(7);
   t.deepEqual(geometryToFeature.getCall(0).args[0], receiveTask.data.geometry,
-              'Action geometry gets converted to geojson features by geometryToFeature');
-  t.deepEqual(getZoomedStyle.getCall(0).args[0], receiveTask.data.geometry,
-              'Gets new zoomed style using the task geometry with getZoomedStyle');
+    'Action geometry gets converted to geojson features by geometryToFeature');
+  t.deepEqual(getZoomedStyle.getCall(0).args[0], fakeGeojson,
+    'Gets new zoomed style using the converted geojson with getZoomedStyle');
   t.equal(state.style.zoom, 0, 'Sets style to the new zoomed style');
   t.equal(state.taskGeojson.id, featureId,
           'Sets the taskGeojson id to the featureId constant used in the app');
@@ -85,6 +86,8 @@ test('map RECEIVE_TASK', t => {
 test('map RECEIVE_TASKS', t => {
   const geometryToFeature = sinon.spy(() => { return {}; });
   mapReducer.__Rewire__('geometryToFeature', geometryToFeature);
+  const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
+    .returns({ name: true });
 
   const setGeoJSONData = sinon.stub(styleManager, 'setGeoJSONData')
     .returns({ name: true });
@@ -108,6 +111,7 @@ test('map RECEIVE_TASKS', t => {
 
   geometryToFeature.reset();
   setGeoJSONData.restore();
+  getZoomedStyle.restore();
   mapReducer.__ResetDependency__('geometryToFeature');
 });
 
@@ -155,10 +159,12 @@ test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
   t.deepEqual(state.style, prevStyle,
               'Retains original style when current' +
               ' state does not contain taskGeojson');
-  state = mapReducer({ taskGeojson: { geometry: { coordinates: ['test'] } } },
-                        setMapSize);
-  t.equal(getZoomedStyle.getCall(0).args[0], 'test',
-          'Uses first coordinate ring to get new zoomed style');
+
+  const taskGeojson = { geometry: { coordinates: ['test'] } };
+  state = mapReducer({ taskGeojson: taskGeojson }, setMapSize);
+
+  t.deepEqual(getZoomedStyle.getCall(0).args[0], taskGeojson,
+          'Uses current taskGeojson to get new zoomed style');
   t.deepEqual(getZoomedStyle.getCall(0).args[1], setMapSize.size,
              'Uses new map size to get new zoomed style');
   t.ok(state.style.name, 'Updates style with the new zoomed style');

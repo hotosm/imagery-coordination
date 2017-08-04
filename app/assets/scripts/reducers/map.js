@@ -42,8 +42,7 @@ function receiveTask (state, action) {
     const geojson = geometryToFeature(action.data.geometry);
     geojson.id = featureId;
     const size = { height: state.mapHeight, width: state.mapWidth };
-    const style = styleManager.getZoomedStyle(
-    action.data.geometry, size, state.style);
+    const style = styleManager.getZoomedStyle(geojson, size, state.style);
     newState = Object.assign({}, state, {
       style: style,
       taskGeojson: geojson,
@@ -85,7 +84,13 @@ function receiveTasks (state, action) {
     });
   }
   const tasksStyle = styleManager.setGeoJSONData(otherTasks, state.style);
-  return Object.assign({}, state, { style: tasksStyle });
+  let zoomedStyle;
+  // When there is not geojson for the task zoom the map to the shadow tasks.
+  if (!state.taskGeojson && otherTasks) {
+    const size = { height: state.mapHeight, width: state.mapWidth };
+    zoomedStyle = styleManager.getZoomedStyle(otherTasks, size, tasksStyle);
+  }
+  return Object.assign({}, state, { style: zoomedStyle || tasksStyle });
 }
 
 function setMapLayer (state, action) {
@@ -104,9 +109,7 @@ function setMapSize (state, action) {
   const taskGeojson = state.taskGeojson;
   if (taskGeojson && taskGeojson.geometry &&
       taskGeojson.geometry.coordinates) {
-    // coordinates from geometryToFeature use rings.
-    style = styleManager.getZoomedStyle(
-      taskGeojson.geometry.coordinates[0], action.size, state.style);
+    style = styleManager.getZoomedStyle(taskGeojson, action.size, state.style);
   }
   return Object.assign({}, state, {
     mapHeight: action.size.height,

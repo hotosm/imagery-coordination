@@ -1,6 +1,5 @@
-// import geojsonExtent from '@mapbox/geojson-extent';
- //import geoViewPort from '@mapbox/geo-viewport';
 import mapboxgl from 'mapbox-gl';
+import geojsonNormalize from 'geojson-normalize';
 import { PerspectiveMercatorViewport } from 'viewport-mercator-project';
 import hotStyle from './hotStyle';
 
@@ -112,19 +111,17 @@ styleManager.setCenter = (prevStyle, center) => {
   return style;
 };
 
-//styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
-  //const extent = geojsonExtent(geojson);
-  //const width = size.width;
-  //const height = size.height;
-  //const viewport = geoViewPort.viewport(extent, [width, height]);
-  //const style = styleManager.setZoom(
-    //styleManager.setCenter(templateStyle,
-                           //{ lng: viewport.center[0], lat: viewport.center[1] }),
-                           //viewport.zoom);
-  //return style;
-//};
+styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
+  const featureCollection = geojsonNormalize(geojson);
+  // Handle zooming to multiple features for shadow features.
+  const coordinates = featureCollection.features
+    .reduce((coordinates, feature) => {
+      feature.geometry.coordinates[0].forEach((coordinate) => {
+        coordinates.push(coordinate);
+      });
+      return coordinates;
+    }, []);
 
-styleManager.getZoomedStyle = (coordinates, size, templateStyle) => {
   const viewport = new PerspectiveMercatorViewport({
     longitude: templateStyle.center[0],
     latitude: templateStyle.center[1],

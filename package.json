@@ -88,8 +88,6 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "@mapbox/geo-viewport": "^0.2.2",
-    "@mapbox/geojson-extent": "^0.3.2",
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/mapbox-gl-draw": "^1.0.0",
     "@turf/bbox": "^3.7.0",
