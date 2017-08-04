@@ -50,14 +50,6 @@ export const EditMap = React.createClass({
     addMapControls(this.map, ReactDOM.findDOMNode(this));
     this.addDraw();
 
-    this.map.on('moveend', (event) => {
-      if (event.originalEvent) {
-        const center = this.map.getCenter();
-        const zoom = this.map.getZoom();
-        const location = { lng: center.lng, lat: center.lat, zoom };
-        //this.props.setMapLocation(location);
-      }
-    });
     this.map.on('load', (event) => {
       this.removeFeature(this.props.taskGeojson, this.props.drawMode);
       if (this.props.taskGeojson) {
@@ -115,7 +107,7 @@ export const EditMap = React.createClass({
         polygon: true,
         trash: true
       },
-      //styles: mbStyles,
+      // styles: mbStyles,
       defaultMode: 'draw_polygon'
     });
     this.map.addControl(this.draw);

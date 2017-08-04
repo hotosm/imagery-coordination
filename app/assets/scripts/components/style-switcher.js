@@ -1,5 +1,4 @@
 import React, { PropTypes as T } from 'react';
-import { connect } from 'react-redux';
 import { Dropdown } from 'oam-design-system';
 import classNames from 'classnames';
 

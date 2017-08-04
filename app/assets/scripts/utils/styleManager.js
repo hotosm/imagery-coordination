@@ -1,5 +1,5 @@
 import mapboxgl from 'mapbox-gl';
-import geojsonNormalize from 'geojson-normalize';
+import geojsonNormalize from '@mapbox/geojson-normalize';
 import { PerspectiveMercatorViewport } from 'viewport-mercator-project';
 import hotStyle from './hotStyle';
 
