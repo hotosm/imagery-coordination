@@ -22,7 +22,8 @@ const ImagerySearch = React.createClass({
     params: T.object.isRequired,
     _setSearchMapCenter: T.func.isRequired,
     _setSearchMapZoom: T.func.isRequired,
-    _setSearchMapBaselayer: T.func.isRequired
+    _setSearchMapBaselayer: T.func.isRequired,
+    setMapLocation: T.func.isRequired
   },
 
   componentDidMount: function () {
@@ -54,9 +55,11 @@ const ImagerySearch = React.createClass({
     this.mainMap.on('moveend', (event) => {
       const center = this.mainMap.getCenter();
       const zoom = this.mainMap.getZoom();
-      const location = [center.lng, center.lat, zoom].join(',');
+      const location = { lng: center.lng, lat: center.lat, zoom };
+      const locationString = [center.lng, center.lat, zoom].join(',');
       if (this.props.params.mapview !== location) {
-        this.props.router.push(`/imagery-search/${location}`);
+        this.props.router.push(`/imagery-search/${locationString}`);
+        this.props.setMapLocation(location);
       }
     });
   },

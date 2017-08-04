@@ -3,9 +3,8 @@ import { getImagerySearchLayers } from '../utils/map-layers';
 import styleManager from '../utils/styleManager';
 
 import { SET_SEARCH_MAP_CENTER, SET_SEARCH_MAP_ZOOM,
-  SET_SEARCH_MAP_BASELAYER } from '../actions/actionTypes';
+  SET_SEARCH_MAP_BASELAYER, SET_MAP_LOCATION } from '../actions/actionTypes';
 
-const SET_MAP_LOCATION = 'SET_MAP_LOCATION';
 const baseLayerId = 'satellite';
 const imagerySearchLayers = getImagerySearchLayers();
 const baseLayer = imagerySearchLayers.find(m => m.id === baseLayerId);
