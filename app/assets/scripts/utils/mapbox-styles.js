@@ -14,17 +14,32 @@ export const mbStyles = [
       'line-width': 2
     }
   },
-  // Active polygon fill
+  // Active polygon fill simple select
   {
     'id': 'gl-draw-polygon-fill',
     'type': 'fill',
-    'filter': ['all', ['==', '$type', 'Polygon'], ['!=', 'mode', 'static']],
+    'filter': ['all', ['==', '$type', 'Polygon'],
+      ['!=', 'active', 'false'], ['!=', 'mode', 'static'],
+      ['==', 'mode', 'simple_select']],
     'paint': {
       'fill-color': '#ff33cc',
       'fill-outline-color': '#ff33cc',
       'fill-opacity': 0.2
     }
   },
+  // Active polygon direct select fill
+  {
+    'id': 'gl-draw-polygon-fill-simple',
+    'type': 'fill',
+    'filter': ['all', ['==', '$type', 'Polygon'], ['!=', 'mode', 'static'],
+      ['!=', 'active', 'false'], ['==', 'mode', 'direct_select']],
+    'paint': {
+      'fill-color': '#bc2196',
+      'fill-outline-color': '#bc2196',
+      'fill-opacity': 0.2
+    }
+  },
+
   // Active polygon outline stroke (after the polygon can close)
   {
     'id': 'gl-draw-polygon-stroke-active',

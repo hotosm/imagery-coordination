@@ -84,6 +84,7 @@ const ImagerySearch = React.createClass({
 
   componentWillUnmount: function () {
     this.maps.forEach(m => { m.remove(); });
+    this.mainMap.remove();
   },
 
   render: function () {

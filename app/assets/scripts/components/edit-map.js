@@ -9,7 +9,7 @@ import Measure from 'react-measure';
 import { diff } from 'mapbox-gl-style-spec';
 import StyleSwitcher from './style-switcher';
 import { addMapControls } from '../utils/map';
-// import { mbStyles } from '../utils/mapbox-styles';
+import { mbStyles } from '../utils/mapbox-styles';
 import { setMapLocation, setMapSize, setTaskGeoJSON,
   setDrawMode, setSelectedFeatureId } from '../actions/map-actions';
 import { setMapBaseLayer } from '../actions';
@@ -73,7 +73,6 @@ export const EditMap = React.createClass({
       this.addFeature(nextProps.taskGeojson, nextProps.drawMode,
                               nextProps.selectedFeatureId);
     }
-    this.activateControls(nextProps);
   },
 
   addFeature: function (feature, mode, selectedFeatureId) {
@@ -90,6 +89,9 @@ export const EditMap = React.createClass({
       if (mode === simpleSelect && !selectedFeatureId) {
         this.draw.changeMode(mode);
       }
+      if (mode === drawPolygon && selectedFeatureId) {
+        this.draw.changeMode(directSelect, { featureId: selectedFeatureId });
+      }
     }
   },
 
@@ -103,11 +105,7 @@ export const EditMap = React.createClass({
   addDraw: function () {
     this.draw = new Draw({
       displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        trash: true
-      },
-      // styles: mbStyles,
+      styles: mbStyles,
       defaultMode: 'draw_polygon'
     });
     this.map.addControl(this.draw);
@@ -115,7 +113,10 @@ export const EditMap = React.createClass({
       this.props.setTaskGeoJSON(Object.assign({}, event.features[0]));
     });
     this.map.on('draw.modechange', (event) => {
-      this.props.setDrawMode(event.mode);
+      const currentMode = this.draw.getMode();
+      if (currentMode !== this.props.drawMode) {
+        this.props.setDrawMode(event.mode);
+      }
     });
     this.map.on('draw.selectionchange', (event) => {
       if (this.props.drawMode === 'simple_select' && event.features.length === 0 &&
@@ -133,38 +134,6 @@ export const EditMap = React.createClass({
         Object.assign({}, event.features[0], { id: featureId })
       );
     });
-    const trashIcon = ReactDOM.findDOMNode(this)
-      .querySelector('.mapbox-gl-draw_trash');
-    trashIcon.addEventListener('click', () => {
-      if (this.props.drawMode === directSelect ||
-          this.props.drawMode === simpleSelect) {
-        this.props.setTaskGeoJSON(undefined);
-      }
-    });
-  },
-
-  activateControls: function (props) {
-    const disabled = 'disabled';
-    const active = 'active';
-    const trashIconClasses = ReactDOM.findDOMNode(this)
-      .querySelector('.mapbox-gl-draw_trash').classList;
-    if (props.selectedFeatureId) {
-      trashIconClasses.add(active);
-      trashIconClasses.remove(disabled);
-    } else {
-      trashIconClasses.add(disabled);
-      trashIconClasses.remove(active);
-    }
-
-    const drawIconClasses = ReactDOM.findDOMNode(this)
-      .querySelector('.mapbox-gl-draw_polygon').classList;
-    if (props.taskGeojson) {
-      drawIconClasses.add(disabled);
-      drawIconClasses.add(active);
-    } else {
-      drawIconClasses.add(active);
-      drawIconClasses.remove(disabled);
-    }
   },
 
   render: function () {

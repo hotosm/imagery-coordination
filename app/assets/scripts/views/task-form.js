@@ -17,6 +17,7 @@ import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
   fetchRequest, invalidateRequest, deleteTask, fetchRequestTasks } from '../actions';
 import { setTaskGeoJSON } from '../actions/map-actions';
 import EditMap from '../components/edit-map';
+import EditStatus from '../components/edit-status';
 
 var TaskForm = React.createClass({
   displayName: 'TaskForm',
@@ -288,6 +289,9 @@ This action is permanent.`;
               ? <p className='message message--alert'>{this.state.errors.geometryFile}</p>
               : null
             }
+          </div>
+          <div className='form__group'>
+            <EditStatus/>
           </div>
           <EditMap
             mapId='map-task-edit'
