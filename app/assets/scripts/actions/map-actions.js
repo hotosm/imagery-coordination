@@ -8,8 +8,8 @@ export function setMapSize (size) {
   return { type: actions.SET_MAP_SIZE, size };
 }
 
-export function setTaskGeoJSON (geojson) {
-  return { type: actions.SET_TASK_GEOJSON, geojson };
+export function setTaskGeoJSON (geojson, isUpload) {
+  return { type: actions.SET_TASK_GEOJSON, geojson, isUpload };
 }
 
 export function setDrawMode (drawMode) {

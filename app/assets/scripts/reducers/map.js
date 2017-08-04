@@ -56,6 +56,25 @@ function receiveTask (state, action) {
   return newState;
 }
 
+function setTaskGeoJSON (state, action) {
+  let style = state.style;
+  let taskGeojson = action.geojson;
+
+  if (action.isUpload) {
+    taskGeojson = geometryToFeature(action.geojson);
+    taskGeojson.id = featureId;
+    const size = { height: state.mapHeight, width: state.mapWidth };
+    style = styleManager.getZoomedStyle(action.geojson, size, state.style);
+  }
+
+  return Object.assign({}, state, {
+    taskGeojson: taskGeojson,
+    selectedFeatureId: action.geojson ? featureId : undefined,
+    drawMode: action.geojson ? state.drawMode : drawPolygon,
+    style
+  });
+}
+
 function receiveTasks (state, action) {
   let otherTasks;
   if (action.data.results) {
@@ -122,11 +141,7 @@ export default function reducer (state = initialState, action) {
       return setMapSize(state, action);
 
     case SET_TASK_GEOJSON:
-      return Object.assign({}, state, {
-        taskGeojson: action.geojson,
-        selectedFeatureId: action.geojson ? featureId : undefined,
-        drawMode: action.geojson ? state.drawMode : drawPolygon
-      });
+      return setTaskGeoJSON(state, action);
 
     case SET_DRAW_MODE:
       return Object.assign({}, state, { drawMode: action.drawMode });
