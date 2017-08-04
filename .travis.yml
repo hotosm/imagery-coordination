@@ -6,6 +6,7 @@ env:
   global:
   - CXX=g++-4.8
   - DEPLOY_BRANCH=master
+  - STAGING_BRANCH=develop
   - secure: "CopIliyM3lwf1eZe2V7CtSLojETwDV7hs0lwZIx4rlJvMPqs+N2LPDC1NDqw8mU9/4lIYzMbAN7v/H9wn0jdr8T0KI06ErZkVOxOyidGxKg5k1cMaXP3AIvo2lsWlSwm67L78WuRzQ0oFJ1cMLM4sJx6s7Z6sAO3/nymcar4nhw="
 
 addons:
@@ -31,8 +32,20 @@ script:
 - npm run build
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: .build_scripts/deploy.sh
-  on:
-    branch: ${DEPLOY_BRANCH}
+  - provider: script
+    skip_cleanup: true
+    script: ".build_scripts/deploy.sh"
+    on:
+      branch: "${DEPLOY_BRANCH}"
+  - provider: s3
+    access_key_id: AKIAIZGD5UPPUZS5P4CQ
+    secret_access_key:
+      secure: "UFhXGP78DQkf/vrhILok48vbqAMf7CNPNn921y+LU072mu1C7UgSa0n5+HzWyoX1/tBe3Rz7rw2yYDXw4Nu1XP58IwyUCKo/u8wwWeS26vkTQZK7Z1it70UdloPrqBlqKdVjU5f4HTWR4FJ9kf22Cp16FmSFN0yCrKq7+bs3omo="
+    bucket: imagery-coordination-staging
+    region: us-east-1
+    skip_cleanup: true
+    local_dir: dist
+    acl: public_read
+    on:
+      repo: hotosm/imagery-coordination
+      branch: "${STAGING_BRANCH}"
