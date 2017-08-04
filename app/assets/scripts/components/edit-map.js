@@ -1,6 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import GLDraw from 'mapbox-gl-draw';
+import GLDraw from '@mapbox/mapbox-gl-draw';
 import extent from '@turf/bbox';
 import _ from 'lodash';
 

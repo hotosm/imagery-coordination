@@ -50,7 +50,7 @@
 
     @include media(large-up) {
       @include col(4/12, $cycle: 3, $uncycle: 2);
-      
+
       &:nth-child(3) {
         margin-top: 0;
       }
@@ -60,10 +60,27 @@
   &__map {
     height: 10rem;
     background-color: tint($base-color, 96%);
+    &:hover {
+      box-shadow: 0 0 2em $primary-color;
+    }
   }
 
   &__source {
     text-align: center;
     font-size: 1rem;
   }
+}
+
+$selectedBorderSize: .35em;
+
+.selected__map {
+  border-color: rgba($primary-color, .7);
+  border-style: solid;
+  border-width: $selectedBorderSize;
+}
+
+.unselected__map {
+  border-color: transparent;
+  border-style: solid;
+  border-width: $selectedBorderSize;
 }
