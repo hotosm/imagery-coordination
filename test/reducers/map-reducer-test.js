@@ -116,11 +116,26 @@ test('map LOCATION_CHANGE', t => {
     type: LOCATION_CHANGE,
     payload: { pathname: '/requests/requestid/tasks/taskid/edit' }
   };
-  const state = mapReducer({}, locationChange);
-  t.plan(1);
+  let state = mapReducer({}, locationChange);
+  t.plan(4);
   t.equal(state.taskId, 'taskid',
           'Sets the current taskId when ' +
             'location changes to route containing taskid');
+
+  const locationChangeCreateTask = {
+    type: LOCATION_CHANGE,
+    payload: { pathname: '/requests/requestid/tasks/edit' }
+  };
+  state = mapReducer({
+    taskId: 'taskid',
+    taskGeojson: true,
+    selectedFeatureId: featureId
+  }, locationChangeCreateTask);
+  t.notOk(state.taskId, 'Route change to create new task clears taskId');
+  t.notOk(state.taskGeojson,
+          'Route change to create new task clears taskGeojson');
+  t.notOk(state.selectedFeatureId,
+          'Route change to create new task clears selectedFeatureId');
 });
 
 test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {

@@ -134,7 +134,8 @@ export default function reducer (state = initialState, action) {
       if (taskId) {
         return Object.assign({}, state, { taskId: taskId });
       } else {
-        return state;
+        return Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
+                             { taskId: undefined });
       }
 
     case SET_MAP_SIZE:
