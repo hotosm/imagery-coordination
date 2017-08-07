@@ -100,7 +100,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jwt-decode": "^2.1.0",
     "lodash": "^4.17.2",
-    "mapbox-gl": "^0.38.0",
+    "mapbox-gl": "<=0.38.0",
     "mapbox-gl-style-spec": "^8.11.0",
     "moment": "^2.17.0",
     "numeral": "^1.5.6",
