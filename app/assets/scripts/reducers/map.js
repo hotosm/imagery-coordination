@@ -61,9 +61,9 @@ function setTaskGeoJSON (state, action) {
 
   if (action.isUpload) {
     taskGeojson = geometryToFeature(action.geojson);
-    taskGeojson.id = featureId;
     const size = { height: state.mapHeight, width: state.mapWidth };
-    style = styleManager.getZoomedStyle(action.geojson, size, state.style);
+    style = styleManager.getZoomedStyle(taskGeojson, size, state.style);
+    taskGeojson.id = featureId;
   }
 
   return Object.assign({}, state, {

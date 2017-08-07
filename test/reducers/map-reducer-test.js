@@ -202,7 +202,7 @@ test('map SET_TASK_GEOJSON', t => {
   };
 
   let state = mapReducer(initialState, setTaskGeojsonUndefined);
-  t.plan(6);
+  t.plan(9);
   t.notOk(state.taskGeojson);
   t.notOk(state.selectedFeatureId);
   t.equal(state.drawMode, drawPolygon);
@@ -216,5 +216,27 @@ test('map SET_TASK_GEOJSON', t => {
   t.ok(state.taskGeojson);
   t.equal(state.selectedFeatureId, featureId);
   t.equal(state.drawMode, initialState.drawMode);
+
+  const geojsonFeatures = { features: true };
+  const geometryToFeature = sinon.spy(() => { return geojsonFeatures; });
+  mapReducer.__Rewire__('geometryToFeature', geometryToFeature);
+  const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
+    .returns({ name: true });
+
+  const setTaskGeojsonFromUpload = {
+    type: actions.SET_TASK_GEOJSON,
+    geojson: true,
+    isUpload: true
+  };
+  state = mapReducer({}, setTaskGeojsonFromUpload);
+
+  t.ok(geometryToFeature.called);
+  t.equal(getZoomedStyle.getCall(0).args[0], geojsonFeatures,
+          'Calls getZoomedStyle with geojson features instead of raw coordinates');
+  t.ok(state.style.name);
+
+  geometryToFeature.reset();
+  getZoomedStyle.restore();
+  mapReducer.__ResetDependency__('geometryToFeature');
 });
 
