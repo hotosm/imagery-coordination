@@ -1,36 +1,30 @@
 language: node_js
 node_js:
-  - "4.5"
-
+- '4.5'
 env:
   global:
   - CXX=g++-4.8
   - DEPLOY_BRANCH=master
   - STAGING_BRANCH=develop
-  - secure: "CopIliyM3lwf1eZe2V7CtSLojETwDV7hs0lwZIx4rlJvMPqs+N2LPDC1NDqw8mU9/4lIYzMbAN7v/H9wn0jdr8T0KI06ErZkVOxOyidGxKg5k1cMaXP3AIvo2lsWlSwm67L78WuRzQ0oFJ1cMLM4sJx6s7Z6sAO3/nymcar4nhw="
-
+  - secure: CopIliyM3lwf1eZe2V7CtSLojETwDV7hs0lwZIx4rlJvMPqs+N2LPDC1NDqw8mU9/4lIYzMbAN7v/H9wn0jdr8T0KI06ErZkVOxOyidGxKg5k1cMaXP3AIvo2lsWlSwm67L78WuRzQ0oFJ1cMLM4sJx6s7Z6sAO3/nymcar4nhw=
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
-
+    - g++-4.8
 cache:
   apt: true
   directories:
-    - node_modules
-
+  - node_modules
 before_install:
 - chmod +x ./.build_scripts/deploy.sh
-
+- chmod +x ./.build_scripts/build.sh
 before_script:
 - npm run lint
 - npm test
-
 script:
-- npm run build
-
+- ".build_scripts/build.sh"
 deploy:
   - provider: script
     skip_cleanup: true
@@ -38,13 +32,13 @@ deploy:
     on:
       branch: "${DEPLOY_BRANCH}"
   - provider: s3
-    access_key_id: AKIAIZGD5UPPUZS5P4CQ
+    access_key_id: AKIAICOK2OJWL55JOBCQ
     secret_access_key:
-      secure: "UFhXGP78DQkf/vrhILok48vbqAMf7CNPNn921y+LU072mu1C7UgSa0n5+HzWyoX1/tBe3Rz7rw2yYDXw4Nu1XP58IwyUCKo/u8wwWeS26vkTQZK7Z1it70UdloPrqBlqKdVjU5f4HTWR4FJ9kf22Cp16FmSFN0yCrKq7+bs3omo="
+      secure: N7qWGI64runhndCuScA3MCBGiCWR2gwCfEt+dZukfw5DL77Q7feBXcKwvUQ21KCM1FHHQUIedL0aps/jJOQHby06Iwe2sGvtkT9qWhWudbHtOi4FcG1hMNrcIZlSjrB/GQ0hFCnJDpqc+ztgTMKHVXDTmb+8TmIqEtqb19/2sCI=
     bucket: imagery-coordination-staging
     region: us-east-1
+    local-dir: dist
     skip_cleanup: true
-    local_dir: dist
     acl: public_read
     on:
       repo: hotosm/imagery-coordination
