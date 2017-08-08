@@ -1,19 +1,19 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import { simpleSelect, directSelect, drawPolygon, featureId }
+import { simpleSelect, directSelect, drawPolygon }
   from './edit-map';
 import { setTaskGeoJSON } from '../actions/map-actions';
 
 function getClassMessage (drawMode, selectedFeatureId) {
-  let classMessage;
-  if (drawMode === directSelect && selectedFeatureId === featureId) {
+  let classMessage = { className: '', message: '' };
+  if (drawMode === directSelect && selectedFeatureId) {
     classMessage = {
       className: 'edit-status-direct-select',
       message: 'Click and drag the shape vertices to move them'
     };
   }
-  if (drawMode === simpleSelect && selectedFeatureId === featureId) {
+  if (drawMode === simpleSelect && selectedFeatureId) {
     classMessage = {
       className: 'edit-status-simple-select',
       message: 'Click and drag on the shape to move it'
@@ -43,9 +43,9 @@ const EditStatus = (props) => {
   return (
     <div>
     <span className={classMessage.className}>{classMessage.message}</span>
-    <button
+    <a
       className={deleteButtonStatus}
-      onClick={() => { props.setTaskGeoJSON(undefined); }}>Delete Drawing</button>
+      onClick={() => { props.setTaskGeoJSON(undefined); }}>Delete Drawing</a>
     </div>
   );
 };
