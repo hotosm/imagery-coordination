@@ -18,6 +18,7 @@ import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
 import { receiveUpload } from '../actions/map-actions';
 import EditMap from '../components/edit-map';
 import EditStatus from '../components/edit-status';
+import TaskSizeWarning from '../components/task-size-warning.js';
 
 var TaskForm = React.createClass({
   displayName: 'TaskForm',
@@ -291,6 +292,7 @@ This action is permanent.`;
             }
           </div>
           <div className='form__group'>
+            <TaskSizeWarning/>
             <EditStatus/>
           </div>
           <EditMap

@@ -2,7 +2,7 @@ import React from 'react';
 import test from 'tape';
 import { mount } from 'enzyme';
 import sinon from 'sinon';
-import { EditMap, simpleSelect, directSelect, drawPolygon, featureId }
+import { EditMap, drawPolygon }
   from '../../app/assets/scripts/components/edit-map';
 import hotStyle from '../../app/assets/scripts/utils/hotStyle';
 import config from '../../app/assets/scripts/config';
