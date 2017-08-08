@@ -134,3 +134,47 @@
     @extend %oam-ds-icon-pencil;
   }
 }
+
+.edit-status {
+    color: #fff;
+    outline: 0.1rem dashed #ff33cc;
+    line-height: 1.5;
+    padding: 0.25rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    vertical-align: middle;
+
+  &::before {
+    @extend %oam-ds-icon-pencil;
+    vertical-align: middle;
+    margin-right: 0.375em;
+  }
+}
+
+.edit-status-direct-select {
+  @extend .edit-status;
+  background: rgba(#bc2196, 0.6);
+}
+
+.edit-status-simple-select {
+  @extend .edit-status;
+  background: rgba(#ff33cc, 0.6);
+}
+
+.edit-status-simple-select-none {
+  @extend .edit-status;
+  background: rgba(#51d6ff, 1);
+  outline: 0.2rem solid #0fc7ff;
+}
+
+.edit-status-draw-polygon {
+  @extend .edit-status;
+  background: rgba(#68c39f, 0.6);
+  outline: none;
+}
+
+.edit-status-delete-drawing {
+  @extend .button-delete;
+  margin-left: 2rem;
+  float: right;
+}

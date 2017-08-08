@@ -9,14 +9,15 @@ import momentLocalizer from 'react-widgets/lib/localizers/moment';
 import { DOMParser } from 'xmldom';
 
 import toGeoJSON from '../utils/togeojson';
-import { geometryToFeature, validateGeoJSONPolygon } from '../utils/features';
+import { validateGeoJSONPolygon } from '../utils/features';
 
 momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
-  fetchRequest, invalidateRequest, deleteTask, setMapBaseLayer, fetchRequestTasks } from '../actions';
-
+  fetchRequest, invalidateRequest, deleteTask, fetchRequestTasks } from '../actions';
+import { setTaskGeoJSON } from '../actions/map-actions';
 import EditMap from '../components/edit-map';
+import EditStatus from '../components/edit-status';
 
 var TaskForm = React.createClass({
   displayName: 'TaskForm',
@@ -30,8 +31,8 @@ var TaskForm = React.createClass({
     _fetchRequest: T.func,
     _invalidateRequest: T.func,
     _deleteTask: T.func,
-    _setMapBaseLayer: T.func,
     _fetchRequestTasks: T.func,
+    _setTaskGeoJSON: T.func.isRequired,
 
     params: T.object,
     task: T.object,
@@ -40,7 +41,7 @@ var TaskForm = React.createClass({
     taskForm: T.object,
     users: T.object,
     user: T.object,
-    mapState: T.object
+    taskGeojson: T.object
   },
 
   getInitialState: function () {
@@ -68,7 +69,7 @@ var TaskForm = React.createClass({
       control = false;
     }
 
-    if (this.state.data.geometry === '') {
+    if (!this.getFormGeometryData(this.props.taskGeojson)) {
       errors.geometry = true;
       control = false;
     }
@@ -93,7 +94,7 @@ var TaskForm = React.createClass({
     if (this.checkErrors()) {
       var payload = {
         name: this.state.data.name,
-        geometry: this.state.data.geometry,
+        geometry: this.getFormGeometryData(this.props.taskGeojson),
         assigneeId: this.state.data.assigneeId || null,
         timePeriodProvidedFrom: this.state.data.timePeriodProvidedFrom
           ? moment(this.state.data.timePeriodProvidedFrom).format('YYYY-MM-DD')
@@ -173,10 +174,10 @@ var TaskForm = React.createClass({
             }
             this.setState({errors: errors});
           } else {
-            let data = Object.assign({}, this.state.data, {geometry: res});
+            this.props._setTaskGeoJSON(res, true);
             errors.geometryFile = null;
             errors.geometry = null;
-            this.setState({errors: errors, data});
+            this.setState({ errors: errors });
           }
         });
       } catch (e) {
@@ -187,16 +188,12 @@ var TaskForm = React.createClass({
     reader.readAsText(file);
   },
 
-  onFeatureDraw: function (fc) {
-    let geometry = fc.features[0].geometry.coordinates[0];
-    let data = Object.assign({}, this.state.data, {geometry});
-    let errors = Object.assign({}, this.state.errors, {geometry: null, geometryFile: null});
-    this.setState({data, errors});
-  },
-
-  onFeatureRemove: function () {
-    let data = Object.assign({}, this.state.data, {geometry: ''});
-    this.setState({data});
+  getFormGeometryData: function (geojson) {
+    let coords;
+    if (geojson && geojson.geometry && geojson.geometry.coordinates) {
+      coords = geojson.geometry.coordinates[0];
+    }
+    return coords;
   },
 
   onDeleteClick: function (e) {
@@ -255,7 +252,7 @@ This action is permanent.`;
       loadedData.timePeriodProvidedTo = data.timePeriodProvided.to;
       // Since it's a date, deliveryTime has to be null.
       loadedData.deliveryTime = loadedData.deliveryTime || null;
-
+      loadedData.geometry = this.getFormGeometryData(nextProps.taskGeojson);
       this.setState({data: loadedData});
     }
 
@@ -280,35 +277,6 @@ This action is permanent.`;
     }
   },
 
-  renderMap: function () {
-    const geometry = geometryToFeature(this.state.data.geometry);
-
-    // Shadow of the request tasks.
-    let otherTasks = null;
-    if (this.props.requestTasks.fetched && !this.props.requestTasks.fetching && this.props.requestTasks.data.results.length) {
-      // If we're editing a task, remove it from the shadow.
-      let tasks = this.props.params.taskid
-        ? this.props.requestTasks.data.results.filter(o => o._id !== this.props.params.taskid)
-        : this.props.requestTasks.data.results;
-
-      otherTasks = geometryToFeature(tasks, result => {
-        return _.omit(result, ['geometry', 'updates']);
-      });
-    }
-
-    return (
-      <EditMap
-        mapId='map-task-edit'
-        className='map-container map-container--edit bleed-full'
-        geometry={geometry}
-        otherTasks={otherTasks}
-        onFeatureDraw={this.onFeatureDraw}
-        onFeatureRemove={this.onFeatureRemove}
-        onBaseLayerSelect={this.props._setMapBaseLayer}
-        selectedLayer={this.props.mapState.baseLayer} />
-    );
-  },
-
   renderFrom: function (data = {}) {
     let editing = !!this.props.params.taskid;
     return (
@@ -322,8 +290,12 @@ This action is permanent.`;
               : null
             }
           </div>
-
-          {this.renderMap()}
+          <div className='form__group'>
+            <EditStatus/>
+          </div>
+          <EditMap
+            mapId='map-task-edit'
+            className='map-container map-container--edit bleed-full' />
 
           {this.state.errors.geometry
             ? <p className='message message--alert'>A task polygon is needed. Draw one or provide a file.</p>
@@ -468,7 +440,7 @@ function selector (state) {
     taskForm: state.taskForm,
     users: state.users,
     user: state.user,
-    mapState: state.map
+    taskGeojson: state.map.taskGeojson
   };
 }
 
@@ -483,7 +455,7 @@ function dispatcher (dispatch) {
     _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
     _deleteTask: (...args) => dispatch(deleteTask(...args)),
-    _setMapBaseLayer: (...args) => dispatch(setMapBaseLayer(...args))
+    _setTaskGeoJSON: (...args) => dispatch(setTaskGeoJSON(...args))
   };
 }
 
