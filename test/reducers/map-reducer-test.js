@@ -99,9 +99,9 @@ test('map RECEIVE_TASKS', t => {
       results: [{ _id: currentTaskId }, { _id: 2 }]
     }
   };
-  const state = mapReducer({ taskId: currentTaskId }, receiveTasks);
+  let state = mapReducer({ taskId: currentTaskId }, receiveTasks);
 
-  t.plan(3);
+  t.plan(4);
   t.deepEqual(geometryToFeature.getCall(0).args[0][0], { _id: 2 },
              'Filters the existing task from being added to the geoJSON' +
                ' source to support shadow features');
@@ -110,9 +110,19 @@ test('map RECEIVE_TASKS', t => {
   t.ok(state.style.name, 'Updates state style with new style');
 
   geometryToFeature.reset();
-  setGeoJSONData.restore();
   getZoomedStyle.restore();
+  setGeoJSONData.restore();
   mapReducer.__ResetDependency__('geometryToFeature');
+
+  const existingStyle = 'test';
+  const emptyReceivedTasks = {
+    type: RECEIVE_TASKS,
+    data: {
+      results: []
+    }
+  };
+  state = mapReducer({ style: existingStyle }, emptyReceivedTasks);
+  t.equal(state.style, existingStyle);
 });
 
 test('map LOCATION_CHANGE', t => {
