@@ -17,7 +17,6 @@ import { setMapBaseLayer } from '../actions';
 export const simpleSelect = 'simple_select';
 export const directSelect = 'direct_select';
 export const drawPolygon = 'draw_polygon';
-export const featureId = 'task-feature';
 
 export const EditMap = React.createClass({
   displayName: 'EditMap',
@@ -49,14 +48,6 @@ export const EditMap = React.createClass({
     });
     addMapControls(this.map, ReactDOM.findDOMNode(this));
     this.addDraw();
-
-    this.map.on('load', (event) => {
-      this.removeFeature(this.props.taskGeojson, this.props.drawMode);
-      if (this.props.taskGeojson) {
-        this.addFeature(this.props.taskGeojson,
-                            this.props.drawMode, this.props.selectedFeatureId);
-      }
-    });
   },
 
   componentWillUnmount: function () {
@@ -64,21 +55,29 @@ export const EditMap = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    this.manageFeatures = (event) => {
+      this.removeFeature(nextProps.taskGeojson, nextProps.drawMode);
+      if (nextProps.taskGeojson) {
+        this.addFeature(nextProps.taskGeojson, nextProps.drawMode,
+                        nextProps.selectedFeatureId);
+      }
+    };
+    if (this.map.loaded()) {
+      this.map.off('load', this.manageFeatures);
+      this.manageFeatures();
+    } else {
+      this.map.on('load', this.manageFeatures);
+    }
+    // Unfortunately ordering is important here.  Map changes must be applied
+    // after features are updated.
     const changes = diff(this.props.style, nextProps.style);
     changes.forEach(change => {
       this.map[change.command].apply(this.map, change.args);
     });
-    this.removeFeature(nextProps.taskGeojson, nextProps.drawMode);
-    if (nextProps.taskGeojson) {
-      this.addFeature(nextProps.taskGeojson, nextProps.drawMode,
-                              nextProps.selectedFeatureId);
-    }
   },
 
   addFeature: function (feature, mode, selectedFeatureId) {
     this.draw.add(feature);
-    // Initial changeMode is necessary, needs research.
-    this.draw.changeMode(simpleSelect);
     if (mode) {
       if (mode === 'direct_select' && selectedFeatureId) {
         this.draw.changeMode(mode, { featureId: selectedFeatureId });
@@ -118,6 +117,10 @@ export const EditMap = React.createClass({
         this.props.setDrawMode(event.mode);
       }
     });
+    this.map.on('draw.create', (event) => {
+      this.props.setTaskGeoJSON(Object.assign({}, event.features[0])
+      );
+    });
     this.map.on('draw.selectionchange', (event) => {
       if (this.props.drawMode === 'simple_select' && event.features.length === 0 &&
          this.props.selectedFeatureId) {
@@ -127,12 +130,6 @@ export const EditMap = React.createClass({
           !this.props.selectedFeatureId) {
         this.props.setSelectedFeatureId(event.features[0].id);
       }
-    });
-    this.map.on('draw.create', (event) => {
-      this.draw.deleteAll();
-      this.props.setTaskGeoJSON(
-        Object.assign({}, event.features[0], { id: featureId })
-      );
     });
   },
 
@@ -159,7 +156,6 @@ export const EditMap = React.createClass({
           </div>
           </div>
       }
-
       </Measure>
     );
   }

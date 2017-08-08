@@ -202,41 +202,45 @@ test('map SET_TASK_GEOJSON', t => {
   };
 
   let state = mapReducer(initialState, setTaskGeojsonUndefined);
-  t.plan(9);
+  t.plan(6);
   t.notOk(state.taskGeojson);
   t.notOk(state.selectedFeatureId);
   t.equal(state.drawMode, drawPolygon);
 
+  const geojsonId = 'geojsonId';
   const setTaskGeojson = {
     type: actions.SET_TASK_GEOJSON,
-    geojson: true
+    geojson: { id: geojsonId }
   };
 
   state = mapReducer(initialState, setTaskGeojson);
   t.ok(state.taskGeojson);
-  t.equal(state.selectedFeatureId, featureId);
+  t.equal(state.selectedFeatureId, geojsonId);
   t.equal(state.drawMode, initialState.drawMode);
+});
 
-  const geojsonFeatures = { features: true };
-  const geometryToFeature = sinon.spy(() => { return geojsonFeatures; });
+test('map RECEIVE_UPLOAD', t => {
+  const actionGeojson = 'test';
+  const features = { coordinates: true };
+  const geometryToFeature = sinon.spy(() => features);
   mapReducer.__Rewire__('geometryToFeature', geometryToFeature);
   const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
     .returns({ name: true });
 
-  const setTaskGeojsonFromUpload = {
-    type: actions.SET_TASK_GEOJSON,
-    geojson: true,
-    isUpload: true
+  const receiveUpload = {
+    type: actions.RECEIVE_UPLOAD,
+    geojson: actionGeojson
   };
-  state = mapReducer({}, setTaskGeojsonFromUpload);
-
-  t.ok(geometryToFeature.called);
-  t.equal(getZoomedStyle.getCall(0).args[0], geojsonFeatures,
-          'Calls getZoomedStyle with geojson features instead of raw coordinates');
+  const state = mapReducer({}, receiveUpload);
+  t.plan(6);
+  t.equals(geometryToFeature.getCall(0).args[0], actionGeojson);
+  t.deepEqual(getZoomedStyle.getCall(0).args[0], features);
+  t.equal(state.taskGeojson.id, featureId);
   t.ok(state.style.name);
+  t.equal(state.selectedFeatureId, featureId);
+  t.equal(state.drawMode, directSelect);
 
   geometryToFeature.reset();
   getZoomedStyle.restore();
   mapReducer.__ResetDependency__('geometryToFeature');
 });
-

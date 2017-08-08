@@ -15,7 +15,7 @@ momentLocalizer(moment);
 
 import { fetchTask, invalidateTask, postTask, patchTask, resetTaskFrom,
   fetchRequest, invalidateRequest, deleteTask, fetchRequestTasks } from '../actions';
-import { setTaskGeoJSON } from '../actions/map-actions';
+import { receiveUpload } from '../actions/map-actions';
 import EditMap from '../components/edit-map';
 import EditStatus from '../components/edit-status';
 
@@ -32,7 +32,7 @@ var TaskForm = React.createClass({
     _invalidateRequest: T.func,
     _deleteTask: T.func,
     _fetchRequestTasks: T.func,
-    _setTaskGeoJSON: T.func.isRequired,
+    _receiveUpload: T.func.isRequired,
 
     params: T.object,
     task: T.object,
@@ -174,7 +174,7 @@ var TaskForm = React.createClass({
             }
             this.setState({errors: errors});
           } else {
-            this.props._setTaskGeoJSON(res, true);
+            this.props._receiveUpload(res);
             errors.geometryFile = null;
             errors.geometry = null;
             this.setState({ errors: errors });
@@ -455,7 +455,7 @@ function dispatcher (dispatch) {
     _fetchRequestTasks: (...args) => dispatch(fetchRequestTasks(...args)),
     _invalidateRequest: (...args) => dispatch(invalidateRequest(...args)),
     _deleteTask: (...args) => dispatch(deleteTask(...args)),
-    _setTaskGeoJSON: (...args) => dispatch(setTaskGeoJSON(...args))
+    _receiveUpload: (...args) => dispatch(receiveUpload(...args))
   };
 }
 
