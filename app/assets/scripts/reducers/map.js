@@ -5,7 +5,7 @@ import styleManager from '../utils/styleManager';
 import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER, RESET_MAP_LAYER,
   FINISH_POST_TASK } from '../actions';
 import { SET_MAP_LOCATION, SET_MAP_SIZE, SET_TASK_GEOJSON, SET_DRAW_MODE,
-  SET_SELECTED_FEATURE_ID } from '../actions/actionTypes';
+  SET_SELECTED_FEATURE_ID, RECEIVE_UPLOAD } from '../actions/actionTypes';
 import { geometryToFeature } from '../utils/features';
 import baseLayers from '../utils/map-layers';
 
@@ -56,20 +56,23 @@ function receiveTask (state, action) {
 }
 
 function setTaskGeoJSON (state, action) {
-  let style = state.style;
-  let taskGeojson = action.geojson;
+  return Object.assign({}, state, {
+    taskGeojson: action.geojson,
+    selectedFeatureId: action.geojson ? action.geojson.id : undefined,
+    drawMode: action.geojson ? state.drawMode : drawPolygon
+  });
+}
 
-  if (action.isUpload) {
-    taskGeojson = geometryToFeature(action.geojson);
-    const size = { height: state.mapHeight, width: state.mapWidth };
-    style = styleManager.getZoomedStyle(taskGeojson, size, state.style);
-    taskGeojson.id = featureId;
-  }
+function receiveUpload (state, action) {
+  const taskGeojson = geometryToFeature(action.geojson);
+  const size = { height: state.mapHeight, width: state.mapWidth };
+  const style = styleManager.getZoomedStyle(taskGeojson, size, state.style);
+  taskGeojson.id = featureId;
 
   return Object.assign({}, state, {
-    taskGeojson: taskGeojson,
-    selectedFeatureId: action.geojson ? featureId : undefined,
-    drawMode: action.geojson ? state.drawMode : drawPolygon,
+    taskGeojson,
+    selectedFeatureId: featureId,
+    drawMode: directSelect,
     style
   });
 }
@@ -83,14 +86,18 @@ function receiveTasks (state, action) {
       return _.omit(result, ['geometry', 'updates']);
     });
   }
-  const tasksStyle = styleManager.setGeoJSONData(otherTasks, state.style);
+  let tasksStyle;
+  if (otherTasks) {
+    tasksStyle = styleManager.setGeoJSONData(otherTasks, state.style);
+  }
   let zoomedStyle;
   // When there is not geojson for the task zoom the map to the shadow tasks.
   if (!state.taskGeojson && otherTasks) {
     const size = { height: state.mapHeight, width: state.mapWidth };
     zoomedStyle = styleManager.getZoomedStyle(otherTasks, size, tasksStyle);
   }
-  return Object.assign({}, state, { style: zoomedStyle || tasksStyle });
+  return Object.assign({}, state,
+                       { style: zoomedStyle || tasksStyle || state.style });
 }
 
 function setMapLayer (state, action) {
@@ -149,6 +156,9 @@ export default function reducer (state = initialState, action) {
 
     case SET_TASK_GEOJSON:
       return setTaskGeoJSON(state, action);
+
+    case RECEIVE_UPLOAD:
+      return receiveUpload(state, action);
 
     case SET_DRAW_MODE:
       return Object.assign({}, state, { drawMode: action.drawMode });

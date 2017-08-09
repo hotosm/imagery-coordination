@@ -20,3 +20,7 @@ export function setSelectedFeatureId (id) {
   return { type: actions.SET_SELECTED_FEATURE_ID, id };
 }
 
+export function receiveUpload (geojson) {
+  return { type: actions.RECEIVE_UPLOAD, geojson };
+}
+

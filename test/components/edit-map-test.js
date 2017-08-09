@@ -43,7 +43,10 @@ const setup = () => {
 test('EditMap clears existing draw features with null taskGeojson prop', t => {
   t.plan(2);
   const wrapper = setup().wrapper;
+  const map = wrapper.instance().map;
   const draw = wrapper.instance().draw;
+  const loaded = sinon.stub(map, 'loaded');
+  loaded.returns(true);
   const deleteAll = sinon.spy(draw, 'deleteAll');
   const changeMode = sinon.spy(draw, 'changeMode');
 
@@ -59,16 +62,5 @@ test('EditMap draw.update setsTaskGeoJSON with correct features', t => {
   const feature = { geometry: 1 };
   map.fire('draw.update', { features: [feature] });
   t.deepEqual(props.setTaskGeoJSON.getCall(0).args[0], feature);
-});
-
-test('EditMap de-selects features when clicking outside of polygon in simple' +
-  ' select mode', t => {
-  t.plan(2);
-  const { wrapper, props } = setup();
-  const map = wrapper.instance().map;
-  wrapper.setProps({ drawMode: simpleSelect, selectedFeatureId: featureId });
-  map.fire('draw.selectionchange', { features: [] });
-  t.ok(props.setSelectedFeatureId.called);
-  t.notOk(props.setSelectedFeatureId.getCall(0).args[0]);
 });
 
