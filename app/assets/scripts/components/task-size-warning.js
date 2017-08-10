@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import area from '@turf/area';
 
-export const areaLimit = 50000000;
-export const uavLimit = 1000000;
+export const areaLimit = 1E9;
+export const uavLimit = 1E6;
 const uavProductType = 'UAV';
 
 const getTaskGeojson = (state) => state.map.taskGeojson;
@@ -25,7 +25,7 @@ export const TaskSizeWarning = (props) => {
     return (
       <div className="alert alert--warning" role="alert">
         <p><strong>Warning </strong>
-          {'The task feature is larger than ' + areaLimit + ' sq/M'}</p>
+          {'The task feature is larger than ' + limit / 1000000 + ' sq/KM'}</p>
       </div>
     );
   } else {
