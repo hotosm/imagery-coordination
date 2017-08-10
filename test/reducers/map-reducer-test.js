@@ -153,6 +153,9 @@ test('map LOCATION_CHANGE', t => {
 });
 
 test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
+  const prevStyle = { name: true };
+  const getSourceZoomedStyle = sinon.stub(styleManager, 'getSourceZoomedStyle')
+    .returns(prevStyle);
   const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
     .returns({ name: true });
 
@@ -160,12 +163,12 @@ test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
     type: actions.SET_MAP_SIZE,
     size: { height: 1, width: 1 }
   };
-  const prevStyle = { name: true };
   let state = mapReducer({ style: prevStyle }, setMapSize);
 
-  t.plan(6);
+  t.plan(7);
   t.equal(state.mapHeight, setMapSize.size.height, 'Sets mapHeight');
   t.equal(state.mapWidth, setMapSize.size.width, 'Sets mapWidth');
+  t.ok(getSourceZoomedStyle.called);
   t.deepEqual(state.style, prevStyle,
               'Retains original style when current' +
               ' state does not contain taskGeojson');
@@ -178,6 +181,7 @@ test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
   t.deepEqual(getZoomedStyle.getCall(0).args[1], setMapSize.size,
              'Uses new map size to get new zoomed style');
   t.ok(state.style.name, 'Updates style with the new zoomed style');
+  getSourceZoomedStyle.restore();
   getZoomedStyle.restore();
 });
 

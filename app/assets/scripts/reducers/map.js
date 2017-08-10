@@ -117,11 +117,14 @@ function setMapSize (state, action) {
   if (taskGeojson && taskGeojson.geometry &&
       taskGeojson.geometry.coordinates) {
     style = styleManager.getZoomedStyle(taskGeojson, action.size, state.style);
+  } else {
+    style = styleManager.getSourceZoomedStyle(action.size, state.style);
   }
+
   return Object.assign({}, state, {
     mapHeight: action.size.height,
     mapWidth: action.size.width,
-    style: style || state.style
+    style
   });
 }
 

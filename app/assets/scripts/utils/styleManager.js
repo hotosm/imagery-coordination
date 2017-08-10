@@ -157,4 +157,15 @@ styleManager.setGeoJSONData = (geojson, templateStyle) => {
   return style;
 };
 
+styleManager.getSourceZoomedStyle = (size, templateStyle) => {
+  let style;
+  const data = templateStyle.sources.geojsonSource.data;
+  if (data.features && data.features.length !== 0) {
+    style = styleManager.getZoomedStyle(data, size, templateStyle);
+  } else {
+    style = templateStyle;
+  }
+  return style;
+};
+
 export default styleManager;
