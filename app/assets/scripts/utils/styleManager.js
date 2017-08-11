@@ -8,7 +8,7 @@ const vector = 'vector';
 const rasterLayerId = 'tiles';
 const shadowFeaturesLayerId = 'shadow-features';
 
-const templateStyle = {
+const rasterTemplateStyle = {
   'version': 8,
   'name': 'rasterTemplate',
   'sources': {
@@ -52,22 +52,42 @@ const templateStyle = {
   zoom: 2
 };
 
+const taskStatusStyles = [
+  {name: 'open', color: '#5ABDCB'},
+  {name: 'inprogress', color: '#D0EC77'},
+  {name: 'completed', color: '#72C97D'}
+];
+
 const styleManager = {};
+
+const setVisibility = (layer, visibility) => {
+  return Object.assign({}, layer, {
+    layout: Object.assign({}, layer.layout, { visibility })
+  });
+};
 
 styleManager.getInitialStyle = (name, url, type) => {
   if (!name) {
-    return hotStyle;
+    const invisibleRaster = rasterTemplateStyle.layers.map((layer) => {
+      let newLayer;
+      if (layer.id === rasterLayerId) {
+        newLayer = setVisibility(layer, 'none');
+      } else {
+        newLayer = layer;
+      }
+      return newLayer;
+    });
+    const newLayers = hotStyle.layers.concat(invisibleRaster);
+    return Object.assign({}, hotStyle, {
+      layers: newLayers,
+      sources: Object.assign({}, hotStyle.sources, rasterTemplateStyle.sources)
+    });
   } else {
-    return styleManager.setSource(templateStyle, name, url, type);
+    return styleManager.setSource(rasterTemplateStyle, name, url, type);
   }
 };
 
 styleManager.setSource = (prevStyle, name, url, type) => {
-  const setVisibility = (layer, visibility) => {
-    return Object.assign({}, layer, {
-      layout: Object.assign({}, layer.layout, { visibility })
-    });
-  };
   const newLayers = prevStyle.layers.map((layer) => {
     let newLayer;
     if (type === raster) {
@@ -165,6 +185,28 @@ styleManager.getSourceZoomedStyle = (size, templateStyle) => {
   } else {
     style = templateStyle;
   }
+  return style;
+};
+
+styleManager.getTaskStatusStyle = (templateStyle) => {
+  const style = Object.assign({}, templateStyle, {
+    layers: templateStyle.layers.map((layer) => {
+      if (layer.id === shadowFeaturesLayerId) {
+        return Object.assign({}, layer, {
+          paint: {
+            'fill-color': {
+              property: 'status',
+              type: 'categorical',
+              stops: taskStatusStyles.map(s => [s.name, s.color])
+            },
+            'fill-opacity': 0.64
+          }
+        });
+      } else {
+        return layer;
+      }
+    })
+  });
   return style;
 };
 

@@ -86,21 +86,6 @@ export default {
     composite: {
       url: 'mapbox://mapbox.mapbox-terrain-v2,mapbox.mapbox-streets-v7',
       type: 'vector'
-    },
-    rasterSource: {
-      type: 'raster',
-      tiles: ['https://api.mapbox.com/styles/v1/hot/civicyccw00bv2io77zqq401h/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNpdmlkM2lkMDAwYTAydXBnNXFkd2EwemsifQ.KPrUb_mKlPmHCR6LNrSihQ'],
-      tileSize: 256
-    },
-    geojsonSource: {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          'coordinates': [ [ [ ] ] ]
-        }
-      }
     }
   },
   sprite: 'mapbox://sprites/hot/cividbt4w00ax2jn8517i2nc9',
@@ -9824,26 +9809,6 @@ export default {
         'text-halo-blur': 0
       },
       'source-layer': 'country_label'
-    },
-    {
-      'id': 'tiles',
-      'type': 'raster',
-      'source': 'rasterSource',
-      'minzoom': 0,
-      'maxzoom': 22,
-      'layout': {
-        'visibility': 'none'
-      }
-    },
-    {
-      'id': 'shadow-features',
-      'type': 'fill',
-      'source': 'geojsonSource',
-      'layout': {},
-      'paint': {
-        'fill-color': '#af92d4',
-        'fill-opacity': 0.4
-      }
     }
   ],
   created: '2016-11-14T17:53:03.305Z',
