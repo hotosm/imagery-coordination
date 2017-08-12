@@ -6,7 +6,8 @@ import hotStyle from './hotStyle';
 const raster = 'raster';
 const vector = 'vector';
 const rasterLayerId = 'tiles';
-const shadowFeaturesLayerId = 'shadow-features';
+export const taskPolygons = 'task-polygons';
+export const taskPolygonsHighlight = 'task-polygons-highlight';
 
 const rasterTemplateStyle = {
   'version': 8,
@@ -39,7 +40,7 @@ const rasterTemplateStyle = {
     }
   },
   {
-    'id': shadowFeaturesLayerId,
+    'id': taskPolygons,
     'type': 'fill',
     'source': 'geojsonSource',
     'layout': {},
@@ -47,12 +48,21 @@ const rasterTemplateStyle = {
       'fill-color': '#af92d4',
       'fill-opacity': 0.4
     }
+  },
+  {
+    id: taskPolygonsHighlight,
+    type: 'fill',
+    source: 'geojsonSource',
+    paint: {
+      'fill-opacity': 0.64
+    },
+    filter: ['==', '_id', '']
   }],
   center: [0, 0],
   zoom: 2
 };
 
-const taskStatusStyles = [
+export const taskStatusStyles = [
   {name: 'open', color: '#5ABDCB'},
   {name: 'inprogress', color: '#D0EC77'},
   {name: 'completed', color: '#72C97D'}
@@ -91,7 +101,7 @@ styleManager.setSource = (prevStyle, name, url, type) => {
   const newLayers = prevStyle.layers.map((layer) => {
     let newLayer;
     if (type === raster) {
-      if (layer.id === rasterLayerId || layer.id === shadowFeaturesLayerId) {
+      if (layer.id === rasterLayerId || layer.id === taskPolygons) {
         newLayer = setVisibility(layer, 'visible');
       } else {
         newLayer = setVisibility(layer, 'none');
@@ -191,7 +201,7 @@ styleManager.getSourceZoomedStyle = (size, templateStyle) => {
 styleManager.getFilteredTaskIdStyle = (taskId, templateStyle) => {
   const newLayers = templateStyle.layers.map((layer) => {
     let newLayer;
-    if (layer.id === shadowFeaturesLayerId) {
+    if (layer.id === taskPolygons) {
       newLayer = Object.assign({}, layer, {
         filter: ['!=', '_id', taskId]
       });
@@ -206,7 +216,7 @@ styleManager.getFilteredTaskIdStyle = (taskId, templateStyle) => {
 styleManager.getTaskStatusStyle = (templateStyle) => {
   const style = Object.assign({}, templateStyle, {
     layers: templateStyle.layers.map((layer) => {
-      if (layer.id === shadowFeaturesLayerId) {
+      if (layer.id === taskPolygons) {
         return Object.assign({}, layer, {
           paint: {
             'fill-color': {
