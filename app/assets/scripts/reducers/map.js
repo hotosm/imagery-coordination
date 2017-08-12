@@ -18,7 +18,6 @@ export const initialState = {
   mapHeight: 2,
   mapWidth: 4,
   style,
-  taskId: undefined,
   taskGeojson: undefined,
   drawMode: drawPolygon,
   selectedFeatureId: undefined,
@@ -34,6 +33,25 @@ function parseTaskId (locationString) {
     taskId = locationParts[4];
   }
   return taskId;
+}
+
+function checkRequestLocation (locationString) {
+  let isRequest = false;
+  const locationParts = locationString.split('/');
+  if (locationParts.length === 3 && locationParts[1] === 'requests') {
+    isRequest = true;
+  }
+  return isRequest;
+}
+
+function checkNewTaskLocation (locationString) {
+  let isNewTask = false;
+  const locationParts = locationString.split('/');
+  if (locationParts[3] && locationParts[3] === 'tasks' && locationParts[4] &&
+      locationParts[4] === 'edit') {
+    isNewTask = true;
+  }
+  return isNewTask;
 }
 
 function receiveTask (state, action) {
@@ -78,23 +96,23 @@ function receiveUpload (state, action) {
 }
 
 function receiveTasks (state, action) {
-  let otherTasks;
+  let tasks;
   if (action.data.results) {
-    const filteredTasks =
-      action.data.results.filter(task => task._id !== state.taskId);
-    otherTasks = geometryToFeature(filteredTasks, result => {
+    tasks = geometryToFeature(action.data.results, result => {
       return _.omit(result, ['geometry', 'updates']);
     });
   }
+
   let tasksStyle;
-  if (otherTasks) {
-    tasksStyle = styleManager.setGeoJSONData(otherTasks, state.style);
+  if (tasks) {
+    tasksStyle = styleManager.setGeoJSONData(tasks, state.style);
   }
+
   let zoomedStyle;
   // When there is not geojson for the task zoom the map to the shadow tasks.
-  if (!state.taskGeojson && otherTasks) {
+  if (!state.taskGeojson && tasks) {
     const size = { height: state.mapHeight, width: state.mapWidth };
-    zoomedStyle = styleManager.getZoomedStyle(otherTasks, size, tasksStyle);
+    zoomedStyle = styleManager.getZoomedStyle(tasks, size, tasksStyle);
   }
   return Object.assign({}, state,
                        { style: zoomedStyle || tasksStyle || state.style });
@@ -128,6 +146,29 @@ function setMapSize (state, action) {
   });
 }
 
+function handleLocationChange (state, action) {
+  const taskId = parseTaskId(action.payload.pathname);
+  const isRequestsPage = checkRequestLocation(action.payload.pathname);
+  const isNewTask = checkNewTaskLocation(action.payload.pathname);
+
+  let newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }));
+  if (taskId) {
+    const style = styleManager.getFilteredTaskIdStyle(taskId, state.style);
+    newState = Object.assign({}, state, { style });
+  }
+  if (isNewTask) {
+    const style = styleManager.getTaskStatusStyle(state.style);
+    newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
+                             { style });
+  }
+  if (isRequestsPage) {
+    const style = styleManager.getTaskStatusStyle(state.style);
+    newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
+                         { style });
+  }
+  return newState;
+}
+
 export default function reducer (state = initialState, action) {
   switch (action.type) {
     case SET_MAP_LOCATION:
@@ -143,13 +184,7 @@ export default function reducer (state = initialState, action) {
       return receiveTasks(state, action);
 
     case LOCATION_CHANGE:
-      const taskId = parseTaskId(action.payload.pathname);
-      if (taskId) {
-        return Object.assign({}, state, { taskId: taskId });
-      } else {
-        return Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
-                             { taskId: undefined });
-      }
+      return handleLocationChange(state, action);
 
     case FINISH_POST_TASK:
       return setTaskGeoJSON(state, { geojson: undefined });

@@ -188,6 +188,21 @@ styleManager.getSourceZoomedStyle = (size, templateStyle) => {
   return style;
 };
 
+styleManager.getFilteredTaskIdStyle = (taskId, templateStyle) => {
+  const newLayers = templateStyle.layers.map((layer) => {
+    let newLayer;
+    if (layer.id === shadowFeaturesLayerId) {
+      newLayer = Object.assign({}, layer, {
+        filter: ['!=', '_id', taskId]
+      });
+    } else {
+      newLayer = layer;
+    }
+    return newLayer;
+  });
+  return Object.assign({}, templateStyle, { layers: newLayers });
+};
+
 styleManager.getTaskStatusStyle = (templateStyle) => {
   const style = Object.assign({}, templateStyle, {
     layers: templateStyle.layers.map((layer) => {
@@ -200,7 +215,8 @@ styleManager.getTaskStatusStyle = (templateStyle) => {
               stops: taskStatusStyles.map(s => [s.name, s.color])
             },
             'fill-opacity': 0.64
-          }
+          },
+          filter: ['has', '_id']
         });
       } else {
         return layer;
