@@ -213,6 +213,21 @@ styleManager.getFilteredTaskIdStyle = (taskId, templateStyle) => {
   return Object.assign({}, templateStyle, { layers: newLayers });
 };
 
+styleManager.getFilteredTasksStyle = (taskId, templateStyle) => {
+  const newLayers = templateStyle.layers.map((layer) => {
+    let newLayer;
+    if (layer.id === taskPolygons) {
+      newLayer = Object.assign({}, layer, {
+        filter: ['==', '_id', taskId]
+      });
+    } else {
+      newLayer = layer;
+    }
+    return newLayer;
+  });
+  return Object.assign({}, templateStyle, { layers: newLayers });
+};
+
 styleManager.getTaskStatusStyle = (templateStyle) => {
   const style = Object.assign({}, templateStyle, {
     layers: templateStyle.layers.map((layer) => {
