@@ -177,10 +177,11 @@ styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
 };
 
 styleManager.setGeoJSONData = (geojson, templateStyle) => {
+  const featureCollection = geojsonNormalize(geojson);
   const style = Object.assign({}, templateStyle, {
     sources: Object.assign({}, templateStyle.sources, {
       geojsonSource: Object.assign({}, templateStyle.sources.geojsonSource, {
-        data: geojson
+        data: featureCollection
       })
     })
   });

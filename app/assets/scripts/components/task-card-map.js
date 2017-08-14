@@ -17,12 +17,13 @@ const getTaskId = (state, props) => {
 export const makeGetTaskZoomStyle = () => {
   return createSelector([getStyle, getTaskId], (style, taskId) => {
     const geojsonSource = style.sources.geojsonSource;
-    if (geojsonSource.data && geojsonSource.data.features.length) {
+    if (geojsonSource.data &&
+        geojsonSource.data.features && geojsonSource.data.features.length) {
       const feature = geojsonSource.data.features
       .find((feature) => {
         return feature.properties._id === taskId;
       });
-      const size = { height: 300, width: 200 };
+      const size = { height: 200, width: 200 };
       const zoomedStyle = styleManager.getZoomedStyle(feature, size, style);
       const filteredStyle = styleManager.getFilteredTasksStyle(taskId, zoomedStyle);
       return filteredStyle;
