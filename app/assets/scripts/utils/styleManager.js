@@ -6,9 +6,10 @@ import hotStyle from './hotStyle';
 const raster = 'raster';
 const vector = 'vector';
 const rasterLayerId = 'tiles';
-const shadowFeaturesLayerId = 'shadow-features';
+export const taskPolygons = 'task-polygons';
+export const taskPolygonsHighlight = 'task-polygons-highlight';
 
-const templateStyle = {
+const rasterTemplateStyle = {
   'version': 8,
   'name': 'rasterTemplate',
   'sources': {
@@ -39,7 +40,7 @@ const templateStyle = {
     }
   },
   {
-    'id': shadowFeaturesLayerId,
+    'id': taskPolygons,
     'type': 'fill',
     'source': 'geojsonSource',
     'layout': {},
@@ -47,31 +48,60 @@ const templateStyle = {
       'fill-color': '#af92d4',
       'fill-opacity': 0.4
     }
+  },
+  {
+    id: taskPolygonsHighlight,
+    type: 'fill',
+    source: 'geojsonSource',
+    paint: {
+      'fill-opacity': 0.64
+    },
+    filter: ['==', '_id', '']
   }],
   center: [0, 0],
   zoom: 2
 };
 
+export const taskStatusStyles = [
+  {name: 'open', color: '#5ABDCB'},
+  {name: 'inprogress', color: '#D0EC77'},
+  {name: 'completed', color: '#72C97D'}
+];
+
 const styleManager = {};
+
+const setVisibility = (layer, visibility) => {
+  return Object.assign({}, layer, {
+    layout: Object.assign({}, layer.layout, { visibility })
+  });
+};
 
 styleManager.getInitialStyle = (name, url, type) => {
   if (!name) {
-    return hotStyle;
+    const invisibleRaster = rasterTemplateStyle.layers.map((layer) => {
+      let newLayer;
+      if (layer.id === rasterLayerId) {
+        newLayer = setVisibility(layer, 'none');
+      } else {
+        newLayer = layer;
+      }
+      return newLayer;
+    });
+    const newLayers = hotStyle.layers.concat(invisibleRaster);
+    return Object.assign({}, hotStyle, {
+      layers: newLayers,
+      sources: Object.assign({}, hotStyle.sources, rasterTemplateStyle.sources)
+    });
   } else {
-    return styleManager.setSource(templateStyle, name, url, type);
+    return styleManager.setSource(rasterTemplateStyle, name, url, type);
   }
 };
 
 styleManager.setSource = (prevStyle, name, url, type) => {
-  const setVisibility = (layer, visibility) => {
-    return Object.assign({}, layer, {
-      layout: Object.assign({}, layer.layout, { visibility })
-    });
-  };
   const newLayers = prevStyle.layers.map((layer) => {
     let newLayer;
     if (type === raster) {
-      if (layer.id === rasterLayerId || layer.id === shadowFeaturesLayerId) {
+      if (layer.id === rasterLayerId || layer.id === taskPolygons) {
         newLayer = setVisibility(layer, 'visible');
       } else {
         newLayer = setVisibility(layer, 'none');
@@ -147,11 +177,76 @@ styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
 };
 
 styleManager.setGeoJSONData = (geojson, templateStyle) => {
+  const featureCollection = geojsonNormalize(geojson);
   const style = Object.assign({}, templateStyle, {
     sources: Object.assign({}, templateStyle.sources, {
       geojsonSource: Object.assign({}, templateStyle.sources.geojsonSource, {
-        data: geojson
+        data: featureCollection
       })
+    })
+  });
+  return style;
+};
+
+styleManager.getSourceZoomedStyle = (size, templateStyle) => {
+  let style;
+  const data = templateStyle.sources.geojsonSource.data;
+  if (data.features && data.features.length !== 0) {
+    style = styleManager.getZoomedStyle(data, size, templateStyle);
+  } else {
+    style = templateStyle;
+  }
+  return style;
+};
+
+styleManager.getFilteredTaskIdStyle = (taskId, templateStyle) => {
+  const newLayers = templateStyle.layers.map((layer) => {
+    let newLayer;
+    if (layer.id === taskPolygons) {
+      newLayer = Object.assign({}, layer, {
+        filter: ['!=', '_id', taskId]
+      });
+    } else {
+      newLayer = layer;
+    }
+    return newLayer;
+  });
+  return Object.assign({}, templateStyle, { layers: newLayers });
+};
+
+styleManager.getFilteredTasksStyle = (taskId, templateStyle) => {
+  const newLayers = templateStyle.layers.map((layer) => {
+    let newLayer;
+    if (layer.id === taskPolygons) {
+      newLayer = Object.assign({}, layer, {
+        filter: ['==', '_id', taskId]
+      });
+    } else {
+      newLayer = layer;
+    }
+    return newLayer;
+  });
+  return Object.assign({}, templateStyle, { layers: newLayers });
+};
+
+styleManager.getTaskStatusStyle = (templateStyle) => {
+  const style = Object.assign({}, templateStyle, {
+    layers: templateStyle.layers.map((layer) => {
+      if (layer.id === taskPolygons) {
+        return Object.assign({}, layer, {
+          paint: {
+            'fill-color': {
+              property: 'status',
+              type: 'categorical',
+              stops: taskStatusStyles.map(s => [s.name, s.color])
+            },
+            'fill-opacity': 0.64
+          },
+          filter: ['has', '_id']
+        });
+      } else {
+        return layer;
+      }
     })
   });
   return style;

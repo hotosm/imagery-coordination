@@ -9,20 +9,19 @@ import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER }
 import * as actions from '../../app/assets/scripts/actions/actionTypes';
 
 test('map reducer initial state', t => {
-  t.plan(8);
   const initialState = mapReducer(undefined, {});
   t.is(typeof (initialState.mapHeight), 'number',
          'Initial state mapHeight is a number');
   t.is(typeof (initialState.mapWidth), 'number',
     'Initial state mapWidth is a number');
   t.ok(initialState.style, 'Initial state has base style loaded');
-  t.notOk(initialState.taskId, 'Initial state has no taskId set');
   t.notOk(initialState.taskGeojson, 'Initial state has no taskGeojson set');
   t.equal(initialState.drawMode, drawPolygon,
           'Initial state draw mode is draw polygon');
   t.true(Array.isArray(initialState.baseLayers),
          'Initial state has base layers array loaded');
   t.ok(initialState.baseLayer, 'Initial state has selected base layer object');
+  t.end();
 });
 
 test('map SET_MAP_LOCATION', t => {
@@ -84,75 +83,105 @@ test('map RECEIVE_TASK', t => {
 });
 
 test('map RECEIVE_TASKS', t => {
-  const geometryToFeature = sinon.spy(() => { return {}; });
+  const feature = 'feature';
+  const geometryToFeature = sinon.spy(() => { return feature; });
   mapReducer.__Rewire__('geometryToFeature', geometryToFeature);
-  const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
-    .returns({ name: true });
 
+  const setgeojson = 'setgeojson';
   const setGeoJSONData = sinon.stub(styleManager, 'setGeoJSONData')
-    .returns({ name: true });
+    .returns(setgeojson);
 
-  const currentTaskId = 1;
-  const receiveTasks = {
+  const zoomed = 'zoomed';
+  const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
+    .returns(zoomed);
+
+  const noResults = {
     type: RECEIVE_TASKS,
-    data: {
-      results: [{ _id: currentTaskId }, { _id: 2 }]
-    }
+    data: { results: undefined }
   };
-  let state = mapReducer({ taskId: currentTaskId }, receiveTasks);
+  const prevStyle = 'prevStyle';
+  let state = mapReducer({ style: prevStyle }, noResults);
+  t.plan(6);
+  t.equal(state.style, prevStyle,
+          'Does not update style when no RECEIVE_TASKS has no results');
 
-  t.plan(4);
-  t.deepEqual(geometryToFeature.getCall(0).args[0][0], { _id: 2 },
-             'Filters the existing task from being added to the geoJSON' +
-               ' source to support shadow features');
-  t.ok(setGeoJSONData.calledOnce,
-              'Sets new style geoJSON source to use the new filtered tasks');
-  t.ok(state.style.name, 'Updates state style with new style');
+  const results = 'results';
+  const setsTasksGeojson = {
+    type: RECEIVE_TASKS,
+    data: { results }
+  };
+  state = mapReducer({ taskGeojson: true }, setsTasksGeojson);
+  t.equal(geometryToFeature.getCall(0).args[0], results,
+         'Converts results to geojson featurs');
+  t.equal(setGeoJSONData.getCall(0).args[0], feature,
+         'Adds the geojson data to the style');
+  t.equal(state.style, setgeojson,
+         'When there is exisiting taskGeojson uses the style without zooming');
+
+  state = mapReducer({}, setsTasksGeojson);
+  t.equal(getZoomedStyle.getCall(0).args[2], setgeojson,
+         'Calls getZoomedStyle with resulting style of setGeoJSONData');
+  t.equal(state.style, zoomed,
+          'Zooms the style to all tasks when there is no exisiting taskGeojson');
 
   geometryToFeature.reset();
   getZoomedStyle.restore();
   setGeoJSONData.restore();
   mapReducer.__ResetDependency__('geometryToFeature');
-
-  const existingStyle = 'test';
-  const emptyReceivedTasks = {
-    type: RECEIVE_TASKS,
-    data: {
-      results: []
-    }
-  };
-  state = mapReducer({ style: existingStyle }, emptyReceivedTasks);
-  t.equal(state.style, existingStyle);
 });
 
 test('map LOCATION_CHANGE', t => {
+  const settaskgeojson = 'settaskgeojson';
+  const setTaskGeoJSON = sinon.spy(() => settaskgeojson);
+  mapReducer.__Rewire__('setTaskGeoJSON', setTaskGeoJSON);
+  const getfiltered = 'getfiltered';
+  const getFilteredTaskIdStyle = sinon.stub(styleManager, 'getFilteredTaskIdStyle')
+    .returns(getfiltered);
+
+  const taskid = 'taskid';
   const locationChange = {
     type: LOCATION_CHANGE,
-    payload: { pathname: '/requests/requestid/tasks/taskid/edit' }
+    payload: { pathname: `/requests/requestid/tasks/${taskid}/edit` }
   };
   let state = mapReducer({}, locationChange);
-  t.plan(4);
-  t.equal(state.taskId, 'taskid',
-          'Sets the current taskId when ' +
-            'location changes to route containing taskid');
+  t.equal(getFilteredTaskIdStyle.getCall(0).args[0], taskid,
+         'Changing location to edit existing task gets style with that task' +
+           ' filtered out');
+  t.equal(state.style, getfiltered);
 
-  const locationChangeCreateTask = {
+  const newTask = {
     type: LOCATION_CHANGE,
     payload: { pathname: '/requests/requestid/tasks/edit' }
   };
-  state = mapReducer({
-    taskId: 'taskid',
-    taskGeojson: true,
-    selectedFeatureId: featureId
-  }, locationChangeCreateTask);
-  t.notOk(state.taskId, 'Route change to create new task clears taskId');
-  t.notOk(state.taskGeojson,
-          'Route change to create new task clears taskGeojson');
-  t.notOk(state.selectedFeatureId,
-          'Route change to create new task clears selectedFeatureId');
+  const gettaskstatus = 'gettaskstatus';
+  const getTaskStatusStyle = sinon.stub(styleManager, 'getTaskStatusStyle')
+    .returns(gettaskstatus);
+  state = mapReducer({}, newTask);
+  t.ok(getTaskStatusStyle.called,
+       'Changing location to create new task gets style with other request task');
+  t.equal(state.style, gettaskstatus);
+  t.notOk(state.taskGeojson);
+
+  getTaskStatusStyle.reset();
+  const requestsPage = {
+    type: LOCATION_CHANGE,
+    payload: { pathname: '/requests/requestid' }
+  };
+  state = mapReducer({}, requestsPage);
+  t.ok(getTaskStatusStyle.called);
+  t.notOk(state.taskGeojson);
+
+  getTaskStatusStyle.reset();
+  getFilteredTaskIdStyle.reset();
+  setTaskGeoJSON.reset();
+  mapReducer.__ResetDependency__('setTaskGeoJSON');
+  t.end();
 });
 
 test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
+  const prevStyle = { name: true };
+  const getSourceZoomedStyle = sinon.stub(styleManager, 'getSourceZoomedStyle')
+    .returns(prevStyle);
   const getZoomedStyle = sinon.stub(styleManager, 'getZoomedStyle')
     .returns({ name: true });
 
@@ -160,12 +189,12 @@ test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
     type: actions.SET_MAP_SIZE,
     size: { height: 1, width: 1 }
   };
-  const prevStyle = { name: true };
   let state = mapReducer({ style: prevStyle }, setMapSize);
 
-  t.plan(6);
+  t.plan(7);
   t.equal(state.mapHeight, setMapSize.size.height, 'Sets mapHeight');
   t.equal(state.mapWidth, setMapSize.size.width, 'Sets mapWidth');
+  t.ok(getSourceZoomedStyle.called);
   t.deepEqual(state.style, prevStyle,
               'Retains original style when current' +
               ' state does not contain taskGeojson');
@@ -178,6 +207,7 @@ test('map SET_MAP_SIZE handles map resize to control fit bounds', t => {
   t.deepEqual(getZoomedStyle.getCall(0).args[1], setMapSize.size,
              'Uses new map size to get new zoomed style');
   t.ok(state.style.name, 'Updates style with the new zoomed style');
+  getSourceZoomedStyle.restore();
   getZoomedStyle.restore();
 });
 
