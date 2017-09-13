@@ -101,7 +101,8 @@ styleManager.setSource = (prevStyle, name, url, type) => {
   const newLayers = prevStyle.layers.map((layer) => {
     let newLayer;
     if (type === raster) {
-      if (layer.id === rasterLayerId || layer.id === taskPolygons) {
+      if (layer.id === rasterLayerId || layer.id === taskPolygons ||
+          layer.id === taskPolygonsHighlight) {
         newLayer = setVisibility(layer, 'visible');
       } else {
         newLayer = setVisibility(layer, 'none');
