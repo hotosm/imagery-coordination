@@ -314,8 +314,26 @@ This action is permanent.`;
             }
           </div>
           <div className='form__group'>
+            <label className='form__label'>To deliver by</label>
+            <DateTimePicker
+              min={new Date()}
+              finalView='decade'
+              format={'YYYY-MM-DD'}
+              value={this.getValueForDate('deliveryTime')}
+              time={false}
+              onChange={this.onDateChange.bind(null, 'deliveryTime')} />
+          </div>
+          <div className='form__group'>
+            <label className='form__label' htmlFor='task-assignee'>Assignee</label>
+            <select className='form__control form__control--medium' id='task-assignee'
+                value={this.state.data.assigneeId} onChange={this.onFieldChange.bind(null, 'assigneeId')} >
+              <option value=''>Not assigned</option>
+              {this.props.users.users.map(o => <option value={o.userId} key={o.userId}>{o.name}</option>)}
+            </select>
+          </div>
+          <div className='form__group'>
             <label className='form__label'>Time period provided</label>
-
+            <p className='form__help'>The dates are used to express a range and are optional.</p>
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker
@@ -338,26 +356,6 @@ This action is permanent.`;
                   onChange={this.onDateChange.bind(null, 'timePeriodProvidedTo')} />
               </div>
             </div>
-            <p className='form__help'>The dates are used to express a range and are optional.</p>
-
-          </div>
-          <div className='form__group'>
-            <label className='form__label'>To deliver by</label>
-            <DateTimePicker
-              min={new Date()}
-              finalView='decade'
-              format={'YYYY-MM-DD'}
-              value={this.getValueForDate('deliveryTime')}
-              time={false}
-              onChange={this.onDateChange.bind(null, 'deliveryTime')} />
-          </div>
-          <div className='form__group'>
-            <label className='form__label' htmlFor='task-assignee'>Assignee</label>
-            <select className='form__control form__control--medium' id='task-assignee'
-                value={this.state.data.assigneeId} onChange={this.onFieldChange.bind(null, 'assigneeId')} >
-              <option value=''>Not assigned</option>
-              {this.props.users.users.map(o => <option value={o.userId} key={o.userId}>{o.name}</option>)}
-            </select>
           </div>
           <div className='form__actions'>
             <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save task' : 'Create task'}</span></button>
