@@ -2,8 +2,9 @@ import test from 'tape';
 import sinon from 'sinon';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import styleManager from '../../app/assets/scripts/utils/styleManager';
-import mapReducer, { featureId, drawPolygon, directSelect }
-  from '../../app/assets/scripts/reducers/map';
+import mapReducer from '../../app/assets/scripts/reducers/map';
+import { featureId, simpleSelect, directSelect, staticDraw } from
+  '../../app/assets/scripts/utils/constants';
 import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER }
   from '../../app/assets/scripts/actions';
 import * as actions from '../../app/assets/scripts/actions/actionTypes';
@@ -16,8 +17,8 @@ test('map reducer initial state', t => {
     'Initial state mapWidth is a number');
   t.ok(initialState.style, 'Initial state has base style loaded');
   t.notOk(initialState.taskGeojson, 'Initial state has no taskGeojson set');
-  t.equal(initialState.drawMode, drawPolygon,
-          'Initial state draw mode is draw polygon');
+  t.equal(initialState.drawMode, staticDraw,
+          'Initial state draw mode is static');
   t.true(Array.isArray(initialState.baseLayers),
          'Initial state has base layers array loaded');
   t.ok(initialState.baseLayer, 'Initial state has selected base layer object');
@@ -57,7 +58,7 @@ test('map RECEIVE_TASK', t => {
   };
   let state = mapReducer({}, receiveTask);
 
-  t.plan(7);
+  t.plan(6);
   t.deepEqual(geometryToFeature.getCall(0).args[0], receiveTask.data.geometry,
     'Action geometry gets converted to geojson features by geometryToFeature');
   t.deepEqual(getZoomedStyle.getCall(0).args[0], fakeGeojson,
@@ -65,9 +66,7 @@ test('map RECEIVE_TASK', t => {
   t.equal(state.style.zoom, 0, 'Sets style to the new zoomed style');
   t.equal(state.taskGeojson.id, featureId,
           'Sets the taskGeojson id to the featureId constant used in the app');
-  t.equal(state.drawMode, directSelect, 'Sets the drawMode to direct select');
-  t.equal(state.selectedFeatureId, featureId,
-          'Sets the selectedFeatureId to the featureId constant used in the app');
+  t.equal(state.drawMode, simpleSelect, 'Sets the drawMode to simple select');
 
   const receiveTaskError = {
     type: RECEIVE_TASK,
@@ -245,7 +244,7 @@ test('map SET_TASK_GEOJSON', t => {
   t.plan(6);
   t.notOk(state.taskGeojson);
   t.notOk(state.selectedFeatureId);
-  t.equal(state.drawMode, drawPolygon);
+  t.equal(state.drawMode, staticDraw);
 
   const geojsonId = 'geojsonId';
   const setTaskGeojson = {

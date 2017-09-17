@@ -1,5 +1,6 @@
 'use strict';
 import mapboxgl from 'mapbox-gl';
+import Geocoder from '@mapbox/mapbox-gl-geocoder';
 
 export function setupMap (container, layerURL) {
   var map = new mapboxgl.Map({
@@ -50,4 +51,24 @@ export function addMapControls (map, domNode) {
   controls.querySelector('.mapboxgl-ctrl-zoom-in').classList.add('button');
   controls.querySelector('.mapboxgl-ctrl-zoom-out').classList.add('button');
   controls.querySelector('.mapboxgl-ctrl-compass').remove();
+}
+
+export function addGeocoder (map) {
+  const geocoder = new Geocoder({
+    accessToken: mapboxgl.accessToken
+  });
+  map.addControl(geocoder);
+  return geocoder;
+}
+
+export function disableGeocoder (domNode) {
+  const control = domNode.querySelector('.mapboxgl-ctrl-geocoder');
+  control.classList.remove('geocode-enabled');
+  control.classList.add('geocode-disabled');
+}
+
+export function enableGeocoder (domNode) {
+  const control = domNode.querySelector('.mapboxgl-ctrl-geocoder');
+  control.classList.remove('geocode-disabled');
+  control.classList.add('geocode-enabled');
 }

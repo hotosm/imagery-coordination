@@ -8,18 +8,17 @@ import { SET_MAP_LOCATION, SET_MAP_SIZE, SET_TASK_GEOJSON, SET_DRAW_MODE,
   SET_SELECTED_FEATURE_ID, RECEIVE_UPLOAD } from '../actions/actionTypes';
 import { geometryToFeature } from '../utils/features';
 import baseLayers from '../utils/map-layers';
+import { directSelect, featureId, drawPolygon, simpleSelect, staticDraw } from
+  '../utils/constants';
 
 const style = styleManager.getInitialStyle();
-export const directSelect = 'direct_select';
-export const featureId = 'task-feature';
-export const drawPolygon = 'draw_polygon';
 
 export const initialState = {
   mapHeight: 2,
   mapWidth: 4,
   style,
   taskGeojson: undefined,
-  drawMode: drawPolygon,
+  drawMode: staticDraw,
   selectedFeatureId: undefined,
   baseLayers,
   baseLayer: baseLayers[0]
@@ -73,8 +72,7 @@ function receiveTask (state, action) {
     newState = Object.assign({}, state, {
       style: style,
       taskGeojson: geojson,
-      drawMode: directSelect,
-      selectedFeatureId: featureId
+      drawMode: simpleSelect
     });
   } else {
     newState = state;
@@ -86,7 +84,7 @@ function setTaskGeoJSON (state, action) {
   return Object.assign({}, state, {
     taskGeojson: action.geojson,
     selectedFeatureId: action.geojson ? action.geojson.id : undefined,
-    drawMode: action.geojson ? state.drawMode : drawPolygon
+    drawMode: action.geojson ? state.drawMode : staticDraw
   });
 }
 

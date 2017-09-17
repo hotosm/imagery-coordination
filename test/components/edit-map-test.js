@@ -2,8 +2,8 @@ import React from 'react';
 import test from 'tape';
 import { mount } from 'enzyme';
 import sinon from 'sinon';
-import { EditMap, drawPolygon }
-  from '../../app/assets/scripts/components/edit-map';
+import { EditMap } from '../../app/assets/scripts/components/edit-map';
+import { drawPolygon } from '../../app/assets/scripts/utils/constants';
 import hotStyle from '../../app/assets/scripts/utils/hotStyle';
 import config from '../../app/assets/scripts/config';
 import mapboxgl from 'mapbox-gl';
