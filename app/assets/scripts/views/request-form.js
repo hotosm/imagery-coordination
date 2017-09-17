@@ -239,6 +239,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-org'>Requesting organization</label>
+            <p className='form__help'>The organization which will utilize the requested imagery</p>
             <input type='text' className='form__control form__control--medium' id='request-org' name='request-org' placeholder='Requesting organization'
                 value={this.state.data.requestingOrg} onChange={this.onFieldChange.bind(null, 'requestingOrg')} />
           </div>
