@@ -332,7 +332,7 @@ This action is permanent.`;
             </select>
           </div>
           <div className='form__group'>
-            <label className='form__label'>Time period provided</label>
+            <label className='form__label'>Desired Time Frame</label>
             <p className='form__help'>The dates are used to express a range and are optional.</p>
             <div className='date-selector'>
               <div className='date-selector__picker'>
