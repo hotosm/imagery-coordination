@@ -191,8 +191,9 @@ This action is permanent, and all associated tasks will be deleted as well.`;
       <div className='request-form'>
         <form ref='form' className='form'>
           <div className='form__group'>
-            <label className='form__label' htmlFor='request-name'>Request name <small>(required)</small></label>
-            <input type='text' className='form__control form__control--medium' id='request-name' name='request-name' placeholder='Request name'
+            <label className='form__label' htmlFor='request-name'>Request Title <small>(required)</small></label>
+            <p className='form__help'>A short title for easily tracking the request</p>
+            <input type='text' className='form__control form__control--medium' id='request-name' name='request-name' placeholder='Request Title'
                 value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
             {this.state.errors.name
               ? <p className='message message--alert'>A name is required</p>
