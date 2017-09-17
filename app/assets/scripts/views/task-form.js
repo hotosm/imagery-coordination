@@ -337,7 +337,6 @@ This action is permanent.`;
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker
-                  max={this.dateOrUndefined('timePeriodProvidedTo') || new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodProvidedFrom')}
@@ -348,7 +347,6 @@ This action is permanent.`;
               <div className='date-selector__picker'>
                 <DateTimePicker
                   min={this.dateOrUndefined('timePeriodProvidedFrom')}
-                  max={new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodProvidedTo')}
