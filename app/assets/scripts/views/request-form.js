@@ -215,7 +215,6 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker
-                  max={this.dateOrUndefined('timePeriodRequestedTo') || new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodRequestedFrom')}
@@ -226,7 +225,6 @@ This action is permanent, and all associated tasks will be deleted as well.`;
               <div className='date-selector__picker'>
                 <DateTimePicker
                   min={this.dateOrUndefined('timePeriodRequestedFrom')}
-                  max={new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodRequestedTo')}
