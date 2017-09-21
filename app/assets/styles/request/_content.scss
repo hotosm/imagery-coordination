@@ -60,3 +60,11 @@
     }
   }
 }
+
+.request_detail_column {
+  @include col(6/12, $cycle: 2);
+}
+
+.request_detail_full {
+  @include col(12/12);
+}
