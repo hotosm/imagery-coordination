@@ -196,7 +196,7 @@ var RequestPage = React.createClass({
 
     return (
       <section className='section section--page'>
-        <header className='section__header'>
+        <header className='section__header no__bottom'>
           <div className='inner'>
             <div className='section__headline'>
               <h1 className='section__title'>{data.name}</h1>
