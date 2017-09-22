@@ -220,9 +220,6 @@ var RequestPage = React.createClass({
         <hr/>
         <div className='section__body'>
           <div className='inner'>
-            <div className='details__col--sec'>
-              {this.renderRequestMap()}
-            </div>
             <div className='details'>
               <div className='details__col--sec'>
                 <div className='request_detail_column'>
@@ -252,7 +249,10 @@ var RequestPage = React.createClass({
                   </dl>
                 </div>
               </div>
-            </div>
+              <div className='details__col--sec'>
+                {this.renderRequestMap()}
+              </div>
+              </div>
             <hr/>
             {this.renderTasks()}
           </div>
