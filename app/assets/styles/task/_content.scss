@@ -112,11 +112,11 @@
 
   &__media {
     background: tint($base-color, 96%);
-    width: 30%; 
+    width: 30%;
   }
 
   &__content {
-    width: 70%; 
+    width: 70%;
   }
 
   &__header {
@@ -177,4 +177,9 @@
   .form__group {
     max-width: 45rem;
   }
+}
+
+.task_detail_full {
+  padding: 1rem;
+  @include col(12/12);
 }

@@ -117,7 +117,7 @@ var TaskPage = React.createClass({
     return (
       <TaskMap
         mapId='map-task-page'
-        className='map-container map-container--display bleed-full'
+        className='map-container map-container--display'
         results={feat}
         selectedId={this.props.task.data._id}
         onBaseLayerChange={this.props._setMapBaseLayer}
@@ -188,34 +188,37 @@ var TaskPage = React.createClass({
               <Link to={`/requests/${data.requestId}/tasks/${data._id}/edit`} className='button-edit'><span>Edit task</span></Link>
             </div>
             ) : null}
-            <div className='section__stats'>
-              <p className={`status-indicator status-indicator--${data.status}`}>{taskStatusMatrix[data.status]}</p>
-              <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')}</p>
-              <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
-              {data.assigneeId
-                ? <p className='task-assignee'>Assigned to: <strong>{userUtils.getNameFromId(data.assigneeId)}</strong></p>
-                : <p className='task-assignee'>Assigned to: <strong>Not assigned</strong></p>}
-            </div>
-          </div>
+        </div>
         </header>
         <div className='section__body'>
           <div className='inner'>
-
-            {this.renderTaskMap()}
-
             <div className='details'>
-              <dl>
-                <dt>Deliver by</dt>
-                <dd>{data.deliveryTime ? moment(data.deliveryTime).format('YYYY/MM/DD') : 'n/a'}</dd>
-                <dt>Time period Provided</dt>
-                <dd>{timePeriodProvidedFrom} - {timePeriodProvidedTo}</dd>
-              </dl>
+              <div className='details__col--sec'>
+                <div className='task_detail_full'>
+                  <div>
+                    <p className={`status-indicator status-indicator--${data.status}`}>{taskStatusMatrix[data.status]}</p>
+                    <p className='meta-info'>Updated on {moment(data.updated).format('YYYY/MM/DD')}</p>
+                    <p className='task-author'>Created by: <strong>{userUtils.getNameFromId(data.authorId)}</strong></p>
+                    {data.assigneeId
+                      ? <p className='task-assignee'>Assigned to: <strong>{userUtils.getNameFromId(data.assigneeId)}</strong></p>
+                      : <p className='task-assignee'>Assigned to: <strong>Not assigned</strong></p>}
+                  </div>
+                </div>
+                <div className='task_detail_full'>
+                  <dl>
+                    <dt>Deliver by</dt>
+                    <dd>{data.deliveryTime ? moment(data.deliveryTime).format('YYYY/MM/DD') : 'n/a'}</dd>
+                    <dt>Time period Provided</dt>
+                    <dd>{timePeriodProvidedFrom} - {timePeriodProvidedTo}</dd>
+                  </dl>
+                </div>
+              </div>
+              <div className='details__col--sec'>
+                {this.renderTaskMap()}
+              </div>
             </div>
-
             <hr/>
-
             {this.renderTaskUpdatesBlock()}
-
           </div>
         </div>
       </section>
