@@ -183,3 +183,8 @@
   padding: 1rem;
   @include col(12/12);
 }
+
+.hr_full {
+  width: 100%;
+  max-width: 100%;
+}

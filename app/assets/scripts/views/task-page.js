@@ -208,7 +208,7 @@ var TaskPage = React.createClass({
                   <dl>
                     <dt>Deliver by</dt>
                     <dd>{data.deliveryTime ? moment(data.deliveryTime).format('YYYY/MM/DD') : 'n/a'}</dd>
-                    <dt>Time period Provided</dt>
+                    <dt>Date Range Of Imagery Collected</dt>
                     <dd>{timePeriodProvidedFrom} - {timePeriodProvidedTo}</dd>
                   </dl>
                 </div>

@@ -210,8 +210,8 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             </select>
           </div>
           <div className='form__group'>
-            <label className='form__label'>Desired Time Frame</label>
-            <p className='form__help'>The dates are used to express a range and are optional.</p>
+            <label className='form__label'>Time Period Requestd</label>
+            <p className='form__help'>The approximate date range for which imagery should be collected</p>
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker

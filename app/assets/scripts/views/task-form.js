@@ -331,9 +331,10 @@ This action is permanent.`;
               {this.props.users.users.map(o => <option value={o.userId} key={o.userId}>{o.name}</option>)}
             </select>
           </div>
+          <hr className='hr_full'/>
+          <p className='form__help'>The Date Range of Imagery Collected can be entered after the task is completed</p>
           <div className='form__group'>
-            <label className='form__label'>Desired Time Frame</label>
-            <p className='form__help'>The dates are used to express a range and are optional.</p>
+            <label className='form__label'>Date Range of Imagery Collected</label>
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker
@@ -355,6 +356,7 @@ This action is permanent.`;
               </div>
             </div>
           </div>
+          <hr className='hr_full'/>
           <div className='form__actions'>
             <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save task' : 'Create task'}</span></button>
             {this.props.user.profile.roles.indexOf('coordinator') !== -1 ? (
