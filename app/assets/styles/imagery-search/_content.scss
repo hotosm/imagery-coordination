@@ -84,3 +84,7 @@ $selectedBorderSize: .35em;
   border-style: solid;
   border-width: $selectedBorderSize;
 }
+
+#geocoder > div {
+  z-index: 999;
+}

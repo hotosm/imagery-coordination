@@ -1,8 +1,10 @@
 import React, { PropTypes as T } from 'react';
+import ReactDOM from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 import { diff } from 'mapbox-gl-style-spec';
 import AddRequestLink from './add-request-link';
 import { addMapControls } from '../utils/map';
+import Geocoder from '@mapbox/mapbox-gl-geocoder';
 
 const ImagerySearch = React.createClass({
   propTypes: {
@@ -41,6 +43,13 @@ const ImagerySearch = React.createClass({
       });
       return map;
     });
+
+    const geocoder = new Geocoder({
+      accessToken: mapboxgl.accessToken
+    });
+    const dom = ReactDOM.findDOMNode(this);
+    const geocoderDiv = dom.querySelector('#geocoder');
+    geocoderDiv.appendChild(geocoder.onAdd(this.mainMap));
 
     this.mainMap.on('move', (event) => {
       if (event.originalEvent) {
@@ -103,6 +112,8 @@ const ImagerySearch = React.createClass({
             </div>
             <div className='section__actions'>
               <AddRequestLink/>
+            </div>
+            <div id='geocoder'>
             </div>
           </div>
         </header>

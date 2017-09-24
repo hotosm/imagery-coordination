@@ -14,13 +14,13 @@
   &__col--sec {
     @include col(12/12);
     @include media(large-up) {
-      @include col(4/12);
+      @include col(6/12);
     }
   }
 
   dl {
     margin-bottom: 0;
-    
+
     dd {
       margin-bottom: 1rem;
     }

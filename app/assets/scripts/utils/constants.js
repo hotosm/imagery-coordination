@@ -17,3 +17,10 @@ export const requestStatusStyles = [
   {name: 'closed', color: '#A5B1B5'},
   {name: 'canceled', color: '#EA4F54'}
 ];
+
+export const directSelect = 'direct_select';
+export const featureId = 'task-feature';
+export const drawPolygon = 'draw_polygon';
+export const simpleSelect = 'simple_select';
+export const staticDraw = 'static';
+

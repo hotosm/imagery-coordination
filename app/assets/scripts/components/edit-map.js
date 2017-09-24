@@ -5,18 +5,18 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import Draw from '@mapbox/mapbox-gl-draw';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import Measure from 'react-measure';
 import { diff } from 'mapbox-gl-style-spec';
 import StyleSwitcher from './style-switcher';
-import { addMapControls } from '../utils/map';
+import { addMapControls, addGeocoder, disableGeocoder, enableGeocoder }
+  from '../utils/map';
 import { mbStyles } from '../utils/mapbox-styles';
 import { setMapLocation, setMapSize, setTaskGeoJSON,
   setDrawMode, setSelectedFeatureId } from '../actions/map-actions';
 import { setMapBaseLayer } from '../actions';
-
-export const simpleSelect = 'simple_select';
-export const directSelect = 'direct_select';
-export const drawPolygon = 'draw_polygon';
+import { simpleSelect, directSelect, drawPolygon, staticDraw } from
+  '../utils/constants';
 
 export const EditMap = React.createClass({
   displayName: 'EditMap',
@@ -48,6 +48,7 @@ export const EditMap = React.createClass({
     });
     addMapControls(this.map, ReactDOM.findDOMNode(this));
     this.addDraw();
+    addGeocoder(this.map);
   },
 
   componentWillUnmount: function () {
@@ -57,9 +58,14 @@ export const EditMap = React.createClass({
   componentWillReceiveProps: function (nextProps) {
     this.manageFeatures = (event) => {
       this.removeFeature(nextProps.taskGeojson, nextProps.drawMode);
+      enableGeocoder(ReactDOM.findDOMNode(this));
       if (nextProps.taskGeojson) {
         this.addFeature(nextProps.taskGeojson, nextProps.drawMode,
                         nextProps.selectedFeatureId);
+        disableGeocoder(ReactDOM.findDOMNode(this));
+      }
+      if (nextProps.drawMode === drawPolygon) {
+        disableGeocoder(ReactDOM.findDOMNode(this));
       }
     };
     if (this.map.loaded()) {
@@ -102,10 +108,13 @@ export const EditMap = React.createClass({
   },
 
   addDraw: function () {
+    const modes = Draw.modes;
+    modes.static = StaticMode;
     this.draw = new Draw({
       displayControlsDefault: false,
       styles: mbStyles,
-      defaultMode: 'draw_polygon'
+      defaultMode: staticDraw,
+      modes: modes
     });
     this.map.addControl(this.draw);
     this.map.on('draw.update', (event) => {

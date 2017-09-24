@@ -52,7 +52,7 @@
     "del": "^2.2.1",
     "envify": "^3.4.1",
     "enzyme": "<=2.8.0",
-    "eslint": "^3.0.1",
+    "eslint": "^3.19.0",
     "eslint-config-standard": "^6.0.0-beta",
     "eslint-plugin-promise": "^3.3.0",
     "eslint-plugin-react": "^6.7.1",
@@ -91,6 +91,8 @@
   "dependencies": {
     "@mapbox/geojson-normalize": "0.0.1",
     "@mapbox/mapbox-gl-draw": "^1.0.0",
+    "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
+    "@mapbox/mapbox-gl-geocoder": "^2.1.1",
     "@turf/area": "^4.6.0",
     "@turf/bbox": "^3.7.0",
     "@turf/center": "^3.7.0",

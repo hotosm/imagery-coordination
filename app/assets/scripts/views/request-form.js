@@ -191,8 +191,9 @@ This action is permanent, and all associated tasks will be deleted as well.`;
       <div className='request-form'>
         <form ref='form' className='form'>
           <div className='form__group'>
-            <label className='form__label' htmlFor='request-name'>Request name <small>(required)</small></label>
-            <input type='text' className='form__control form__control--medium' id='request-name' name='request-name' placeholder='Request name'
+            <label className='form__label' htmlFor='request-name'>Request Title <small>(required)</small></label>
+            <p className='form__help'>A short title for easily tracking the request</p>
+            <input type='text' className='form__control form__control--medium' id='request-name' name='request-name' placeholder='Request Title'
                 value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
             {this.state.errors.name
               ? <p className='message message--alert'>A name is required</p>
@@ -209,12 +210,11 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             </select>
           </div>
           <div className='form__group'>
-            <label className='form__label'>Time period requested</label>
-
+            <label className='form__label'>Time Period Requestd</label>
+            <p className='form__help'>The approximate date range for which imagery should be collected</p>
             <div className='date-selector'>
               <div className='date-selector__picker'>
                 <DateTimePicker
-                  max={this.dateOrUndefined('timePeriodRequestedTo') || new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodRequestedFrom')}
@@ -225,7 +225,6 @@ This action is permanent, and all associated tasks will be deleted as well.`;
               <div className='date-selector__picker'>
                 <DateTimePicker
                   min={this.dateOrUndefined('timePeriodRequestedFrom')}
-                  max={new Date()}
                   finalView='decade'
                   format={'YYYY-MM-DD'}
                   value={this.getValueForDate('timePeriodRequestedTo')}
@@ -233,19 +232,19 @@ This action is permanent, and all associated tasks will be deleted as well.`;
                   onChange={this.onDateChange.bind(null, 'timePeriodRequestedTo')} />
               </div>
             </div>
-            <p className='form__help'>The dates are used to express a range and are optional.</p>
 
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-org'>Requesting organization</label>
+            <p className='form__help'>The organization which will utilize the requested imagery</p>
             <input type='text' className='form__control form__control--medium' id='request-org' name='request-org' placeholder='Requesting organization'
                 value={this.state.data.requestingOrg} onChange={this.onFieldChange.bind(null, 'requestingOrg')} />
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-gsd'>GSD</label>
+            <p className='form__help'>Ground Sample Distance in meters.</p>
             <input ref='gsd' type='text' className='form__control form__control--medium' id='request-gsd' name='request-gsd' placeholder='Desired GSD'
                 value={this.state.data.gsd} onChange={this.onFieldChange.bind(null, 'gsd')} />
-            <p className='form__help'>Ground Sample Distance in meters.</p>
             {this.state.errors.gsd
               ? <p className='message message--alert'>The GSD must be a number</p>
               : null
@@ -261,15 +260,15 @@ This action is permanent, and all associated tasks will be deleted as well.`;
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-purpose'>Purpose</label>
+            <p className='form__help'>Describe why these images are needed and the context of the work being conducted.</p>
             <textarea ref='purpose' className='form__control' id='request-purpose' rows='4' placeholder='Purpose of this request'
                 value={this.state.data.purpose} onChange={this.onFieldChange.bind(null, 'purpose')} ></textarea>
-            <p className='form__help'>Describe why these images are needed and the context of the work being conducted.</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-use'>Use</label>
+            <p className='form__help'>How will the imagery be used and what products do you intend to generate?</p>
             <textarea ref='use' className='form__control' id='request-use' rows='4' placeholder='Intended use for the imagery'
                 value={this.state.data.use} onChange={this.onFieldChange.bind(null, 'use')} ></textarea>
-            <p className='form__help'>How will the imagery be used and what products do you intend to generate?</p>
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-notes'>Notes</label>

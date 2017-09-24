@@ -314,34 +314,6 @@ This action is permanent.`;
             }
           </div>
           <div className='form__group'>
-            <label className='form__label'>Time period provided</label>
-
-            <div className='date-selector'>
-              <div className='date-selector__picker'>
-                <DateTimePicker
-                  max={this.dateOrUndefined('timePeriodProvidedTo') || new Date()}
-                  finalView='decade'
-                  format={'YYYY-MM-DD'}
-                  value={this.getValueForDate('timePeriodProvidedFrom')}
-                  time={false}
-                  onChange={this.onDateChange.bind(null, 'timePeriodProvidedFrom')} />
-              </div>
-              <p className='date-selector__sep'>to</p>
-              <div className='date-selector__picker'>
-                <DateTimePicker
-                  min={this.dateOrUndefined('timePeriodProvidedFrom')}
-                  max={new Date()}
-                  finalView='decade'
-                  format={'YYYY-MM-DD'}
-                  value={this.getValueForDate('timePeriodProvidedTo')}
-                  time={false}
-                  onChange={this.onDateChange.bind(null, 'timePeriodProvidedTo')} />
-              </div>
-            </div>
-            <p className='form__help'>The dates are used to express a range and are optional.</p>
-
-          </div>
-          <div className='form__group'>
             <label className='form__label'>To deliver by</label>
             <DateTimePicker
               min={new Date()}
@@ -359,6 +331,32 @@ This action is permanent.`;
               {this.props.users.users.map(o => <option value={o.userId} key={o.userId}>{o.name}</option>)}
             </select>
           </div>
+          <hr className='hr_full'/>
+          <p className='form__help'>The Date Range of Imagery Collected can be entered after the task is completed</p>
+          <div className='form__group'>
+            <label className='form__label'>Date Range of Imagery Collected</label>
+            <div className='date-selector'>
+              <div className='date-selector__picker'>
+                <DateTimePicker
+                  finalView='decade'
+                  format={'YYYY-MM-DD'}
+                  value={this.getValueForDate('timePeriodProvidedFrom')}
+                  time={false}
+                  onChange={this.onDateChange.bind(null, 'timePeriodProvidedFrom')} />
+              </div>
+              <p className='date-selector__sep'>to</p>
+              <div className='date-selector__picker'>
+                <DateTimePicker
+                  min={this.dateOrUndefined('timePeriodProvidedFrom')}
+                  finalView='decade'
+                  format={'YYYY-MM-DD'}
+                  value={this.getValueForDate('timePeriodProvidedTo')}
+                  time={false}
+                  onChange={this.onDateChange.bind(null, 'timePeriodProvidedTo')} />
+              </div>
+            </div>
+          </div>
+          <hr className='hr_full'/>
           <div className='form__actions'>
             <button type='submit' className={'button button--primary'} onClick={this.onSave}><span>{editing ? 'Save task' : 'Create task'}</span></button>
             {this.props.user.profile.roles.indexOf('coordinator') !== -1 ? (

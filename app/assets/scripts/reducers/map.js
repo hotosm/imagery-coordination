@@ -2,24 +2,23 @@
 import { LOCATION_CHANGE } from 'react-router-redux';
 import _ from 'lodash';
 import styleManager from '../utils/styleManager';
-import { RECEIVE_TASK, RECEIVE_TASKS, SET_MAP_LAYER, RESET_MAP_LAYER,
-  FINISH_POST_TASK } from '../actions';
+import { RECEIVE_TASK, RECEIVE_TASKS, RECEIVE_USER_TASKS, SET_MAP_LAYER,
+  RESET_MAP_LAYER, FINISH_POST_TASK } from '../actions';
 import { SET_MAP_LOCATION, SET_MAP_SIZE, SET_TASK_GEOJSON, SET_DRAW_MODE,
   SET_SELECTED_FEATURE_ID, RECEIVE_UPLOAD } from '../actions/actionTypes';
 import { geometryToFeature } from '../utils/features';
 import baseLayers from '../utils/map-layers';
+import { directSelect, featureId, drawPolygon, simpleSelect, staticDraw } from
+  '../utils/constants';
 
 const style = styleManager.getInitialStyle();
-export const directSelect = 'direct_select';
-export const featureId = 'task-feature';
-export const drawPolygon = 'draw_polygon';
 
 export const initialState = {
   mapHeight: 2,
   mapWidth: 4,
   style,
   taskGeojson: undefined,
-  drawMode: drawPolygon,
+  drawMode: staticDraw,
   selectedFeatureId: undefined,
   baseLayers,
   baseLayer: baseLayers[0]
@@ -54,6 +53,15 @@ function checkNewTaskLocation (locationString) {
   return isNewTask;
 }
 
+function checkLocationDashboard (locationString) {
+  let isDashboard = false;
+  const locationParts = locationString.split('/');
+  if (locationParts[1] === 'dashboard') {
+    isDashboard = true;
+  }
+  return isDashboard;
+}
+
 function receiveTask (state, action) {
   let newState;
   if (!action.error && action.data.geometry) {
@@ -64,8 +72,7 @@ function receiveTask (state, action) {
     newState = Object.assign({}, state, {
       style: style,
       taskGeojson: geojson,
-      drawMode: directSelect,
-      selectedFeatureId: featureId
+      drawMode: simpleSelect
     });
   } else {
     newState = state;
@@ -77,7 +84,7 @@ function setTaskGeoJSON (state, action) {
   return Object.assign({}, state, {
     taskGeojson: action.geojson,
     selectedFeatureId: action.geojson ? action.geojson.id : undefined,
-    drawMode: action.geojson ? state.drawMode : drawPolygon
+    drawMode: action.geojson ? state.drawMode : staticDraw
   });
 }
 
@@ -150,13 +157,14 @@ function handleLocationChange (state, action) {
   const taskId = parseTaskId(action.payload.pathname);
   const isRequestsPage = checkRequestLocation(action.payload.pathname);
   const isNewTask = checkNewTaskLocation(action.payload.pathname);
+  const isDashboard = checkLocationDashboard(action.payload.pathname);
 
   let newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }));
   if (taskId) {
     const style = styleManager.getFilteredTaskIdStyle(taskId, state.style);
     newState = Object.assign({}, state, { style });
   }
-  if (isNewTask) {
+  if (isNewTask || isDashboard) {
     const style = styleManager.getTaskStatusStyle(state.style);
     newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
                              { style });
@@ -181,6 +189,9 @@ export default function reducer (state = initialState, action) {
       return receiveTask(state, action);
 
     case RECEIVE_TASKS:
+      return receiveTasks(state, action);
+
+    case RECEIVE_USER_TASKS:
       return receiveTasks(state, action);
 
     case LOCATION_CHANGE:
