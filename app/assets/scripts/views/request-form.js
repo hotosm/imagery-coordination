@@ -210,7 +210,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
             </select>
           </div>
           <div className='form__group'>
-            <label className='form__label'>Time Period Requestd</label>
+            <label className='form__label'>Time Period Requested</label>
             <p className='form__help'>The approximate date range for which imagery should be collected</p>
             <div className='date-selector'>
               <div className='date-selector__picker'>
