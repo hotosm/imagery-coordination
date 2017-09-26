@@ -16,7 +16,7 @@ function getClassMessage (drawMode, selectedFeatureId) {
   if (drawMode === simpleSelect && selectedFeatureId) {
     classMessage = {
       className: 'edit-status-simple-select',
-      message: 'Click and drag on the shape to move it'
+      message: 'Drag on the shape to move it or click map to complete'
     };
   }
   if (drawMode === simpleSelect && !selectedFeatureId) {

@@ -242,7 +242,7 @@ This action is permanent, and all associated tasks will be deleted as well.`;
           </div>
           <div className='form__group'>
             <label className='form__label' htmlFor='request-gsd'>GSD</label>
-            <p className='form__help'>Ground Sample Distance in meters.</p>
+            <p className='form__help'>Ground Sample Distance in meters (e.g. enter 0.5 for a 50cm resolution).</p>
             <input ref='gsd' type='text' className='form__control form__control--medium' id='request-gsd' name='request-gsd' placeholder='Desired GSD'
                 value={this.state.data.gsd} onChange={this.onFieldChange.bind(null, 'gsd')} />
             {this.state.errors.gsd
