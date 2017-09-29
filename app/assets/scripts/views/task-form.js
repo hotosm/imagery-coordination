@@ -284,7 +284,8 @@ This action is permanent.`;
       <div className='task-form'>
         <form ref='form' className='form'>
           <div className='form__group'>
-            <label className='form__label'>Area of interest</label>
+            <label className='form__label'>Define the area of interest to collect</label>
+            <p className='form__help'>Draw the area of interest on the map below or upload a file (KML and GeoJSON format only).</p>
             <input type='file' name='task-area-file' onChange={this.onFileChange} />
             {this.state.errors.geometryFile
               ? <p className='message message--alert'>{this.state.errors.geometryFile}</p>
