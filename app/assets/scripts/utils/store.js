@@ -1,8 +1,10 @@
+/* eslint spaced-comment: 0 */
 import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import createLogger from 'redux-logger';
+//import createLogger from 'redux-logger';
+import { composeWithDevTools } from 'redux-devtools-extension/logOnlyInProduction';
 
-import config from '../config';
+//import config from '../config';
 import reducer from '../reducers';
 import { getProfileLocalStorage, getTokenLocalStorage } from './auth-service';
 
@@ -13,14 +15,15 @@ const initialState = {
   }
 };
 
-const logger = createLogger({
-  level: 'info',
-  collapsed: true,
-  predicate: (getState, action) => {
-    return (config.environment !== 'production');
-  }
-});
+//const logger = createLogger({
+  //level: 'info',
+  //collapsed: true,
+  //predicate: (getState, action) => {
+    //return (config.environment !== 'production');
+  //}
+//});
 
-const store = createStore(reducer, initialState, applyMiddleware(thunkMiddleware, logger));
+const composeEnhancers = composeWithDevTools({});
+const store = createStore(reducer, initialState, composeEnhancers(applyMiddleware(thunkMiddleware)));
 
 module.exports = store;

@@ -3,7 +3,7 @@
 const mapLayers = [
   {
     id: 'oam-base',
-    type: 'raster',
+    type: 'vector',
     imagerySearch: false,
     name: 'Mapbox Light',
     url: 'https://api.mapbox.com/styles/v1/hot/cividbt4w00ax2jn8517i2nc9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaG90IiwiYSI6ImNpdmlkM2lkMDAwYTAydXBnNXFkd2EwemsifQ.KPrUb_mKlPmHCR6LNrSihQ'

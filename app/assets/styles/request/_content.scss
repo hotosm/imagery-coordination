@@ -4,8 +4,15 @@
 
 .section--page {
   .section__header {
-    padding: 2rem 0;
+    padding-top: 2rem;
+    padding-right: 0;
+    padding-left: 0;
+    padding-bottom: 2rem;
   }
+}
+
+.no__bottom {
+  padding-bottom: 0 !important;
 }
 
 .button-add-task {
@@ -59,4 +66,12 @@
       text-align: center;
     }
   }
+}
+
+.request_detail_column {
+  @include col(6/12, $cycle: 2);
+}
+
+.request_detail_full {
+  @include col(12/12);
 }

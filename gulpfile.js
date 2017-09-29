@@ -1,7 +1,6 @@
 'use strict';
 
 var fs = require('fs');
-var path = require('path');
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
@@ -19,6 +18,9 @@ var revReplace = require('gulp-rev-replace');
 var SassString = require('node-sass').types.String;
 var notifier = require('node-notifier');
 var OAM_ADDONS = require('oam-design-system/gulp-addons');
+var uglifyes = require('uglify-es');
+var composer = require('gulp-uglify/composer');
+var minifyes = composer(uglifyes, console);
 
 // /////////////////////////////////////////////////////////////////////////////
 // --------------------------- Variables -------------------------------------//
@@ -204,7 +206,8 @@ gulp.task('styles', function () {
 gulp.task('html', ['styles'], function () {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
-    .pipe($.if('*.js', $.uglify()))
+    // compress comparisons flag necessary for mapbox-gl
+    .pipe($.if('*.js', minifyes({compress: {comparisons: false}})))
     .pipe($.if('*.css', $.csso()))
     .pipe($.if(/\.(css|js)$/, rev()))
     .pipe(revReplace())

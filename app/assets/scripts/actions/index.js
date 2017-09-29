@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import { stringify as buildAPIQS } from 'qs';
 
 import config from '../config';
-import store from '../utils/store';
 
 export const SET_USER_TOKEN = 'SET_USER_TOKEN';
 export const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -59,9 +58,9 @@ export const FINISH_DELETE_TASK = 'FINISH_DELETE_TASK';
 export const SET_MAP_LAYER = 'SET_MAP_LAYER';
 export const RESET_MAP_LAYER = 'SET_MAP_LAYER';
 
-export const SET_SEARCH_MAP_BASELAYER = 'SET_SEARCH_MAP_BASELAYER';
 export const SET_SEARCH_MAP_CENTER = 'SET_SEARCH_MAP_CENTER';
 export const SET_SEARCH_MAP_ZOOM = 'SET_SEARCH_MAP_ZOOM';
+export const SET_SEARCH_MAP_BASELAYER = 'SET_SEARCH_MAP_BASELAYER';
 export const RESET_SEARCH_MAP = 'RESET_SEARCH_MAP';
 
 // User
@@ -339,21 +338,8 @@ export function resetMapBaseLayer () {
 }
 
 // Search Map
-
 export function resetSearchMap () {
   return { type: RESET_SEARCH_MAP };
-}
-
-export function setSearchMapBaseLayer (layer) {
-  return { type: SET_SEARCH_MAP_BASELAYER, layer };
-}
-
-export function setSearchMapBaseCenter (center) {
-  return { type: SET_SEARCH_MAP_CENTER, center };
-}
-
-export function setSearchMapBaseZoom (zoom) {
-  return { type: SET_SEARCH_MAP_ZOOM, zoom };
 }
 
 // Fetcher function
@@ -383,42 +369,50 @@ function fetcher (url, requestFn, receiveFn) {
 }
 
 function fetcherAuthenticated (url, requestFn, receiveFn) {
-  let opt = {
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    }
+  return function (dispatch, getState) {
+    let opt = {
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      }
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function postAuthenticated (url, data, requestFn, receiveFn) {
-  let opt = {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    },
-    body: JSON.stringify(data)
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      },
+      body: JSON.stringify(data)
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function patchAuthenticated (url, data, requestFn, receiveFn) {
-  let opt = {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    },
-    body: JSON.stringify(data)
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      },
+      body: JSON.stringify(data)
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }
 
 function deleteAuthenticated (url, requestFn, receiveFn) {
-  let opt = {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${store.getState().user.token}`
-    }
+  return function (dispatch, getState) {
+    let opt = {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getState().user.token}`
+      }
+    };
+    return dispatch(f(url, opt, requestFn, receiveFn));
   };
-  return f(url, opt, requestFn, receiveFn);
 }

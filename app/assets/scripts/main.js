@@ -49,6 +49,9 @@ import ImagerySearch from './views/imagery-search';
 const history = syncHistoryWithStore(hashHistory, store);
 
 const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
+  if (currRouterProps.routes.some(route => route.ignoreScrollBehavior)) {
+    return false;
+  }
   return prevRouterProps &&
     decodeURIComponent(currRouterProps.location.pathname) !== decodeURIComponent(prevRouterProps.location.pathname);
 });
@@ -62,7 +65,7 @@ render((
       <Route path='/' component={App} auth={auth}>
         <Route path='/dashboard' component={Dashboard} onEnter={requireAuth} />
         <Route path='/about' component={About}/>
-        <Route path='/imagery-search(/:mapview)' component={ImagerySearch} />
+        <Route path='/imagery-search(/:mapview)' component={ImagerySearch} ignoreScrollBehavior />
         <Route path='/requests/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
         <Route path='/requests/:reqid/edit' component={RequestForm} onEnter={requireRole('coordinator')} />
 

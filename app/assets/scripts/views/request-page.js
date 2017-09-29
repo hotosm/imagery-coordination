@@ -140,7 +140,7 @@ var RequestPage = React.createClass({
     return (
       <RequestMap
         mapId='map-request-page'
-        className='map-container map-container--display bleed-full'
+        className='map-container map-container--display'
         results={feat}
         onBaseLayerChange={this.props._setMapBaseLayer}
         selectedLayer={this.props.mapState.baseLayer} />
@@ -196,7 +196,7 @@ var RequestPage = React.createClass({
 
     return (
       <section className='section section--page'>
-        <header className='section__header'>
+        <header className='section__header no__bottom'>
           <div className='inner'>
             <div className='section__headline'>
               <h1 className='section__title'>{data.name}</h1>
@@ -217,40 +217,44 @@ var RequestPage = React.createClass({
             </div>
           </div>
         </header>
+        <hr/>
         <div className='section__body'>
           <div className='inner'>
-
-            {this.renderRequestMap()}
-
             <div className='details'>
               <div className='details__col--sec'>
-                <dl>
-                  <dt>Requesting organization</dt>
-                  <dd>{data.requestingOrg ? data.requestingOrg : 'n/a'}</dd>
-                  <dt>Time period requested</dt>
-                  <dd>{timePeriodRequested}</dd>
-                  <dt>Desired GSD</dt>
-                  <dd>{data.gsd ? `${data.gsd}m` : 'n/a'}</dd>
-                  <dt>Product type</dt>
-                  <dd>{data.productType ? data.productType : 'n/a'}</dd>
-                </dl>
+                <div className='request_detail_column'>
+                  <dl>
+                    <dt>Requesting organization</dt>
+                    <dd>{data.requestingOrg ? data.requestingOrg : 'n/a'}</dd>
+                    <dt>Desired GSD</dt>
+                    <dd>{data.gsd ? `${data.gsd}m` : 'n/a'}</dd>
+                  </dl>
+                </div>
+                <div className='request_detail_column'>
+                  <dl>
+                    <dt>Time period requested</dt>
+                    <dd>{timePeriodRequested}</dd>
+                    <dt>Product type</dt>
+                    <dd>{data.productType ? data.productType : 'n/a'}</dd>
+                  </dl>
+                </div>
+                <div className='request_detail_full'>
+                  <dl>
+                    <dt>Purpose</dt>
+                    <dd><Linkify>{data.purpose ? data.purpose : 'Purpose not provided'}</Linkify></dd>
+                    <dt>Use</dt>
+                    <dd><Linkify>{data.use ? data.use : 'Use not provided'}</Linkify></dd>
+                    <dt>Notes</dt>
+                    <dd><Linkify>{data.notes ? data.notes : 'Notes not provided'}</Linkify></dd>
+                  </dl>
+                </div>
               </div>
-              <div className='details__col--main'>
-                <dl>
-                  <dt>Purpose</dt>
-                  <dd><Linkify>{data.purpose ? data.purpose : 'Purpose not provided'}</Linkify></dd>
-                  <dt>Use</dt>
-                  <dd><Linkify>{data.use ? data.use : 'Use not provided'}</Linkify></dd>
-                  <dt>Notes</dt>
-                  <dd><Linkify>{data.notes ? data.notes : 'Notes not provided'}</Linkify></dd>
-                </dl>
+              <div className='details__col--sec'>
+                {this.renderRequestMap()}
               </div>
-            </div>
-
+              </div>
             <hr/>
-
             {this.renderTasks()}
-
           </div>
         </div>
       </section>
