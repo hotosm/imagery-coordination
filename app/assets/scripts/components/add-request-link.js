@@ -4,16 +4,17 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import { isLoggedIn } from '../utils/auth-service';
 
-const AddRequestLink = (props) => {
-  if (props.coordinator) {
-    return <Link to='/requests/edit' className='button-skip'>Skip this step</Link>;
+export const AddRequestLink = (props) => {
+  if (props.coordinator && props.createRequestEnabled) {
+    return <Link to='/requests/edit' className='button-add-request'>Complete request</Link>;
   } else {
     return <div></div>;
   }
 };
 
 AddRequestLink.propTypes = {
-  coordinator: T.bool.isRequired
+  coordinator: T.bool.isRequired,
+  createRequestEnabled: T.bool.isRequired
 };
 
 export function isCoordinator (token, user) {
@@ -22,7 +23,8 @@ export function isCoordinator (token, user) {
 }
 
 const mapStateToProps = state => ({
-  coordinator: isCoordinator(state.user.token, state.user)
+  coordinator: isCoordinator(state.user.token, state.user),
+  createRequestEnabled: state.imagerySearch.createRequestEnabled
 });
 
 export default connect(mapStateToProps, null)(AddRequestLink);
