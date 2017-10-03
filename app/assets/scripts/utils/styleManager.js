@@ -5,46 +5,71 @@ import hotStyle from './hotStyle';
 
 const raster = 'raster';
 const vector = 'vector';
+const visible = 'visible';
+const none = 'none';
+
 const rasterLayerId = 'tiles';
 export const taskPolygons = 'task-polygons';
+export const requestPoints = 'request-points';
+export const requestPointLabels = 'request-point-labels';
 export const taskPolygonsHighlight = 'task-polygons-highlight';
+export const geojsonSource = 'geojsonSource';
+export const requestsSource = 'requestsSource';
+
+export const requestStatusStyles = [
+  {name: 'open', color: '#5ABDCB'},
+  {name: 'closed', color: '#A5B1B5'},
+  {name: 'canceled', color: '#EA4F54'}
+];
 
 const rasterTemplateStyle = {
-  'version': 8,
-  'name': 'rasterTemplate',
-  'sources': {
-    'rasterSource': {
-      'type': 'raster',
-      'tiles': ['url'],
-      'tileSize': 256
+  version: 8,
+  name: 'rasterTemplate',
+  sources: {
+    rasterSource: {
+      type: 'raster',
+      tiles: ['url'],
+      tileSize: 256
     },
-    'geojsonSource': {
-      'type': 'geojson',
-      'data': {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Polygon',
-          'coordinates': [ [ [ ] ] ]
+    [geojsonSource]: {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [ [ [ ] ] ]
+        }
+      }
+    },
+    [requestsSource]: {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [ [ [ ] ] ]
         }
       }
     }
   },
-  'layers': [{
-    'id': rasterLayerId,
-    'type': 'raster',
-    'source': 'rasterSource',
-    'minzoom': 0,
-    'maxzoom': 22,
-    'layout': {
-      'visibility': 'visible'
+  layers: [{
+    id: rasterLayerId,
+    type: 'raster',
+    source: 'rasterSource',
+    minzoom: 0,
+    maxzoom: 22,
+    layout: {
+      visibility: 'none'
     }
   },
   {
-    'id': taskPolygons,
-    'type': 'fill',
-    'source': 'geojsonSource',
-    'layout': {},
-    'paint': {
+    id: taskPolygons,
+    type: 'fill',
+    source: geojsonSource,
+    layout: {
+      visibility: 'visible'
+    },
+    paint: {
       'fill-color': '#af92d4',
       'fill-opacity': 0.4
     }
@@ -52,12 +77,43 @@ const rasterTemplateStyle = {
   {
     id: taskPolygonsHighlight,
     type: 'fill',
-    source: 'geojsonSource',
+    source: geojsonSource,
+    layout: {
+      visibility: 'visible'
+    },
     paint: {
       'fill-opacity': 0.64
     },
     filter: ['==', '_id', '']
-  }],
+  },
+  {
+    id: requestPoints,
+    type: 'circle',
+    source: requestsSource,
+    layout: {
+      visibility: 'visible'
+    },
+    paint: {
+      'circle-color': {
+        property: 'status',
+        type: 'categorical',
+        stops: requestStatusStyles.map(style => [style.name, style.color])
+      },
+      'circle-radius': 10
+    }
+  },
+  {
+    id: requestPointLabels,
+    type: 'symbol',
+    source: requestsSource,
+    layout: {
+      visibility: 'visible',
+      'text-field': '',
+      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+      'text-anchor': 'center'
+    }
+  }
+  ],
   center: [0, 0],
   zoom: 2
 };
@@ -72,48 +128,48 @@ const styleManager = {};
 
 const setVisibility = (layer, visibility) => {
   return Object.assign({}, layer, {
-    layout: Object.assign({}, layer.layout, { visibility })
+    layout: Object.assign({}, layer.layout, { visibility: visibility })
   });
 };
 
 styleManager.getInitialStyle = (name, url, type) => {
+  const mergedStyle = Object.assign({}, hotStyle, {
+    layers: hotStyle.layers.concat(rasterTemplateStyle.layers),
+    sources: Object.assign({}, hotStyle.sources, rasterTemplateStyle.sources)
+  });
   if (!name) {
-    const invisibleRaster = rasterTemplateStyle.layers.map((layer) => {
-      let newLayer;
-      if (layer.id === rasterLayerId) {
-        newLayer = setVisibility(layer, 'none');
-      } else {
-        newLayer = layer;
-      }
-      return newLayer;
-    });
-    const newLayers = hotStyle.layers.concat(invisibleRaster);
-    return Object.assign({}, hotStyle, {
-      layers: newLayers,
-      sources: Object.assign({}, hotStyle.sources, rasterTemplateStyle.sources)
-    });
+    return mergedStyle;
   } else {
-    return styleManager.setSource(rasterTemplateStyle, name, url, type);
+    return styleManager.setSource(mergedStyle, name, url, type);
   }
 };
 
 styleManager.setSource = (prevStyle, name, url, type) => {
+  let rasterVisibility = visible;
+  let vectorVisibility = visible;
+  if (type === raster) {
+    rasterVisibility = visible;
+    vectorVisibility = none;
+  }
+  if (type === vector) {
+    rasterVisibility = none;
+    vectorVisibility = visible;
+  }
+
   const newLayers = prevStyle.layers.map((layer) => {
+    const isTemplateLayer = rasterTemplateStyle.layers.find(templateLayer => {
+      return templateLayer.id === layer.id;
+    });
+
     let newLayer;
-    if (type === raster) {
-      if (layer.id === rasterLayerId || layer.id === taskPolygons ||
-          layer.id === taskPolygonsHighlight) {
-        newLayer = setVisibility(layer, 'visible');
-      } else {
-        newLayer = setVisibility(layer, 'none');
-      }
-    }
-    if (type === vector) {
+    if (isTemplateLayer) {
       if (layer.id === rasterLayerId) {
-        newLayer = setVisibility(layer, 'none');
+        newLayer = setVisibility(layer, rasterVisibility);
       } else {
-        newLayer = setVisibility(layer, 'visible');
+        newLayer = setVisibility(layer, layer.layout.visibility);
       }
+    } else {
+      newLayer = setVisibility(layer, vectorVisibility);
     }
     return newLayer;
   });
@@ -147,9 +203,14 @@ styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
   // Handle zooming to multiple features for shadow features.
   const coordinates = featureCollection.features
     .reduce((coordinates, feature) => {
-      feature.geometry.coordinates[0].forEach((coordinate) => {
-        coordinates.push(coordinate);
-      });
+      if (feature.geometry.type === 'Polygon') {
+        feature.geometry.coordinates[0].forEach((coordinate) => {
+          coordinates.push(coordinate);
+        });
+      }
+      if (feature.geometry.type === 'Point') {
+        coordinates.push(feature.geometry.coordinates);
+      }
       return coordinates;
     }, []);
 
@@ -177,11 +238,11 @@ styleManager.getZoomedStyle = (geojson, size, templateStyle) => {
   return style;
 };
 
-styleManager.setGeoJSONData = (geojson, templateStyle) => {
+styleManager.setGeoJSONData = (geojson, templateStyle, source) => {
   const featureCollection = geojsonNormalize(geojson);
   const style = Object.assign({}, templateStyle, {
     sources: Object.assign({}, templateStyle.sources, {
-      geojsonSource: Object.assign({}, templateStyle.sources.geojsonSource, {
+      [source]: Object.assign({}, templateStyle.sources.geojsonSource, {
         data: featureCollection
       })
     })
@@ -189,9 +250,9 @@ styleManager.setGeoJSONData = (geojson, templateStyle) => {
   return style;
 };
 
-styleManager.getSourceZoomedStyle = (size, templateStyle) => {
+styleManager.getSourceZoomedStyle = (size, source, templateStyle) => {
   let style;
-  const data = templateStyle.sources.geojsonSource.data;
+  const data = templateStyle.sources[source].data;
   if (data.features && data.features.length !== 0) {
     style = styleManager.getZoomedStyle(data, size, templateStyle);
   } else {
@@ -248,6 +309,48 @@ styleManager.getTaskStatusStyle = (templateStyle) => {
       } else {
         return layer;
       }
+    })
+  });
+  return style;
+};
+
+styleManager.getRequestStatusOffStyle = (templateStyle) => {
+  const style = Object.assign({}, templateStyle, {
+    layers: templateStyle.layers.map((layer) => {
+      let newLayer;
+      if (layer.id === requestPoints || layer.id === requestPointLabels) {
+        newLayer = setVisibility(layer, none);
+      } else if (layer.id === taskPolygons) {
+        newLayer = setVisibility(layer, visible);
+      } else {
+        newLayer = layer;
+      }
+      // Hack to handle Mapbox worker issue
+      if (layer.id === requestPointLabels) {
+        newLayer.layout['text-field'] = '';
+      }
+      return newLayer;
+    })
+  });
+  return style;
+};
+
+styleManager.getRequestStatusStyle = (templateStyle) => {
+  const style = Object.assign({}, templateStyle, {
+    layers: templateStyle.layers.map((layer) => {
+      let newLayer;
+      if (layer.id === requestPoints || layer.id === requestPointLabels) {
+        newLayer = setVisibility(layer, visible);
+      } else if (layer.id === taskPolygons) {
+        newLayer = setVisibility(layer, none);
+      } else {
+        newLayer = layer;
+      }
+      // Hack to handle Mapbox worker issue
+      if (layer.id === requestPointLabels) {
+        newLayer.layout['text-field'] = '{completed}';
+      }
+      return newLayer;
     })
   });
   return style;
