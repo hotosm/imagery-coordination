@@ -18,7 +18,8 @@ const imageryStyles = imagerySearchLayers.map(m => {
 const initialState = {
   mainMapStyle,
   imageryStyles,
-  selectedBase: undefined
+  selectedBase: undefined,
+  createRequestEnabled: false
 };
 
 function freshState (state) {
@@ -49,6 +50,12 @@ function newExtentState (state, action) {
     const newImageryStyle = newExtentStyle(s, action);
     newState.imageryStyles[i] = newImageryStyle;
   });
+  return newState;
+}
+
+function setCreateRequestEnabled (state) {
+  const newState = freshState(state);
+  newState.createRequestEnabled = true;
   return newState;
 }
 
@@ -94,7 +101,13 @@ export default function reducer (state = initialState, action) {
       case LOCATION_CHANGE:
         const setMapLocation = parseLocationString(action.payload.pathname);
         if (setMapLocation) {
-          return newExtentState(state, setMapLocation);
+          if (mainMapStyle.center[0] !== setMapLocation.center.lng ||
+              mainMapStyle.center[1] !== setMapLocation.center.lat ||
+              mainMapStyle.zoom !== setMapLocation.zoom) {
+            return setCreateRequestEnabled(newExtentState(state, setMapLocation));
+          } else {
+            return newExtentState(state, setMapLocation);
+          }
         } else {
           return state;
         }

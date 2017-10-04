@@ -7,7 +7,7 @@ import { getImagerySearchLayers } from
 import * as actions from '../../app/assets/scripts/actions/actionTypes';
 
 test('imagery-search reducer initial state', t => {
-  t.plan(3);
+  t.plan(4);
   const initialState = imagerySearchReducer(undefined, {});
   t.is(typeof (initialState.mainMapStyle.zoom), 'number',
     'Initial state main style zoom is a number');
@@ -16,6 +16,7 @@ test('imagery-search reducer initial state', t => {
   t.equal(initialState.imageryStyles.length,
           getImagerySearchLayers().length,
             'Initial state imageryStyles is dervied from map-layers');
+  t.false(initialState.createRequestEnabled);
 });
 
 test('imagery-search SET_SEARCH_MAP_CENTER updates main map style', t => {
@@ -120,5 +121,15 @@ test('imagery-search LOCATION_CHANGE with incomplete params is ignored', t => {
                                     locationChangeDifferentPath).mainMapStyle;
   t.equal(mainStyle.zoom, initialMainMapStyle.zoom,
           'Makes no state changes when path is not /imagery-search/');
+});
+
+test('imagery-search LOCATION_CHANGE with new location enables create request', t => {
+  t.plan(1);
+  const locationChange = {
+    type: LOCATION_CHANGE,
+    payload: { pathname: '/imagery-search/1,2,4' }
+  };
+  const resultState = imagerySearchReducer(undefined, locationChange);
+  t.ok(resultState.createRequestEnabled);
 });
 

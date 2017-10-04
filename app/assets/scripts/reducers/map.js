@@ -1,12 +1,14 @@
 /* eslint no-unused-vars:0 */
 import { LOCATION_CHANGE } from 'react-router-redux';
 import _ from 'lodash';
-import styleManager from '../utils/styleManager';
+import center from '@turf/center';
+import styleManager, { geojsonSource, requestsSource }
+  from '../utils/styleManager';
 import { RECEIVE_TASK, RECEIVE_TASKS, RECEIVE_USER_TASKS, SET_MAP_LAYER,
-  RESET_MAP_LAYER, FINISH_POST_TASK } from '../actions';
+  RESET_MAP_LAYER, FINISH_POST_TASK, RECEIVE_REQUESTS } from '../actions';
 import { SET_MAP_LOCATION, SET_MAP_SIZE, SET_TASK_GEOJSON, SET_DRAW_MODE,
   SET_SELECTED_FEATURE_ID, RECEIVE_UPLOAD } from '../actions/actionTypes';
-import { geometryToFeature } from '../utils/features';
+import { geometryToFeature, combineFeatureResults } from '../utils/features';
 import baseLayers from '../utils/map-layers';
 import { directSelect, featureId, drawPolygon, simpleSelect, staticDraw } from
   '../utils/constants';
@@ -21,7 +23,9 @@ export const initialState = {
   drawMode: staticDraw,
   selectedFeatureId: undefined,
   baseLayers,
-  baseLayer: baseLayers[0]
+  baseLayer: baseLayers[0],
+  dataSource: geojsonSource,
+  newestRequest: undefined
 };
 
 function parseTaskId (locationString) {
@@ -60,6 +64,15 @@ function checkLocationDashboard (locationString) {
     isDashboard = true;
   }
   return isDashboard;
+}
+
+function checkHomeLocation (locationString) {
+  let isHome = false;
+  const locationParts = locationString.split('/');
+  if (locationParts[1] === '') {
+    isHome = true;
+  }
+  return isHome;
 }
 
 function receiveTask (state, action) {
@@ -112,7 +125,7 @@ function receiveTasks (state, action) {
 
   let tasksStyle;
   if (tasks) {
-    tasksStyle = styleManager.setGeoJSONData(tasks, state.style);
+    tasksStyle = styleManager.setGeoJSONData(tasks, state.style, geojsonSource);
   }
 
   let zoomedStyle;
@@ -123,6 +136,32 @@ function receiveTasks (state, action) {
   }
   return Object.assign({}, state,
                        { style: zoomedStyle || tasksStyle || state.style });
+}
+
+function receiveRequests (state, action) {
+  let requests;
+  let newestRequest;
+  if (action.data.results.length !== 0) {
+    newestRequest = action.data.results.reduce((a, b) => {
+      return a.created > b.created ? a : b;
+    })._id;
+    requests = combineFeatureResults(action.data.results, result => {
+      return _.omit(result, ['geometry', 'updates']);
+    });
+  }
+
+  let style;
+  if (requests) {
+    requests.features.forEach((feature) => {
+      feature.geometry = center(feature).geometry;
+      feature.properties.completed = feature.properties.tasksInfo.status.completed;
+    });
+    style = styleManager.setGeoJSONData(requests, state.style, requestsSource);
+  } else {
+    style = styleManager.setGeoJSONData({ features: [], type: 'FeatureCollection' },
+                                        state.style, requestsSource);
+  }
+  return Object.assign({}, state, { style: style, newestRequest: newestRequest });
 }
 
 function setMapLayer (state, action) {
@@ -138,12 +177,18 @@ function setMapLayer (state, action) {
 
 function setMapSize (state, action) {
   let style;
-  const taskGeojson = state.taskGeojson;
-  if (taskGeojson && taskGeojson.geometry &&
-      taskGeojson.geometry.coordinates) {
-    style = styleManager.getZoomedStyle(taskGeojson, action.size, state.style);
+  if (state.dataSource === requestsSource) {
+    style = styleManager.getSourceZoomedStyle(action.size, state.dataSource,
+                                              state.style);
   } else {
-    style = styleManager.getSourceZoomedStyle(action.size, state.style);
+    const taskGeojson = state.taskGeojson;
+    if (taskGeojson && taskGeojson.geometry &&
+      taskGeojson.geometry.coordinates) {
+      style = styleManager.getZoomedStyle(taskGeojson, action.size, state.style);
+    } else {
+      style = styleManager.getSourceZoomedStyle(action.size, state.dataSource,
+                                              state.style);
+    }
   }
 
   return Object.assign({}, state, {
@@ -158,21 +203,28 @@ function handleLocationChange (state, action) {
   const isRequestsPage = checkRequestLocation(action.payload.pathname);
   const isNewTask = checkNewTaskLocation(action.payload.pathname);
   const isDashboard = checkLocationDashboard(action.payload.pathname);
+  const isHome = checkHomeLocation(action.payload.pathname);
 
   let newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }));
   if (taskId) {
     const style = styleManager.getFilteredTaskIdStyle(taskId, state.style);
-    newState = Object.assign({}, state, { style });
+    newState = Object.assign({}, state, { dataSource: geojsonSource, style });
   }
   if (isNewTask || isDashboard) {
-    const style = styleManager.getTaskStatusStyle(state.style);
+    const style = styleManager.getRequestStatusOffStyle(
+      styleManager.getTaskStatusStyle(state.style));
     newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
-                             { style });
+                             { dataSource: geojsonSource, style });
   }
   if (isRequestsPage) {
-    const style = styleManager.getTaskStatusStyle(state.style);
+    const style = styleManager.getRequestStatusOffStyle(
+      styleManager.getTaskStatusStyle(state.style));
     newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
-                         { style });
+                         { dataSource: geojsonSource, style });
+  }
+  if (isHome) {
+    const style = styleManager.getRequestStatusStyle(state.style);
+    newState = Object.assign({}, state, { dataSource: requestsSource, style });
   }
   return newState;
 }
@@ -190,6 +242,9 @@ export default function reducer (state = initialState, action) {
 
     case RECEIVE_TASKS:
       return receiveTasks(state, action);
+
+    case RECEIVE_REQUESTS:
+      return receiveRequests(state, action);
 
     case RECEIVE_USER_TASKS:
       return receiveTasks(state, action);
