@@ -139,6 +139,8 @@ test('map LOCATION_CHANGE', t => {
   const getFilteredTaskIdStyle = sinon.stub(styleManager, 'getFilteredTaskIdStyle')
     .returns(getfiltered);
 
+  const getRequestStatusOffStyle = sinon.stub(styleManager,
+                                              'getRequestStatusOffStyle');
   const taskid = 'taskid';
   const locationChange = {
     type: LOCATION_CHANGE,
@@ -154,19 +156,17 @@ test('map LOCATION_CHANGE', t => {
     type: LOCATION_CHANGE,
     payload: { pathname: '/requests/requestid/tasks/edit' }
   };
-  const gettaskstatus = 'gettaskstatus';
-  const getTaskStatusStyle = sinon.stub(styleManager, 'getTaskStatusStyle')
-    .returns(gettaskstatus);
+  const getTaskStatusStyle = sinon.stub(styleManager, 'getTaskStatusStyle');
   state = mapReducer({}, newTask);
+  t.ok(getRequestStatusOffStyle.called,
+       'Turns off requests layer when creating new task');
   t.ok(getTaskStatusStyle.called,
        'Changing location to create new task gets style with other request task');
-  t.equal(state.style, gettaskstatus);
   t.notOk(state.taskGeojson);
 
   getTaskStatusStyle.reset();
+  getRequestStatusOffStyle.reset();
 
-  const getRequestStatusOffStyle = sinon.stub(styleManager,
-                                              'getRequestStatusOffStyle');
   const requestsPage = {
     type: LOCATION_CHANGE,
     payload: { pathname: '/requests/requestid' }

@@ -211,7 +211,8 @@ function handleLocationChange (state, action) {
     newState = Object.assign({}, state, { dataSource: geojsonSource, style });
   }
   if (isNewTask || isDashboard) {
-    const style = styleManager.getTaskStatusStyle(state.style);
+    const style = styleManager.getRequestStatusOffStyle(
+      styleManager.getTaskStatusStyle(state.style));
     newState = Object.assign({}, setTaskGeoJSON(state, { geojson: undefined }),
                              { dataSource: geojsonSource, style });
   }
